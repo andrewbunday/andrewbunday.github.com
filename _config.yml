@@ -1,8 +1,3 @@
-source: ./_source
-
-name: andrew bunday
-description: tech notes and papers
-
 pygments:  true
 markdown:  kramdown
 permalink: date
@@ -17,3 +12,5 @@ kramdown:
 css:
   theme: spacelab
 
+name: andrew bunday
+description: tech notes and papers
