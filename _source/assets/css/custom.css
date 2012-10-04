@@ -1,0 +1,121 @@
+html {
+    overflow-y: scroll;
+}
+
+
+.h4-3em h4{
+    padding-top: 20px;
+    line-height: 30px;
+}
+
+.well-large {
+    min-height: 70px;
+}
+
+.hero-unit {
+    /*margin-bottom: 0px;*/
+    margin-top: 10px;
+}
+
+.page-header {
+    margin-bottom: 0px;
+    padding-left: 60px;
+}
+
+.breadcrumb {
+    margin-bottom: 10px;
+    padding-left: 60px;
+}
+
+.main-content {
+    padding-left: 60px;
+    padding-right:60px;
+    height: 100%;
+}
+
+#pastPostTab {
+    padding-top: 10px;
+}
+
+#main-nav {
+    margin: 0px;
+}
+
+#tagged_posts{
+    text-align: center;
+}
+
+#tagged_posts label{
+    margin: 3px;
+}
+
+.default-contact-thumbs{
+    margin-left:auto;
+    margin-right:auto;
+    width: 30%;
+    max-width: 500px;
+    -webkit-filter: grayscale(1);
+    filter: gray;
+    filter: url(filters.svg#grayscale);
+}
+
+.page-contact-thumbs{
+    margin-left:auto;
+    margin-right:auto;
+    width: 20%;
+    max-width: 500px;
+    -webkit-filter: grayscale(1);
+    filter: gray;
+    filter: url(filters.svg#grayscale);
+}
+
+.about-contact-thumbs{
+    margin-left:auto;
+    margin-right:auto;
+    width: 20%;
+    max-width: 500px;
+    -webkit-filter: grayscale(1);
+    filter: gray;
+    filter: url(filters.svg#grayscale);
+}
+
+.post-contact-thumbs{
+    margin-left:auto;
+    margin-right:auto;
+    width: 20%;
+    max-width: 500px;
+    -webkit-filter: grayscale(1);
+    filter: gray;
+    filter: url(filters.svg#grayscale);
+}
+
+.main-navbar {
+    padding-right: 20px;
+}
+
+.main-navbar-inner {
+    padding-right: 20px;
+}
+
+.avatar {
+    max-width: 170px;
+    min-width: 170px;
+    padding: 10px;
+}
+
+img.twitter {
+    width:45px;
+    height:45px;
+    background:url(img_navsprites.gif) 180px 45px;
+}
+
+@media (max-width: 979px) {
+    .hidden-800 {
+        display:none !important;
+    }
+
+  .span12-tablet {
+    width: 91.48936170212765% !important;
+    *width: 91.43617021276594% !important;
+  }
+}

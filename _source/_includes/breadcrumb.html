@@ -1,0 +1,9 @@
+<ul class="breadcrumb">
+  <li><a href="/">home</a> <span class="divider">/</span></li>
+  {% if page.layout == "post" %}
+    <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
+  {% endif %}
+  {% if page.title != "home" and page.title != "posts" %}
+    <li class="active">{{page.title | downcase}}</li>
+  {% endif %}
+</ul>

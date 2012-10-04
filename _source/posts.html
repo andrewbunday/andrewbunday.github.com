@@ -1,0 +1,38 @@
+---
+layout: page
+title: "Post History"
+---
+
+<ul class="nav nav-tabs" id="pastPostTab">
+  <li><a href="#dated_posts" data-toggle="tab">Date</a></li>
+  <li><a href="#tagged_posts" data-toggle="tab">Tags</a></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="dated_posts">
+        {% for post in site.posts %}
+            <span class="row">
+                <span class="span9">
+                    <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    {{ post.date | date: "%B %e, %Y" }}
+                </span>
+            </span>
+        {% endfor %}
+    </div>
+    <div class="tab-pane fade" id="tagged_posts">
+        <p><i>*Tags are not yet linked to.</i></p>
+        {% for tag in site.tags %}
+            <span class="label" >
+                {{tag[0]}}
+            </span>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#pastPostTab a:first').tab('show');
+    })
+</script>
