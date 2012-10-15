@@ -4,4 +4,4 @@ layout: post
 title: "Daybreak over the Serpentine"
 ---
 
-<img src='/assets/img/photostream/2010-10-15_08.09.02.jpg'/>
+<a href='/assets/img/photostream/2010-10-15_08.09.02.jpg' target='_blank'><img src='/assets/img/photostream/2010-10-15_08.09.02.jpg'/></a>
