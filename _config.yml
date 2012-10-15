@@ -10,7 +10,7 @@ kramdown:
   use_coderay: false
 
 css:
-  theme: spacelab
+  theme: journal
 
 name: andrew bunday
 description: tech notes and papers
