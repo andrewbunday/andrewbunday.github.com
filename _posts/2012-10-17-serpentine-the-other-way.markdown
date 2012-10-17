@@ -1,0 +1,7 @@
+---
+date: 2012-10-17 09:46AM
+layout: post
+title: "Serpentine the Other Way"
+---
+
+<a href='/assets/img/photostream/2010-10-17_08.06.52.jpg' target='_blank'><img src='/assets/img/photostream/2010-10-15_08.06.52.jpg'/></a>
