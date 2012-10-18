@@ -47,26 +47,22 @@ First up, Proxmox uses a token based authentication mechanism which must be atta
 
 Connect to any node in the cluster and get the auth_token:
 
-````python
-import proxmox
+    import proxmox
 
-connection = proxmox.Connector('proxmox-1', 8006)
-auth_token = connection.get_auth_token('user@pam', 'strawberries')
-````
+    connection = proxmox.Connector('proxmox-1', 8006)
+    auth_token = connection.get_auth_token('user@pam', 'strawberries')
 
 Next create Proxmox and Node access objects, these are the bread and butter of the library:
 
-````python
-p = proxmox.Proxmox(connection)
-node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
-````
+    p = proxmox.Proxmox(connection)
+    node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
+
     
 The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:
 
-````python
-vmid = 108
-print node.openvz(vmid).status.current()
-````
+    vmid = 108
+    print node.openvz(vmid).status.current()
+
 
 Which is converted to the URL:
 
@@ -74,40 +70,36 @@ Which is converted to the URL:
 
 Find a vm template filepath and use this as the ostemplate for a new vm you create. And then start it up once it has finished being created:
 
-````python
-# find the path for the template you want to use.
-for template in node.storage('virtual-nfs').content(content='vztmpl'):
-    if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
-        volume = node.storage('virtual-nfs').content(template['volid']).get()
+    # find the path for the template you want to use.
+    for template in node.storage('virtual-nfs').content(content='vztmpl'):
+        if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
+            volume = node.storage('virtual-nfs').content(template['volid']).get()
 
-# create the container, giving it some sensible settings
-taskid = node.openvz.post( ostemplate=volume.get('path'),
-                           vmid=204,
-                           hostname='test-4',
-                           ip_address='192.168.123.204',
-                           storage='local')
+    # create the container, giving it some sensible settings
+    taskid = node.openvz.post( ostemplate=volume.get('path'),
+                               vmid=204,
+                               hostname='test-4',
+                               ip_address='192.168.123.204',
+                               storage='local')
 
-# keep an eye on task and see when its completed
-while node.tasks(taskid).status()['status'] == 'running':
-        time.sleep(1)
+    # keep an eye on task and see when its completed
+    while node.tasks(taskid).status()['status'] == 'running':
+            time.sleep(1)
 
-# print out the logs
-for line in node.tasks(taskid).log():
-    print line['t']
+    # print out the logs
+    for line in node.tasks(taskid).log():
+        print line['t']
 
-try:
-    # start up the container
-    node.openvz('204').status.start.post()
-except:
-    raise Exception('Unable to start container')
-````
+    try:
+        # start up the container
+        node.openvz('204').status.start.post()
+    except:
+        raise Exception('Unable to start container')
 
 Find if a user exists and create them if they do not:
 
-````python
-if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
-    p.access.users.post(userid='andrew.bunday@pve', comment="test user", password="strawberries")
-````
+    if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
+        p.access.users.post(userid='andrew.bunday@pve', comment="test user", password="strawberries")
 
 
 
