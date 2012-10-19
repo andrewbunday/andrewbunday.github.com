@@ -14,7 +14,7 @@
                     {% for post in site.posts limit:3 offset:1%}
                         <div class="span4 secondary-story-header">
                             <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
-                            <div class=thumb>{{ post.synopsis }}</div>
+                            <div class=thumbnail>{{ post.synopsis }}</div>
                         </div>
                     {% endfor %}
                 </div>
