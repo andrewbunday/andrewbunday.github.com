@@ -2,6 +2,7 @@
 date: 2012-10-18 10:27PM
 layout: post
 title: "Introducing Proxmoxia"
+synopsis: "Today I'm happy to have finished up work on a small python wrapper for Proxmox's rest based API. We've called it [Proxmoxia](http://github.com/baseblack/proxmoxia)."
 ---
 
 Today I'm happy to have finished up work on a small python wrapper for Proxmox's rest based API. We've called it [Proxmoxia](http://github.com/baseblack/proxmoxia).
@@ -14,7 +15,7 @@ At Baseblack we utilise Proxmox to provide us with the majority of our central i
 
 An area of active development for us is the automation of builds of new software packages for deployment onto our workstations, render nodes and virtual hosts.
 
-> _This is where Proxmoxia comes in._ 
+> _This is where Proxmoxia comes in._
 
 Until recently anytime we've needed to spin up a new virtual server, we've needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.
 
@@ -22,7 +23,7 @@ We knew that our plans for automated builds, and testing of packages would invol
 
 ###Creating Proxmoxia
 
-After a short burst of _'Spanish Flea'_ our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren't keen on or flat out refused to use. 
+After a short burst of _'Spanish Flea'_ our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren't keen on or flat out refused to use.
 
 > _Perl, Java, PHP need not apply_
 
@@ -31,9 +32,9 @@ Unfortunately I didn't come across PyProxmox _(a major omission of mine)_ until 
 I wanted to create a library which followed a few simple rules:
 
 1. It should 'feel' pythonic.
-2. I wanted the wrapper to extend itself. Or in a few more words; I didn't want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api. 
+2. I wanted the wrapper to extend itself. Or in a few more words; I didn't want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.
 
-Personally I don't like PyProxmox's implementation for both of these reasons which is why I feel justified in completing Proxmoxia. 
+Personally I don't like PyProxmox's implementation for both of these reasons which is why I feel justified in completing Proxmoxia.
 
 ###Whats Next?
 
@@ -41,9 +42,9 @@ We're going to be using the library as part of our testing suite, creating new V
 
 ###Finally Some Examples
 
-Okay, so here are some examples to show what I'm talking about. Head over to the [github](http://github.com/baseblack/proxmoxia) site for the source for these. 
+Okay, so here are some examples to show what I'm talking about. Head over to the [github](http://github.com/baseblack/proxmoxia) site for the source for these.
 
-First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request. 
+First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request.
 
 Connect to any node in the cluster and get the auth_token:
 
@@ -57,7 +58,7 @@ Next create Proxmox and Node access objects, these are the bread and butter of t
     p = proxmox.Proxmox(connection)
     node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
 
-    
+
 The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:
 
     vmid = 108

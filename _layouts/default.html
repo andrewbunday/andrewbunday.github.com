@@ -12,8 +12,9 @@
             <div class="container-fluid main-content">
                 <div class="row-fluid">
                     {% for post in site.posts limit:3 offset:1%}
-                        <div class="span4 well">
-                            <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a>
+                        <div class="span4 well secondary-story-header">
+                            <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
+                            {{ post.synopsis }}
                         </div>
                     {% endfor %}
                 </div>
@@ -21,7 +22,8 @@
                     <div class="span12 well">
                         <!--{% include hero-unit.html %}-->
                         {% for post in site.posts limit:1 %}
-                            <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a>
+                            <h3><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h3>
+                            {{ post }}
                         {% endfor %}
                     </div>
                 </div>

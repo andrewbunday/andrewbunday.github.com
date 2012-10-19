@@ -8,15 +8,16 @@ html {
 
 .well-large {
     display: inline-block;
+    min-height: 70px;
+}
+
+.secondary-story-header{
+    min-height: 150px;
 }
 
 .h4-3em h4{
     padding-top: 20px;
     line-height: 30px;
-}
-
-.well-large {
-    min-height: 70px;
 }
 
 .hero-unit {
