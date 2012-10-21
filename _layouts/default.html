@@ -10,13 +10,17 @@
             {% include breadcrumb.html %}
 
             <div class="container-fluid main-content">
-                <div class="row-fluid" style="margin-bottom:20px; margin-top:10px">
-                    {% for post in site.posts limit:3 offset:1%}
-                        <div class="span4 secondary-story-header">
-                            <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
-                            <div class=thumbnail>{{ post.synopsis }}</div>
-                        </div>
-                    {% endfor %}
+                <div class="row-fluid" style="margin-top:10px">
+                    <ul class="thumbnails">
+                        {% for post in site.posts limit:3 offset:1%}
+                            <li class="span4 secondary-story-header">  <!---->
+                                <!--<div class=thumbnail>-->
+                                    <h4><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></h4>
+                                    {{ post.synopsis }}
+                                <!--</div>-->
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
                 <div class="row-fluid">
                     <div class="span12">
