@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>home / Andy Bunday</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/ubuntu.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+
+    <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-772003-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+    </head>
+    <body>
+        <div class="page">
+            <div class="navbar navbar-static-top">
+    <div class="navbar-inner main-navbar-inner">
+        <div class="container-fluid main-navbar">
+            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+           </a>
+
+            <div class="nav-collapse pull-right">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/posts.html">Posts</a></li>
+                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div class="page-header">
+  <h3>Andrew Bunday <small>tech notes</small></h3>
+</div>
+
+            <ul class="breadcrumb">
+  <li><a href="/">home</a> <span class="divider">/</span></li>
+  
+  
+</ul>
+
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid" style="margin-top:10px">
+                    <ul class="thumbnails">
+                        
+                            <li class="span4 secondary-story-header">  <!---->
+                                <!--<div class=thumbnail>-->
+                                    <h4><a href="/2012/10/17/serpentine-the-other-way.html">Serpentine the Other Way</a></h4>
+                                    <img src='/assets/photostream/thumbs/2012-10-17_08.06.52.jpg'/>
+                                <!--</div>-->
+                            </li>
+                        
+                            <li class="span4 secondary-story-header">  <!---->
+                                <!--<div class=thumbnail>-->
+                                    <h4><a href="/2012/10/16/triggering-ppas-only-once-with-puppet.html">One time PPA additions in Puppet</a></h4>
+                                    Puppet exec has a 'creates => somefile' action. Use it.
+                                <!--</div>-->
+                            </li>
+                        
+                            <li class="span4 secondary-story-header">  <!---->
+                                <!--<div class=thumbnail>-->
+                                    <h4><a href="/2012/10/15/daybreak-over-the-serpentine.html">Daybreak over the Serpentine</a></h4>
+                                    <img src='/assets/photostream/thumbs/2010-10-15_08.09.02.jpg'/>
+                                <!--</div>-->
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <!--<div class="well well-large"> 
+    <blockquote class="pull-right">
+        <p>the most interesting people I know didnt know at 22 what they
+           wanted to do with their lives, some of the most interesting 40 year 
+           olds I know still dont. </p>
+        <small>Baz Luhrmann</small>
+    </blockquote>
+</div>
+-->
+                        
+                            <h2><a href="/2012/10/18/introducting-proxmoxia.html">Introducing Proxmoxia</a></h2>
+                            <div class="well">
+                                <p>Today I&#8217;m happy to have finished up work on a small python wrapper for Proxmox&#8217;s rest based API. We&#8217;ve called it <a href="http://github.com/baseblack/proxmoxia">Proxmoxia</a>.</p>
+
+<h3 id="background">Background</h3>
+
+<p>For those who don&#8217;t know, <a href="http://pve.proxmox.com/wiki/Main_Page">Proxmox</a> is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.</p>
+
+<p>At Baseblack we utilise Proxmox to provide us with the majority of our central infrastructure. For example we run a pair of DNS servers, an almost countless number of license servers and farm manager all as openvz containers. Doing this provides us with a far higher level of service since if any one of our virtualization nodes go down we can quickly and pretty painlessly re-start the downed services on one of the other nodes whilst we work outs whats happening.</p>
+
+<p>An area of active development for us is the automation of builds of new software packages for deployment onto our workstations, render nodes and virtual hosts.</p>
+
+<blockquote>
+  <p><em>This is where Proxmoxia comes in.</em></p>
+</blockquote>
+
+<p>Until recently anytime we&#8217;ve needed to spin up a new virtual server, we&#8217;ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.</p>
+
+<p>We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.</p>
+
+<h3 id="creating-proxmoxia">Creating Proxmoxia</h3>
+
+<p>After a short burst of <em>&#8216;Spanish Flea&#8217;</em> our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren&#8217;t keen on or flat out refused to use.</p>
+
+<blockquote>
+  <p><em>Perl, Java, PHP need not apply</em></p>
+</blockquote>
+
+<p>Unfortunately I didn&#8217;t come across PyProxmox <em>(a major omission of mine)</em> until I&#8217;d already spent the better part of a day planning on how to make proxmoxia. And by then I well and truly had the bit between my teeth.</p>
+
+<p>I wanted to create a library which followed a few simple rules:</p>
+
+<ol>
+  <li>It should &#8216;feel&#8217; pythonic.</li>
+  <li>I wanted the wrapper to extend itself. Or in a few more words; I didn&#8217;t want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.</li>
+</ol>
+
+<p>Personally I don&#8217;t like PyProxmox&#8217;s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.</p>
+
+<h3 id="whats-next">Whats Next?</h3>
+
+<p>We&#8217;re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it&#8217;s going to work out to be really useful.</p>
+
+<h3 id="finally-some-examples">Finally Some Examples</h3>
+
+<p>Okay, so here are some examples to show what I&#8217;m talking about. Head over to the <a href="http://github.com/baseblack/proxmoxia">github</a> site for the source for these.</p>
+
+<p>First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request.</p>
+
+<p>Connect to any node in the cluster and get the auth_token:</p>
+
+<pre><code>import proxmox
+
+connection = proxmox.Connector('proxmox-1', 8006)
+auth_token = connection.get_auth_token('user@pam', 'strawberries')
+</code></pre>
+
+<p>Next create Proxmox and Node access objects, these are the bread and butter of the library:</p>
+
+<pre><code>p = proxmox.Proxmox(connection)
+node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
+</code></pre>
+
+<p>The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:</p>
+
+<pre><code>vmid = 108
+print node.openvz(vmid).status.current()
+</code></pre>
+
+<p>Which is converted to the URL:</p>
+
+<pre><code>http://proxmox-1:8006/api2/json/nodes/proxmox-7/openvz/108/status/current
+</code></pre>
+
+<p>Find a vm template filepath and use this as the ostemplate for a new vm you create. And then start it up once it has finished being created:</p>
+
+<pre><code># find the path for the template you want to use.
+for template in node.storage('virtual-nfs').content(content='vztmpl'):
+    if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
+        volume = node.storage('virtual-nfs').content(template['volid']).get()
+
+# create the container, giving it some sensible settings
+taskid = node.openvz.post( ostemplate=volume.get('path'),
+                           vmid=204,
+                           hostname='test-4',
+                           ip_address='192.168.123.204',
+                           storage='local')
+
+# keep an eye on task and see when its completed
+while node.tasks(taskid).status()['status'] == 'running':
+        time.sleep(1)
+
+# print out the logs
+for line in node.tasks(taskid).log():
+    print line['t']
+
+try:
+    # start up the container
+    node.openvz('204').status.start.post()
+except:
+    raise Exception('Unable to start container')
+</code></pre>
+
+<p>Find if a user exists and create them if they do not:</p>
+
+<pre><code>if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
+    p.access.users.post(userid='andrew.bunday@pve', comment="test user", password="strawberries")
+</code></pre>
+
+
+                            </div>
+                        
+                    </div>
+                </div>
+                <div class="page-header">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
+</div>
+
+<div class="row-fluid default-contact-thumbs">
+    <div class="span4">
+        <a href="https://twitter.com/itwat" target="_blank">
+            <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
+        </a>
+    </div>
+    <div class="span4">
+        <a href="http://github.com/andrewbunday" target="_blank">
+            <img src="/assets/img/octocat.png" alt="">
+        </a>
+    </div>
+    <div class="span4">
+        <a href="http://www.linkedin.com/in/andrewbunday" target="_blank">
+            <img src="/assets/img/LinkedIn_Logo200x200.png" alt="">
+        </a>
+    </div>
+</div>
+
+
+            </div>
+
+        </div>
+     </body>
+</html>
+
+

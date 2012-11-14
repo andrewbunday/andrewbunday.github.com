@@ -1,0 +1,1061 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>andrewbunday.co.uk</title>
+    <link>http://andrewbunday.github.com/</link>
+    <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
+    <description>tech notes and photos</description>
+    <language>en-us</language>
+    <pubDate>Wed, 14 Nov 2012 10:52:49 +0000</pubDate>
+    <lastBuildDate>Wed, 14 Nov 2012 10:52:49 +0000</lastBuildDate>
+
+    
+    <item>
+      <title>Introducing Proxmoxia</title>
+      <link>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia.html</link>
+      <pubDate>Thu, 18 Oct 2012 22:27:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia</guid>
+      <description>&lt;p&gt;Today I&amp;#8217;m happy to have finished up work on a small python wrapper for Proxmox&amp;#8217;s rest based API. We&amp;#8217;ve called it &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;Proxmoxia&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;background&quot;&gt;Background&lt;/h3&gt;
+
+&lt;p&gt;For those who don&amp;#8217;t know, &lt;a href=&quot;http://pve.proxmox.com/wiki/Main_Page&quot;&gt;Proxmox&lt;/a&gt; is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.&lt;/p&gt;
+
+&lt;p&gt;At Baseblack we utilise Proxmox to provide us with the majority of our central infrastructure. For example we run a pair of DNS servers, an almost countless number of license servers and farm manager all as openvz containers. Doing this provides us with a far higher level of service since if any one of our virtualization nodes go down we can quickly and pretty painlessly re-start the downed services on one of the other nodes whilst we work outs whats happening.&lt;/p&gt;
+
+&lt;p&gt;An area of active development for us is the automation of builds of new software packages for deployment onto our workstations, render nodes and virtual hosts.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;This is where Proxmoxia comes in.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Until recently anytime we&amp;#8217;ve needed to spin up a new virtual server, we&amp;#8217;ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.&lt;/p&gt;
+
+&lt;p&gt;We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.&lt;/p&gt;
+
+&lt;h3 id=&quot;creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/h3&gt;
+
+&lt;p&gt;After a short burst of &lt;em&gt;&amp;#8216;Spanish Flea&amp;#8217;&lt;/em&gt; our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren&amp;#8217;t keen on or flat out refused to use.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;Perl, Java, PHP need not apply&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unfortunately I didn&amp;#8217;t come across PyProxmox &lt;em&gt;(a major omission of mine)&lt;/em&gt; until I&amp;#8217;d already spent the better part of a day planning on how to make proxmoxia. And by then I well and truly had the bit between my teeth.&lt;/p&gt;
+
+&lt;p&gt;I wanted to create a library which followed a few simple rules:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;It should &amp;#8216;feel&amp;#8217; pythonic.&lt;/li&gt;
+  &lt;li&gt;I wanted the wrapper to extend itself. Or in a few more words; I didn&amp;#8217;t want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Personally I don&amp;#8217;t like PyProxmox&amp;#8217;s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.&lt;/p&gt;
+
+&lt;h3 id=&quot;whats-next&quot;&gt;Whats Next?&lt;/h3&gt;
+
+&lt;p&gt;We&amp;#8217;re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it&amp;#8217;s going to work out to be really useful.&lt;/p&gt;
+
+&lt;h3 id=&quot;finally-some-examples&quot;&gt;Finally Some Examples&lt;/h3&gt;
+
+&lt;p&gt;Okay, so here are some examples to show what I&amp;#8217;m talking about. Head over to the &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;github&lt;/a&gt; site for the source for these.&lt;/p&gt;
+
+&lt;p&gt;First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request.&lt;/p&gt;
+
+&lt;p&gt;Connect to any node in the cluster and get the auth_token:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import proxmox
+
+connection = proxmox.Connector('proxmox-1', 8006)
+auth_token = connection.get_auth_token('user@pam', 'strawberries')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next create Proxmox and Node access objects, these are the bread and butter of the library:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;p = proxmox.Proxmox(connection)
+node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vmid = 108
+print node.openvz(vmid).status.current()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Which is converted to the URL:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://proxmox-1:8006/api2/json/nodes/proxmox-7/openvz/108/status/current
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Find a vm template filepath and use this as the ostemplate for a new vm you create. And then start it up once it has finished being created:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# find the path for the template you want to use.
+for template in node.storage('virtual-nfs').content(content='vztmpl'):
+    if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
+        volume = node.storage('virtual-nfs').content(template['volid']).get()
+
+# create the container, giving it some sensible settings
+taskid = node.openvz.post( ostemplate=volume.get('path'),
+                           vmid=204,
+                           hostname='test-4',
+                           ip_address='192.168.123.204',
+                           storage='local')
+
+# keep an eye on task and see when its completed
+while node.tasks(taskid).status()['status'] == 'running':
+        time.sleep(1)
+
+# print out the logs
+for line in node.tasks(taskid).log():
+    print line['t']
+
+try:
+    # start up the container
+    node.openvz('204').status.start.post()
+except:
+    raise Exception('Unable to start container')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Find if a user exists and create them if they do not:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
+    p.access.users.post(userid='andrew.bunday@pve', comment=&quot;test user&quot;, password=&quot;strawberries&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Serpentine the Other Way</title>
+      <link>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way.html</link>
+      <pubDate>Wed, 17 Oct 2012 09:46:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way</guid>
+      <description>&lt;p&gt;&lt;a href=&quot;/assets/photostream/2012-10-17_08.06.52.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/assets/photostream/2012-10-17_08.06.52.jpg&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>One time PPA additions in Puppet</title>
+      <link>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet.html</link>
+      <pubDate>Tue, 16 Oct 2012 10:00:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet</guid>
+      <description>&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+
+&lt;p&gt;When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.&lt;/p&gt;
+
+&lt;h2 id=&quot;apt&quot;&gt;Apt&lt;/h2&gt;
+
+&lt;p&gt;At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.&lt;/p&gt;
+
+&lt;p&gt;We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.&lt;/p&gt;
+
+&lt;p&gt;For internal software and tools we use Jordan Sissel&amp;#8217;s &lt;a href=&quot;https://github.com/jordansissel/fpm&quot;&gt;fpm&lt;/a&gt; to generate Debian packages which can then locally host in a &lt;a href=&quot;http://mirrorer.alioth.debian.org/&quot;&gt;reprepro&lt;/a&gt; managed apt repository.&lt;/p&gt;
+
+&lt;p&gt;For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu&amp;#8217;s &lt;a href=&quot;https://help.launchpad.net/Packaging/PPA&quot;&gt;PPA&lt;/a&gt; mechanism for adding additional unofficial packages to the system.&lt;/p&gt;
+
+&lt;h2 id=&quot;ppas&quot;&gt;PPAs&lt;/h2&gt;
+
+&lt;p&gt;PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa&amp;#8217;s short name, builds the apt url to access it, stores it in &lt;code&gt;/etc/apt/sources.list.d/*&lt;/code&gt; and retrieves its public signing key.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;add-apt-repository ppa:username/package&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;puppet&quot;&gt;Puppet&lt;/h2&gt;
+
+&lt;p&gt;We make use of the puppet-apt manifests put together by evolvingweb. &lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;https://github.com/evolvingweb/puppet-apt&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unfortunately each time puppet was running we were finding that it would not only take longer than we expected, but that the time it took was variable. Often during the middle of the day when our internet connection was more heavily being utilised the runs would take substantially longer.&lt;/p&gt;
+
+&lt;p&gt;We quickly saw when inspecting the run logs that on each run the ppas were being re-added into &lt;em&gt;sources.list.d&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Using what little skill I have at writing puppet configurations and from &lt;strong&gt;&lt;em&gt;reading&lt;/em&gt;&lt;/strong&gt; the documentation I amended the apt::ppa definition to make use of the &lt;strong&gt;creates =&amp;gt;&lt;/strong&gt; parameter for the &lt;strong&gt;exec&lt;/strong&gt; action. This parameter causes the action to only be executed if the file which it points towards does not exist at the specified location.&lt;/p&gt;
+
+&lt;p&gt;After adding the condition we found that our runs became much shorter and consistent in run time. &lt;/p&gt;
+
+&lt;p&gt;Finally here is the amended definition in all of its terrible glory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;define apt::ppa(
+
+) {
+    require apt
+
+    $ppa_prefix = split($name, ':')
+    $ppa_name_repo = split($ppa_prefix[1], '/')
+    $ppa_name = $ppa_name_repo[0]
+    $ppa_repo = $ppa_name_repo[1]
+
+    exec { &quot;apt-update-${name}&quot;:
+        command     =&amp;gt; &quot;/usr/bin/aptitude update&quot;,
+        refreshonly =&amp;gt; true,
+        creates =&amp;gt; &quot;/etc/apt/sources.list.d/${ppa_name}-${ppa_repo}-${lsbdistcodename}.list&quot;,
+    }
+
+    exec { &quot;add-apt-repository-${name}&quot;:
+        command =&amp;gt; &quot;/usr/bin/add-apt-repository ${name}&quot;,
+        notify  =&amp;gt; Exec[&quot;apt-update-${name}&quot;],
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;tldr&quot;&gt;TL;DR&lt;/h2&gt;
+
+&lt;p&gt;Puppet exec has a &amp;#8216;creates =&amp;gt; somefile&amp;#8217; action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Daybreak over the Serpentine</title>
+      <link>http://andrewbunday.github.com/2012/10/15/daybreak-over-the-serpentine.html</link>
+      <pubDate>Mon, 15 Oct 2012 08:09:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2012/10/15/daybreak-over-the-serpentine</guid>
+      <description>&lt;p&gt;&lt;a href=&quot;/assets/photostream/2010-10-15_08.09.02.jpg&quot; target=&quot;_blank&quot;&gt;&lt;img src=&quot;/assets/photostream/2010-10-15_08.09.02.jpg&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Cake baking timelapse</title>
+      <link>http://andrewbunday.github.com/2011/12/18/cake-baking-timelapse.html</link>
+      <pubDate>Sun, 18 Dec 2011 16:17:53 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/12/18/cake-baking-timelapse</guid>
+      <description>&lt;iframe src=&quot;http://player.vimeo.com/video/33862996?color=F05822&quot; width=&quot;500&quot; height=&quot;281&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;
+    &lt;a href=&quot;http://vimeo.com/33862996&quot;&gt;Cake Baking&lt;/a&gt; from &lt;a href=&quot;http://vimeo.com/andrewbunday&quot;&gt;Andrew Bunday&lt;/a&gt; on &lt;a href=&quot;http://vimeo.com&quot;&gt;Vimeo&lt;/a&gt;.
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Greenlet based PyQt and Flask Application</title>
+      <link>http://andrewbunday.github.com/2011/12/07/greenlet-based-pyqt-and-flask-application.html</link>
+      <pubDate>Wed, 07 Dec 2011 19:02:18 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/12/07/greenlet-based-pyqt-and-flask-application</guid>
+      <description>&lt;p&gt;I had a slightly odd moment a few weeks ago and felt that I really didn&amp;#8217;t want to write a PyQt based desktop application.
+Instead, fueled by some webapp based docs i&amp;#8217;d been reading recently (I blame you @manneohrstrom) which were written using Flask. I decided to try out launching a PyQt QWebView and pointing it back at a local webservice run from the same process.&lt;/p&gt;
+
+&lt;p&gt;What I great idea I thought! Jumping in blindly only to quickly discover that both Flask and PyQt want to run in the primary python thread. To get around the problem I fell back onto Greenlets and hand processing events in PyQt rather than giving over control to app._exec().&lt;/p&gt;
+
+&lt;p&gt;Ultimately I ended up ditching the whole thing and reverting back to a vanilla
+PyQt application since once I started to add user interaction for elements such
+as dynamic combo boxes I found that my Javascript skills were sufficiently rusty
+that it was taking an age to write the handlers, and callbacks on both ends of
+the system.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/1358794.js&quot;&gt; &lt;/script&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Really gets on my wick</title>
+      <link>http://andrewbunday.github.com/2011/12/07/really-gets-on-my-wick.html</link>
+      <pubDate>Wed, 07 Dec 2011 18:33:52 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/12/07/really-gets-on-my-wick</guid>
+      <description>&lt;p&gt;This kinda thing really gets on my wick. Sometimes a plugin comes along which
+doesn&amp;#8217;t source it&amp;#8217;s own shelves. When that happens you have to hunt around in
+the file system to load the shelf. So instead popping this file into the scripts
+directory of the plugin&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import maya
+
+def bbLoadShelf(name, filepath=&quot;&quot;):
+    mainShelfLayout = maya.mel.eval('global string $gShelfTopLevel; string $tmp=$gShelfTopLevel;')
+    labels = maya.cmds.tabLayout(mainShelfLayout, query=True, tabLabel=True)
+    if not name in labels:
+        maya.mel.eval('addNewShelfTab &quot;%s&quot;' % name)
+
+maya.utils.executeDeferred( bbLoadShelf('MyPlugin')
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Chest Harness Test Ride</title>
+      <link>http://andrewbunday.github.com/2011/12/04/chest-harness-test-ride.html</link>
+      <pubDate>Sun, 04 Dec 2011 10:55:10 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/12/04/chest-harness-test-ride</guid>
+      <description>&lt;p&gt;The updates are starting to come in thick and fast. Here is a quick blast of
+shots from the mini ride around London, to the M25 and back home trying out how
+best to use the chest harness for my GoPro.&lt;/p&gt;
+
+&lt;iframe src=&quot;http://player.vimeo.com/video/33864071?color=F05822&quot; width=&quot;500&quot; height=&quot;281&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&quot;http://vimeo.com/33864071&quot;&gt;GoPro Motorcycle Montage&lt;/a&gt; from &lt;a href=&quot;http://vimeo.com/andrewbunday&quot;&gt;Andrew Bunday&lt;/a&gt; on &lt;a href=&quot;http://vimeo.com&quot;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>First Helmet Cam Test</title>
+      <link>http://andrewbunday.github.com/2011/12/03/first-helmet-cam-test.html</link>
+      <pubDate>Sat, 03 Dec 2011 15:36:45 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/12/03/first-helmet-cam-test</guid>
+      <description>&lt;p&gt;Earlier in the week I strapped on my new GoPro camera onto my noggin after
+running around in the Hyde park for an hour. I&amp;#8217;ll try and record one of the BMF
+sessions sometime to see just how much I throw myself about during class.&lt;/p&gt;
+
+&lt;iframe src=&quot;http://player.vimeo.com/video/33072392?color=F05822&quot; width=&quot;500&quot; height=&quot;281&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&quot;http://vimeo.com/33072392&quot;&gt;Through the Park&lt;/a&gt; from &lt;a href=&quot;http://vimeo.com/andrewbunday&quot;&gt;Andrew Bunday&lt;/a&gt; on &lt;a href=&quot;http://vimeo.com&quot;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>The Dog Show</title>
+      <link>http://andrewbunday.github.com/2011/11/13/the-dog-show.html</link>
+      <pubDate>Sun, 13 Nov 2011 21:13:48 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/11/13/the-dog-show</guid>
+      <description>&lt;p&gt;Yesterday myself, Bob, Phil and Fay heading down the Discover Dogs event held at
+Earl&amp;#8217;s Court in London. This is an edit of what we saw. It was recorded using a
+Nikon D5100 and 50mm prime.&lt;/p&gt;
+
+&lt;iframe src=&quot;http://player.vimeo.com/video/32043282?color=F05822&quot; width=&quot;500&quot; height=&quot;281&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&quot;http://vimeo.com/32043282&quot;&gt;The Dog Show&lt;/a&gt; from &lt;a href=&quot;http://vimeo.com/andrewbunday&quot;&gt;Andrew Bunday&lt;/a&gt; on &lt;a href=&quot;http://vimeo.com&quot;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Fireworks in Vancouver</title>
+      <link>http://andrewbunday.github.com/2011/09/05/fireworks-in-vancouver.html</link>
+      <pubDate>Mon, 05 Sep 2011 14:43:49 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/09/05/fireworks-in-vancouver</guid>
+      <description>&lt;p&gt;Last month I travelled to Vancouver for Siggraph2011. Somehow with frantic days,
+and hectic nights of ennui I&amp;#8217;m only now getting around to posting up some of my
+pics and videos. This one was recorded using a Nikon D5100 and 50mm prime.&lt;/p&gt;
+
+&lt;iframe src=&quot;http://player.vimeo.com/video/28612968?color=F05822&quot; width=&quot;500&quot; height=&quot;281&quot; frameborder=&quot;0&quot; webkitallowfullscreen=&quot;&quot; mozallowfullscreen=&quot;&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&quot;http://vimeo.com/28612968&quot;&gt;Vancouver Firework&lt;/a&gt; from &lt;a href=&quot;http://vimeo.com/andrewbunday&quot;&gt;Andrew Bunday&lt;/a&gt; on &lt;a href=&quot;http://vimeo.com&quot;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Update: Raging on Jockey</title>
+      <link>http://andrewbunday.github.com/2011/07/06/update-raging-on-jockey.html</link>
+      <pubDate>Wed, 06 Jul 2011 18:49:50 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/07/06/update-raging-on-jockey</guid>
+      <description>&lt;p&gt;After posting up a short rage post about &lt;a href=&quot;http://www.andrewbunday.com/2011/07/raging-on-jockey/&quot;&gt;Jockey&lt;/a&gt;
+I decided to dive into the deb package file which nvidia current is installed
+from and I realised that the postinst script actually does most of the heavy
+lifting for me when installing the driver.&lt;/p&gt;
+
+&lt;p&gt;It first runs &lt;strong&gt;update-alternatives&lt;/strong&gt; on a modprobe.conf file to ensure that the
+nouveau driver is blacklisted. Next is adds the kernel module into &lt;strong&gt;dkms&lt;/strong&gt; and
+starts the autoinstaller. Finally it runs &lt;strong&gt;modprobe&lt;/strong&gt; to add the kernel module
+into the kernel.&lt;/p&gt;
+
+&lt;p&gt;Which made me realise that jockey brings absolutely nothing to the table. Its
+now been replaced with these two lines of effective shell script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ apt-get install nvidia-current
+$ nvidia-xconfig
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Awesome.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Raging on Jockey</title>
+      <link>http://andrewbunday.github.com/2011/07/06/raging-on-jockey.html</link>
+      <pubDate>Wed, 06 Jul 2011 17:16:15 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/07/06/raging-on-jockey</guid>
+      <description>&lt;p&gt;Recently I&amp;#8217;ve been raging out quite frequently against some of the technology
+I&amp;#8217;ve been having to come acquainted  with. In particular there is Puppet a
+centralised configuration tools which we&amp;#8217;ve been using to orchestrate our
+automated deployment system in conjunction with apt-get and reprepro as our
+backend package respository here at Baseblack.&lt;/p&gt;
+
+&lt;p&gt;However describing the system we&amp;#8217;ve been building is the topic of another for
+longer and more interesting post. Where I can cover some of the hurdles we&amp;#8217;ve
+encountered and how we&amp;#8217;ve dealt with them, despite some of the frankly bizarre
+behaviours which Puppet exhibits.&lt;/p&gt;
+
+&lt;h3 id=&quot;bloatware&quot;&gt;Bloatware&lt;/h3&gt;
+
+&lt;p&gt;No, instead I&amp;#8217;m going to pick on &lt;strong&gt;jockey-text&lt;/strong&gt;. Jockey-text is the command
+script version of the gtk interface provided with Ubuntu for the last few
+releases for installing hardware drivers attached to the system. Specifically
+graphics card adaptors, printers and firmware updates are handled by jockey. To
+cope with such a broad range of packages to install, kernel modules to enable
+and devices to probe for Jockey has become something of a behemoth.&lt;/p&gt;
+
+&lt;p&gt;The jockey-text executable itself is quite short, mearly wrapping the jockey
+python module. However the module&amp;#8217;s source runs at close to 4 1/2K lines of
+code. This 4500 lines is taken up by numerous; private nested functions, class
+methods and dbus-functions which bloat Jockey massively beyond what should be
+required of it.&lt;/p&gt;
+
+&lt;h3 id=&quot;exit-codes&quot;&gt;Exit Codes&lt;/h3&gt;
+
+&lt;p&gt;However none of this should have mattered to us. Instead jockey should be doing
+its thing and leaving us to get on with what we&amp;#8217;ve been working on. To get a
+workstation net installed and completely configured without human interation.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately despite its near 4.5K of code, there is very little good exception
+handling or adherence with the rules of program exit codes. You see should it
+not get to the end of its run, because for example the driver your asking to be
+enabled, has already been. Then jockey will immediately exit with a value of 1.&lt;/p&gt;
+
+&lt;p&gt;That makes it pretty darned hard to use with any confidence.&lt;/p&gt;
+
+&lt;h3 id=&quot;installing-a-graphics-driver&quot;&gt;Installing a graphics driver&lt;/h3&gt;
+
+&lt;p&gt;In our the action we wanted jockey to do was enable the nvidia driver which
+we&amp;#8217;re apt-getting from the x-swat ubuntu ppa. Getting annoyed with jockey, and
+not particularly wanting to have to fight with Puppet, I decided to have a dive
+into the jockey source and see what its really doing.&lt;/p&gt;
+
+&lt;p&gt;Here I present an immensely cut down version of what it&amp;#8217;s really doing (in our
+edge case).&lt;/p&gt;
+
+&lt;p&gt;Pretty simple huh? I&amp;#8217;m still undecided about how we&amp;#8217;re going to go about
+installing our nvidia drivers. Although I have the sneaking susupission that
+we&amp;#8217;ll probably be &lt;em&gt;apt-get installing&lt;/em&gt; them ourselves and then calling &lt;em&gt;nvidia-
+xconfig&lt;/em&gt; to enable them before rebooting at the end of the installation.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Final words on Final Cut Pro X</title>
+      <link>http://andrewbunday.github.com/2011/06/25/final-words-on-final-cut-pro-x.html</link>
+      <pubDate>Sat, 25 Jun 2011 15:43:32 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/06/25/final-words-on-final-cut-pro-x</guid>
+      <description>&lt;p&gt;A lot of words have already been dedicated to talking about Final Cut Pro X
+which was released this week on Apple&amp;#8217;s App Store.&lt;/p&gt;
+
+&lt;p&gt;The many new features and also lack of many has been the main topic which web
+commentaries, online reviews and the general public&amp;#8217;s tweets and social media
+updates have been comprised off. Indeed only a couple of days ago I created a
+post of my own:&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet tw-align-center&quot;&gt;
+    &lt;p&gt; So why has Apple chosen to release Final Cut Pro X now when its obviously only half baked? &lt;/p&gt;
+    &amp;mdash; Andrew Bunday (@itwat) &lt;a href=&quot;https://twitter.com/itwat/status/83661664628641793&quot; data-datetime=&quot;2011-06-22T22:24:29+00:00&quot;&gt;June 22, 2011&lt;/a&gt;
+&lt;/blockquote&gt;
+&lt;script src=&quot;//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;This pretty much sums up my personal opinion of the new release, which whilst I
+know counts for very little in the grand scheme of things is still valid.&lt;/p&gt;
+
+&lt;p&gt;For whilst I&amp;#8217;m not an editor and have very little desire to be one, I do have
+the very unenviable position in a company where it is my responsibility to try
+and improve the efficiency of our data pipeline and internal company work flows.
+This does mean that I have to work closely with editorial and become involved
+whenever we start working with a client who wants to send us a project file or
+plates in a data format. Formats which more often that not are entirely archaic.&lt;/p&gt;
+
+&lt;p&gt;The obvious first problem that I often encounter is that of the belief that we
+should all still be converting all of our image files into DPX file format
+images whenever we pass them between facilities. It&amp;#8217;s pretty much impossible to
+believe that VFX or post house cannot handle OpenEXR today, and yet still we&amp;#8217;re
+stuck with this legacy. One of the initial causes for not embracing EXR at
+smaller companies used to be Shake&amp;#8217;s poor performance and minimal support for
+the format. Shake of course has been discontinued for a number of years and it
+so its only been in the last couple of years that the newer compositing
+applications such as Nuke or Fusion have started to be used in companies enough
+for the old ideas to be blown away. It can be mind blowing for a Sup to be
+asked, &amp;#8220;Why can&amp;#8217;t we hand on EXRs over to XXX for this shared shot?&amp;#8221;.&lt;/p&gt;
+
+&lt;p&gt;Coming back to Final Cut, I&amp;#8217;m glad that Apple has decided to discard native
+support for a number of ageing formats and technologies.&lt;/p&gt;
+
+&lt;p&gt;For example, most high end digital film cameras are now file based. Whilst some
+may record onto a data tape, the recordings themselves are stored as files. The
+Red One produces REDRAW images files, whilst the Arri Alexia can record to
+either ProRes format video clips for immediate editing or into ARRIRAW image
+files. For editors who still work in companies that are accepting tape based
+video, my suggestion is to:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Stay with FCP7 for now. Just because a new version has been released, doesn&amp;#8217;t
+mean you have to get it straight away.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Another format which is dropped to the wayside is EDLs and XML based edit
+export. Whilst the usefulness of the format is undeniable, pretty much eveyone
+knows it and can support it, it is old and &lt;em&gt;could&lt;/em&gt; be replaced with something
+else.&lt;/p&gt;
+
+&lt;p&gt;I quite liked this &lt;a href=&quot;http://pogue.blogs.nytimes.com/2011/06/23/professional-video-editors-weigh-in-on-final-cut-pro-x/&quot;&gt;review&lt;/a&gt;
+which turned up in the New York Times. Most of the points made are sensible and
+rather than simply complaining the author gives solutions to many of them.&lt;/p&gt;
+
+&lt;p&gt;Which I guess help to round off this commentary. My final words then are that I
+like the new version of FCP, that the technology which has gone into it beneath
+the hood is miles ahead from where the last version but which has required much
+of the old functionality has had to be dropped. New plugins will need to be
+re/written to support some these functions, for which perhaps Apple should have
+released a developer version sooner. and some functionality, such as multiple
+camera support and project management need to be addressed until the project
+can be deemed as professional.&lt;/p&gt;
+
+&lt;p&gt;Perhaps it should be called simply &amp;#8220;Final Cut X&amp;#8221; for now, with the &amp;#8220;Pro&amp;#8221;
+monkeyier added in a few months. Either way, I hope that it encourages editors,
+directors and producers to look at the way they&amp;#8217;ve been working and helps them
+to move into the modern digital era.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>What Im looking forward to from the Summer of Code 2011</title>
+      <link>http://andrewbunday.github.com/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011.html</link>
+      <pubDate>Sun, 08 May 2011 18:06:19 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011</guid>
+      <description>&lt;p&gt;&lt;img src=&quot;http://www.andrewbunday.com/wp-content/uploads/2011/05/logo-banner.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;#8217;s that time of year again when CS majors have finished their course work,
+polished off more than a few late nights revising for their finals, and finally
+are able to start working on their Summer of Code projects.&lt;/p&gt;
+
+&lt;p&gt;For anyone unsure of what SoC is, here is a short description:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Google Summer of Code is a global program that offers students stipends to
+write code for open source projects. We have worked with the open source
+community to identify and fund exciting projects for the upcoming summer.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I always find it interesting to take a quick peek through the project lists at this
+time of year to see which organisations signed themselves up, and what projects
+are going to be worked on over the summer break. The full list can be found
+&lt;a href=&quot;http://www.google-melange.com/gsoc/projects/list/google/gsoc2011&quot;&gt;&lt;strong&gt;here&lt;/strong&gt;&lt;/a&gt;
+for anyone wanted to look themselves.&lt;/p&gt;
+
+&lt;p&gt;This year there are a few oss projects which are having effort expended on them
+which may turn out to be useful. My particular favourite is probably to try and
+create a &lt;a href=&quot;http://www.google-
+melange.com/gsoc/org/google/gsoc2011/oiio&quot;&gt;&lt;strong&gt;Photoshop PSD plugin&lt;/strong&gt;&lt;/a&gt; for OpenImageIO. If it&amp;#8217;s successful
+it will provide fantastic functionality to access psd&amp;#8217;s to any application which
+makes use of the OIIO shared library, without having to make any substantial
+changes to your own code. Or using the python binding to OIIO you could hook
+together simple processes such as a colour space conversion on a PSD file,
+passing the output into a renderer compliant mip-mapped texture file.&lt;/p&gt;
+
+&lt;p&gt;Reaching the end of my look through the list I was a little disappointed not to
+see any of the larger broadcasters or vfx facilities contributing directly to
+the organisation/mentor lists. Whilst I know that many of them do already
+provide their own mentor-ship and intern programmes don&amp;#8217;t you think that it
+would be good if they engaged in this public forum too? Or even, and this I
+would love to have happen, for the tech communities to gather together and share
+our collective knowledge towards a &lt;em&gt;greater good&lt;/em&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Goodbye Buzz</title>
+      <link>http://andrewbunday.github.com/2011/04/24/goodbye-buzz.html</link>
+      <pubDate>Sun, 24 Apr 2011 19:13:42 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/04/24/goodbye-buzz</guid>
+      <description>&lt;p&gt;Dear Buzz,&lt;/p&gt;
+
+&lt;p&gt;You&amp;#8217;re fucking dead. Not dying. Not sick with a mortal illness. But simply and
+completely dead. Whilst I&amp;#8217;d love to say that you&amp;#8217;ve managed to become an
+indispensable part of my social network I simply cannot.&lt;/p&gt;
+
+&lt;p&gt;Taking a moment to consider why this is I&amp;#8217;m left with the resounding realisation
+that you simply have no real purpose which makes you useful. Let us look at your
+competitors, starting with the smallest we have LinkedIn a social network which
+started out as a way to keep track of people you had worked with previously and
+to enable introductions to those whom you want to work with. Whilst it has now
+become another font for banal gibberish from nameless morons I can accept it as
+still having a place of worth. Even if that place is on the eighth circle of
+hell (i&amp;#8217;ll leave you to ponder that one after this) inhabited by head hunters
+and lazy recruiters.&lt;/p&gt;
+
+&lt;p&gt;Next up we have twitter, which for me is the original and best place for people
+to dump all of the crap &amp;#8216;me too&amp;#8217; information they want into. I&amp;#8217;ll admit that I
+do it too, and sometimes it can rather refreshing to express yourself fully
+within the limitations of 140 characters.&lt;/p&gt;
+
+&lt;p&gt;And finally for me we have Facebook, these are big guys. The guys who you are
+never, I&amp;#8217;ll repeat that NEVER going to be able to compete with in this space. In
+the same way that every competitor in the search space has failed to make any
+real impact on Google&amp;#8217; bottom line in the past 8 years, so to will you fail to
+take any market percentage points away from Facebook.&lt;/p&gt;
+
+&lt;p&gt;I&amp;#8217;m stuck with them, we&amp;#8217;re all stuck with them because they have become the de
+facto place for friends and family to stay connected.&lt;/p&gt;
+
+&lt;p&gt;And that&amp;#8217;s it. I have no more room in my social network for you Buzz. I would
+have probably left you hanging on the periphery, but today you&amp;#8217;ve pushed me too
+far.&lt;/p&gt;
+
+&lt;p&gt;You see a few years ago I posted a number of video clips on Google Video. I
+honestly can&amp;#8217;t remember why I chose to do that rather than upload them to
+YouTube. Perhaps Google didn&amp;#8217;t own them at that time, or my Google account
+wouldn&amp;#8217;t have been connected. I don&amp;#8217;t know or care. But what I do care about is
+that after Google decided to close down the video site and I decided to transfer
+my old videos over to YouTube that you decided to paste every single fucking one
+of them into my Buzz feed as a new and individual post.&lt;/p&gt;
+
+&lt;p&gt;I feel like my feed has been fucked by fucking Shire Horse on fucking steroids.
+We can&amp;#8217;t go on like this. Its not you its&amp;#8230; no actually it is you. You are
+needy and irritating popping up right underneath my Inbox link (surprisingly
+clever UX there by making sure that I NEVER fucking forget about you).&lt;/p&gt;
+
+&lt;p&gt;Goodbye Buzz,&lt;/p&gt;
+
+&lt;p&gt;/Me.&lt;/p&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>A Painful Squeeze</title>
+      <link>http://andrewbunday.github.com/2011/02/15/a-painful-squeeze.html</link>
+      <pubDate>Tue, 15 Feb 2011 20:54:50 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2011/02/15/a-painful-squeeze</guid>
+      <description>&lt;p&gt;Tonight I finally got around to completing the upgrade of the server for this
+site from Lenny to Squeeze. As upgrades go it was relatively painless. Well
+painless in the same way that you can describe that having your arm ripped off
+is painless when its then used as club to bludgeon you to death.&lt;/p&gt;
+
+&lt;p&gt;There was a time, as little as 10years ago (now that does scare the bejebus out
+of me) when both my knowledge of operating a linux system was, well best
+described as on a par with the knowledge that hedgehogs seem to have that roads
+are a bad idea but they can&amp;#8217;t quite put their finger on why. Oh and the other
+reason any kind of upgrade was difficult was because most of the software I had
+to hand was shit.&lt;/p&gt;
+
+&lt;p&gt;Redhat 8, oh how I loathed you. Particularly the horrific memory leak you had on
+my system. And the craptacular gnome theme which you&amp;#8230;. oh fedora still uses
+it&amp;#8230;.&lt;/p&gt;
+
+&lt;p&gt;Digression aside, the upgrade from Lenny to Squeeze went for the most part
+without any hitches. The system remained up, and ssh access was maintained. The
+web server restarted successfully and I was left with only two components which
+no longer worked.&lt;/p&gt;
+
+&lt;p&gt;The first of those was the ftp daemon I run to make uploading and retrieving
+multiple files easy. Strangely during the upgrade the package was lost which
+meant a simple re-install and ftp was back online.&lt;/p&gt;
+
+&lt;p&gt;Then we have MySQL.&lt;/p&gt;
+
+&lt;h2 id=&quot;mysql&quot;&gt;MySQL&lt;/h2&gt;
+
+&lt;p&gt;First up you need to remember that the version of mysql changed from 4.x to 5.x
+between Lenny and Squeeze. This means that they fucked up the structure in any
+existing tables you might be trying to migrate over.&lt;/p&gt;
+
+&lt;p&gt;At first I tried to run the upgrade scripts and do everything in what I
+perceived to be the &amp;#8216;right&amp;#8217; way.&lt;/p&gt;
+
+&lt;p&gt;But they didn&amp;#8217;t work. Or at least didn&amp;#8217;t work how the documentation described
+they should.&lt;/p&gt;
+
+&lt;p&gt;So I gave up and did what I&amp;#8217;d do again in the future, which is to purge the
+database and start with a fresh install of mysql. Its then easy days to simply
+take your database backup and pop it back into the server.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-moral&quot;&gt;The Moral&lt;/h2&gt;
+
+&lt;p&gt;Is there a moral to this story and my very long winded rant? Well yes of course
+there is or I wouldn&amp;#8217;t have made a header for it. Simply put, don&amp;#8217;t be afraid of
+upgrades or doing things that you haven&amp;#8217;t before. The worst that can happen to
+you is that you loose everything and have to start again from scratch.&lt;/p&gt;
+
+&lt;p&gt;But also hedge your bets and make backups of everything. I used **WP-DBManager
+**to mail me periodic backups of my wordpress db which meant that I had the
+security of knowing that if everything did go tits up that I&amp;#8217;d probably be OK.&lt;/p&gt;
+
+&lt;p&gt;A&amp;gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Making Windows Usable</title>
+      <link>http://andrewbunday.github.com/2010/12/05/making-windows-usable.html</link>
+      <pubDate>Sun, 05 Dec 2010 00:45:33 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/12/05/making-windows-usable</guid>
+      <description>&lt;p&gt;We all have our pet hates. Mine includes complaining about the crappy the user
+interfaces provided as default by operating systems.&lt;/p&gt;
+
+&lt;p&gt;Another pet hate of mine is people who complain about something without trying
+to do something about it. Which is why when I find a system I&amp;#8217;m using is playing
+silly buggers with me I set off trying to find ways to work around the issues I
+have until I have something that I don&amp;#8217;t mind using.&lt;/p&gt;
+
+&lt;p&gt;To that end over the last 2 years that I&amp;#8217;ve had to use Windows XP daily _(yes I
+know that it&amp;#8217;s an old system and many corporate IT departments are now switching
+over to Win7, but I have to use it so I&amp;#8217;m going to post it) _ I&amp;#8217;ve made a few
+changes and installed a few apps which have helped me keep productive.&lt;/p&gt;
+
+&lt;p&gt;So, onwards with my setup for Windows.&lt;/p&gt;
+
+&lt;h3 id=&quot;putty&quot;&gt;Putty&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;A simple multiple-protocol terminal client.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;launchy&quot;&gt;Launchy&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Used Quicksilver or Spotlight? Well its a cheesy copy of one of those. For
+me the simple type based calculator is a lifesaver.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;xming&quot;&gt;Xming&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;A fantastic light X11 framebuffer for Win32. Excellent for connecting to
+graphic-less set top box emulators.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;dropbox&quot;&gt;Dropbox&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;www.dropbox.com my install everywhere file sync solution. If you have less
+than 2GB to store the service is free :)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;keepassx&quot;&gt;KeePassX&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Tired of remembering those crazy CAPITAL,number,lowercase passwords that
+services require these days to be changed every few weeks? Well I don't. For
+lower security services I store randomly generated passwords in a keylock
+file allowing me to only remember the master password.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;virtualboxvmware-player&quot;&gt;VirtualBox/VMware Player&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Whichever of these you choose you'll end up with the same end result. Easy to
+setup instances of any machine you need. A godsend when you need a clean
+environment.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And these are non-essential but useful applications which I use most days:&lt;/p&gt;
+
+&lt;h3 id=&quot;foxit-reader&quot;&gt;Foxit Reader&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;OMG this is what Adobe Reader should be like. Multiple documents opened in
+new tabs, fast and responsive. No freaking updates every few days which are
+'critical'.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;chrome-browser&quot;&gt;Chrome Browser&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Fastest, cleanest web browser out there today. That it syncs my bookmarks
+between machines is an added bonus. I run the dev channel releases which
+means getting new features early, but also means running foul of bugs from
+time to time.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;wallpaper-changer&quot;&gt;Wallpaper Changer&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;In my last post I described the process for having a cycling wallpaper in
+Ubuntu 10.10. This app does the same thing in WinXP. Thankfully Win7 has the
+feature baked in.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;picasa-photo-viewer&quot;&gt;Picasa Photo viewer&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;Whilst I don't use Picasa web hosting for my photos this is defiantly the
+nicest image viewer for WinXP.
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Cycling Gnome Desktop Wallpapers</title>
+      <link>http://andrewbunday.github.com/2010/12/05/cycling-gnome-desktop-wallpapers.html</link>
+      <pubDate>Sun, 05 Dec 2010 00:14:43 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/12/05/cycling-gnome-desktop-wallpapers</guid>
+      <description>&lt;p&gt;If you are like me then you get bored fairly easily. Something which in today&amp;#8217;s
+constant dip information world is all to easy. An example for me is finding that
+I like to have an attractive background on my PC but get bored looking at the
+same one for any period of time.&lt;/p&gt;
+
+&lt;p&gt;On most recently released systems it&amp;#8217;s fairly easy to go to the default desktop
+background manager and select a series of images to cycle through along with a
+dwell period for each to be displayed.&lt;/p&gt;
+
+&lt;p&gt;Apparently that isn&amp;#8217;t the case for Gnome.&lt;/p&gt;
+
+&lt;p&gt;If you go to the background manager you can select single images, and, crucially
+select a pre-defined list of images to cycle through. But there is not facility
+to do this yourself. More accurately there isn&amp;#8217;t any GUI to help.&lt;/p&gt;
+
+&lt;p&gt;It turns out an xml file is needed to be stored under:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/share/gnome-background-properties/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this file you name another xml file which defines the images to display and
+the display interval for each.&lt;/p&gt;
+
+&lt;p&gt;Here are the two files I use:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://sinotr.eu/darkwallpapers/darkwallpapers.xml&quot;&gt;darkwallpapers.xml&lt;/a&gt;
+&lt;a href=&quot;http://sinotr.eu/darkwallpapers/background-1.xml&quot;&gt;background-1.xml&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;So, for example we end up with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/share/gnome-background-properties/darkwallpapers.xml
+/home/andrewb/Pictures/darkwallpapers/background-1.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here is a link to a zip including the files and pictures which I use:
+&lt;a href=&quot;http://sinotr.eu/darkwallpapers/darkwallpapers.tar.gz&quot;&gt;darkwallpapers.tar.gz&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Scapa Flow 2010</title>
+      <link>http://andrewbunday.github.com/2010/10/19/scapa-flow-2010.html</link>
+      <pubDate>Tue, 19 Oct 2010 17:41:29 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/10/19/scapa-flow-2010</guid>
+      <description>&lt;p&gt;At the beginning of September myself and a bunch of guys and gals from my dive
+club &lt;a href=&quot;http://www.arieldivers.org/&quot;&gt;&lt;strong&gt;Ariel Divers&lt;/strong&gt;&lt;/a&gt; and another BSAC affiliate
+&lt;a href=&quot;http://www.bermondsey-bsac.org.uk&quot;&gt;&lt;strong&gt;Bermondsey&lt;/strong&gt;&lt;/a&gt; headed up to the far
+northern tip of Scotland to spend a week on the Orkney Islands diving the famous
+Scapa Flow wrecks.&lt;/p&gt;
+
+&lt;p&gt;The diving was harder than anything I&amp;#8217;ve ever experienced before but within my
+limits and I definitely enjoyed myself during the trip. Both for the diving and
+relaxing in a part of the country that truly is spectacular, we really are lucky
+to live in this beautiful country.&lt;/p&gt;
+
+&lt;p&gt;Check out the photos in the main post.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4083/5063290898_f17017cbdd.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4144/5063294930_7eb2f438de.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4153/5062686601_5d7945f6e5.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4145/5062687787_1a04cbabde.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4153/5063299956_73e9aa7e39.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4154/5062691179_6abc9b7783.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4104/5063305098_559160ef7d.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4085/5062696297_8f79b12b27.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4141/5062698711_d848afbfbd.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4127/5062700635_b5808a305f.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4106/5062703133_5d227182e0.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4145/5063317094_002b68fd80.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Brilliant Kindle App Idea, now when will they get back to me?</title>
+      <link>http://andrewbunday.github.com/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me.html</link>
+      <pubDate>Tue, 19 Oct 2010 17:21:57 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me</guid>
+      <description>&lt;p&gt;A couple of weeks ago whilst browsing around the Kindle store documentation
+looking up using the platform as a publishing service I came across the Kindle
+Developer pages and remembered having seen them been launched a few months
+earlier.&lt;/p&gt;
+
+&lt;p&gt;When I&amp;#8217;d originally taken a glance at the pages I didn&amp;#8217;t have any ideas of what
+I could create for the Kindle, especially in light of having not had one at the
+time. Since then I bought one of the newest ones, receiving mine on release day
+was a fantastic feeling (especially when my iPad co-joined flatmate started
+eyeing it up).&lt;/p&gt;
+
+&lt;p&gt;In the few months since I&amp;#8217;ve gotten more and more used to simply having it on me
+all the time. It&amp;#8217;s light enough and just small enough to carry pretty much
+everywhere, either in my backpack or one of the large roomy pockets I have on my
+coat.&lt;/p&gt;
+
+&lt;p&gt;Now this isn&amp;#8217;t a Kindle review, nor is it a love-fest posting about the device.
+I simply want to give some context. You see I now used this thing pretty much
+every day which has meant that my mind can occasionally think up little ideas
+for things I would like to be able to do with it.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;As a handy tip, I&amp;#8217;ve found that it&amp;#8217;ll fit quite happily inside a medium zip-
+lock bag making it quite waterproof for reading whilst on a windswept boat, by
+the beach or even in the bath&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;My idea for an App I&amp;#8217;d like to make came from one of these times when I had my
+Kindle in its waterproof bag whilst scuba diving up in Scotland. My hands were
+damp, along with pretty much everything on the boat so taking a book was a no-
+go. But I was able to read away without any problems.&lt;/p&gt;
+
+&lt;p&gt;Something however that I wasn&amp;#8217;t able to do so easily was record my dives in my
+log book.&lt;/p&gt;
+
+&lt;p&gt;Previously I&amp;#8217;ve switched from having a hand written book to recording all of my
+dives in a digital dive log application on my lap top and mobile phone. Of
+course taking either of those devices out on the open water is a stupid thing to
+do, so I wasn&amp;#8217;t able to record my dives until late each day when we got back to
+port.&lt;/p&gt;
+
+&lt;p&gt;But what if my Kindle had an App which could record that data for me? I know
+that it&amp;#8217;s probably going to be safe in its pouch, and if it had some data sync
+capability I wouldn&amp;#8217;t need to worry overtly if it were to be water damaged as
+the data would be safe and the device itself is fairly cheap.&lt;/p&gt;
+
+&lt;p&gt;So please, if anyone from Amazon with the power to approve my application to
+join the KDK were to read this post, please help me out and add me to the
+program.&lt;/p&gt;
+
+&lt;p&gt;Oh and here is a video of some of us jumping in the water on that dive trip
+&lt;a href=&quot;http://www.youtube.com/watch?v=gDv_kVD2O2c&quot;&gt;&lt;em&gt;via Youtube&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>9 years ago they unleashed hell on our ear canals</title>
+      <link>http://andrewbunday.github.com/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals.html</link>
+      <pubDate>Thu, 02 Sep 2010 15:26:01 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals</guid>
+      <description>&lt;p&gt;I&amp;#8217;ve been a user for around 8 years now. It started out during the summer before
+my 2nd year of Uni. My Dad gave me a 2nd gen iPod, with a stonking 10GB of
+space.&lt;/p&gt;
+
+&lt;p&gt;At the time I didn&amp;#8217;t have 10GB of music stored as mp3s and our PC at home didn&amp;#8217;t
+even have a HDD that large. Windows didn&amp;#8217;t have iTunes so Apple supplied a
+plugin for a peice of craptacular software to handle syncing and that had to be
+done over a firewire connection.&lt;/p&gt;
+
+&lt;p&gt;Since those easly days I&amp;#8217;ve worked my way through 3 i-devices, my iPod(2nd gen),
+a iPod nano and an iPhone 3Gs. I even strayed away for a short time with another
+mp3 player whilst travelling for a few months.&lt;/p&gt;
+
+&lt;p&gt;The plugin was replaced with iTunes on Windows and firewire was replaced with
+good ol&amp;#8217; USB 2.0. Battery life improved and each player got smaller, lighter and
+more powerful, capable of handling a multitude of tasks.&lt;/p&gt;
+
+&lt;p&gt;But through all this time one accessory has failed to be improved. Those damn
+stupid stock earbuds.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/IPod_Earbuds.JPG/800px-IPod_Earbuds.JPG&quot; alt=&quot;Apple Earbuds&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lets take a quick look at this image, on the left are a pair of early buds, on
+the right some of the current ones you&amp;#8217;ll get if you buy a new iPod. Their
+aesthetic has been changed, removing the harsh duplo styling of the originals
+and replacing it with a smoother softer look in keeping with the design of other
+Apple products. They&amp;#8217;ve also picked up a slightly rubberier edge to the bud so
+that it no longer scratches quite as much as they previously did.&lt;/p&gt;
+
+&lt;p&gt;And yet that&amp;#8217;s about all they&amp;#8217;ve done.&lt;/p&gt;
+
+&lt;p&gt;Over the 9 years since the original iPod was introduced we&amp;#8217;ve now got touch
+screens on all but the very smallest of the players. Battery lives through the
+roof, &lt;em&gt;somewhat&lt;/em&gt; improved sound quality and string of other improvements.
+Apple&amp;#8217;s design is sometimes called evolutionary rather than revolutionary. Yet
+in the case of their headphones its practically stagnant.&lt;/p&gt;
+
+&lt;p&gt;So we all carry on doing what we&amp;#8217;ve had to do for all these long years and carry
+on buying our own extra headphones on the side.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;I wrote this whilst wearing a pair of HD380 pro&amp;#8217;s. Slightly ott, but you get
+the point.&lt;/em&gt;&lt;/p&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Lundy and back</title>
+      <link>http://andrewbunday.github.com/2010/07/07/lundy-and-back.html</link>
+      <pubDate>Wed, 07 Jul 2010 23:23:14 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/07/07/lundy-and-back</guid>
+      <description>&lt;p&gt;This past week I’ve been to Lundy and back, dived with seals, run up and down the cliffs and gone in search of Puffins.&lt;/p&gt;
+
+&lt;p&gt;Last Thursday I set off for Lundy with a group of friends from my dive club, Ariel Divers. Unfortunately Steve, who was also my ride down to Devon became sick on the Wednesday night and had to go to hospital leaving me to hitch a ride with the others in the club truck.&lt;/p&gt;
+
+&lt;p&gt;We set off sometime after 4pm and after a long drive arrived in Clovelly, a bizarre historic fishing town on the coast. After bunking down for the night in the local B&amp;amp;B we set off in the morning to meet our skipper and sail over to the island.&lt;/p&gt;
+
+&lt;p&gt;This is Clive, who’s boat the Jessica Hettie we dived off of for the 4 days we were on the island for.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://farm5.static.flickr.com/4137/4771438654_b8ae348f7d_m.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Whilst there, we dived with seals, and took in a couple of wrecks. We spend time in the local (only) pub and went on a late night search for deer we’d been told were near. We did manage to find the deer thankfully although when we did then realised that we’d actually just walked past most of the rest of the herd in the dark.&lt;/p&gt;
+
+&lt;p&gt;On the last evening before we left I decided to go for a wander off across the island in search of Puffins and pretty views. I was rewarded well as the sun slowly set I was able to capture a set of beautiful views.&lt;/p&gt;
+
+&lt;p&gt;Photos of all of this can be found here on my flickr account. Link&lt;/p&gt;
+
+&lt;p&gt;A video of our exploits under water can be found here on YouTube. Link&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>I'll take a serving of... Sports Diver please.</title>
+      <link>http://andrewbunday.github.com/2010/05/18/ill-take-a-serving-of-sports-diver-please.html</link>
+      <pubDate>Tue, 18 May 2010 10:38:16 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/05/18/ill-take-a-serving-of-sports-diver-please</guid>
+      <description>&lt;p&gt;This weekend saw a group of hardy Ariel divers take to the chilly waters of
+Stoney Cove to complete training for both Sports Divers and Dive Leaders.&lt;/p&gt;
+
+&lt;p&gt;Personally I had still to complete a dive whilst using an SMB and to plan and
+lead a dive, reviewing existing skills such as an AS lift, mask clearing and
+buoyancy check.&lt;/p&gt;
+
+&lt;p&gt;Thankfully my two training dives  went off without a hitch on the Saturday,
+which along with assisting in the dive managing for the weekend left me as a
+brand new Sports Diver.&lt;/p&gt;
+
+&lt;p&gt;Sunday ended up being far more relaxed as I played at being a body in the
+morning and being led by another trainee in the afternoon.&lt;/p&gt;
+
+&lt;p&gt;It was brisk in the water at a steady 6/7 Celsius, but it was fun and thankfully
+sunny.&lt;/p&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Lets party like its 1234567890</title>
+      <link>http://andrewbunday.github.com/2010/03/03/lets-party-like-its-1234567890.html</link>
+      <pubDate>Wed, 03 Mar 2010 19:19:02 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2010/03/03/lets-party-like-its-1234567890</guid>
+      <description>&lt;p&gt;On friday I was reminded of a script I used last February 13th to celebrate the
+unix timestamp reaching &amp;#8216;1234567890&amp;#8217; seconds since the epoch.&lt;/p&gt;
+
+&lt;p&gt;````bash
+#!/bin/bash
+time=&lt;code&gt;date '+%s'&lt;/code&gt;
+while [ $time -lt 1234567890 ]; do
+#echo &amp;#8216;waiting&amp;#8230;&amp;#8217;
+time=&lt;code&gt;date '+%s'&lt;/code&gt;
+done&lt;/p&gt;
+
+&lt;p&gt;afplay &amp;#8216;/Users/andrewbunday/Music/iTunes/iTunes Music/DMX/Cradle 2 the Grave/01 X Gonna Give It to Ya.mp3&amp;#8217;
+````&lt;/p&gt;
+
+</description>
+    </item>
+    
+
+  </channel> 
+</rss>
