@@ -10,7 +10,7 @@ kramdown:
   use_coderay: false
 
 css:
-  theme: journal
+  theme: ubuntu
 
 name: Andrew Bunday
-description: tech notes and photos
+description: tech notes
