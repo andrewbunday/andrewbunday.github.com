@@ -11,6 +11,19 @@ html {
     min-height: 70px;
 }
 
+.well pre {
+    background-color: #fff;
+}
+
+.well blockquote {
+    background-color: #fff;
+}
+
+.well hr {
+    border-bottom-color: #e3e3e3;
+}
+
+
 .secondary-story-header {
     min-height: 200px;
     max-height: 220px;
@@ -18,7 +31,7 @@ html {
 
 .secondary-story-header h4{
     min-height: 40px;
-    vertical-align: text-top; 
+    vertical-align: text-top;
 }
 
 .secondary-story-header img{

@@ -9,7 +9,7 @@ title: "Post History"
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade in active" id="dated_posts">
+    <div class="tab-pane active" id="dated_posts">
         {% for post in site.posts %}
             <span class="row">
                 <span class="span9">
@@ -21,7 +21,7 @@ title: "Post History"
             </span>
         {% endfor %}
     </div>
-    <div class="tab-pane fade" id="tagged_posts">
+    <div class="tab-pane" id="tagged_posts">
         <p><i>*Tags are not yet linked to.</i></p>
         {% for tag in site.tags %}
             <span class="label" >

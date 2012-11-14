@@ -1,13 +1,19 @@
 ---
 date: 2012-10-18 10:27PM
 layout: post
-title: "Introducing Proxmoxia"
+published: true
+title: "Proxmoxia <small>yet another Python API for Proxmox</small>"
 synopsis: "Today I'm happy to have finished up work on a small python wrapper for Proxmox's rest based API. We've called it [Proxmoxia](http://github.com/baseblack/proxmoxia)."
+---
+
+* This will become a table of contents (this text will be scraped).
+{:toc}
+
 ---
 
 Today I'm happy to have finished up work on a small python wrapper for Proxmox's rest based API. We've called it [Proxmoxia](http://github.com/baseblack/proxmoxia).
 
-###Background
+##Background
 
 For those who don't know, [Proxmox](http://pve.proxmox.com/wiki/Main_Page) is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.
 
@@ -21,7 +27,7 @@ Until recently anytime we've needed to spin up a new virtual server, we've neede
 
 We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.
 
-###Creating Proxmoxia
+##Creating Proxmoxia
 
 After a short burst of _'Spanish Flea'_ our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren't keen on or flat out refused to use.
 
@@ -36,11 +42,11 @@ I wanted to create a library which followed a few simple rules:
 
 Personally I don't like PyProxmox's implementation for both of these reasons which is why I feel justified in completing Proxmoxia.
 
-###Whats Next?
+##Whats Next?
 
 We're going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it's going to work out to be really useful.
 
-###Finally Some Examples
+##Finally Some Examples
 
 Okay, so here are some examples to show what I'm talking about. Head over to the [github](http://github.com/baseblack/proxmoxia) site for the source for these.
 
@@ -48,60 +54,69 @@ First up, Proxmox uses a token based authentication mechanism which must be atta
 
 Connect to any node in the cluster and get the auth_token:
 
-    import proxmox
+~~~ python
+import proxmox
 
-    connection = proxmox.Connector('proxmox-1', 8006)
-    auth_token = connection.get_auth_token('user@pam', 'strawberries')
+connection = proxmox.Connector('proxmox-1', 8006)
+auth_token = connection.get_auth_token('user@pam', 'strawberries')
+~~~
 
 Next create Proxmox and Node access objects, these are the bread and butter of the library:
 
-    p = proxmox.Proxmox(connection)
-    node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
-
+~~~ python
+p = proxmox.Proxmox(connection)
+node = proxmox.Node(connection, 'proxmox-7')  # this is on a different host.
+~~~
 
 The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:
 
-    vmid = 108
-    print node.openvz(vmid).status.current()
-
+~~~ python
+vmid = 108
+print node.openvz(vmid).status.current()
+~~~
 
 Which is converted to the URL:
 
-    http://proxmox-1:8006/api2/json/nodes/proxmox-7/openvz/108/status/current
+~~~
+http://proxmox-1:8006/api2/json/nodes/proxmox-7/openvz/108/status/current
+~~~
 
 Find a vm template filepath and use this as the ostemplate for a new vm you create. And then start it up once it has finished being created:
 
-    # find the path for the template you want to use.
-    for template in node.storage('virtual-nfs').content(content='vztmpl'):
-        if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
-            volume = node.storage('virtual-nfs').content(template['volid']).get()
+~~~ python
+# find the path for the template you want to use.
+for template in node.storage('virtual-nfs').content(content='vztmpl'):
+    if re.match('.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$', template['volid']):
+        volume = node.storage('virtual-nfs').content(template['volid']).get()
 
-    # create the container, giving it some sensible settings
-    taskid = node.openvz.post( ostemplate=volume.get('path'),
-                               vmid=204,
-                               hostname='test-4',
-                               ip_address='192.168.123.204',
-                               storage='local')
+# create the container, giving it some sensible settings
+taskid = node.openvz.post( ostemplate=volume.get('path'),
+                           vmid=204,
+                           hostname='test-4',
+                           ip_address='192.168.123.204',
+                           storage='local')
 
-    # keep an eye on task and see when its completed
-    while node.tasks(taskid).status()['status'] == 'running':
-            time.sleep(1)
+# keep an eye on task and see when its completed
+while node.tasks(taskid).status()['status'] == 'running':
+        time.sleep(1)
 
-    # print out the logs
-    for line in node.tasks(taskid).log():
-        print line['t']
+# print out the logs
+for line in node.tasks(taskid).log():
+    print line['t']
 
-    try:
-        # start up the container
-        node.openvz('204').status.start.post()
-    except:
-        raise Exception('Unable to start container')
+try:
+    # start up the container
+    node.openvz('204').status.start.post()
+except:
+    raise Exception('Unable to start container')
+~~~
 
 Find if a user exists and create them if they do not:
 
-    if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
-        p.access.users.post(userid='andrew.bunday@pve', comment="test user", password="strawberries")
-
+~~~ python
+if 'andrew.bunday@pve' not in [x['userid'] for x in p.access.users()]:
+    p.access.users.post(userid='andrew.bunday@pve', comment="test user", password="strawberries")
+~~~
 
 
 
