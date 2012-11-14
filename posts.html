@@ -1,33 +1,351 @@
----
-layout: page
-title: "Post History"
----
+<!DOCTYPE html>
+<html>
+    <head>
+        <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Post History / Andy Bunday</title>
 
-<ul class="nav nav-tabs" id="pastPostTab">
+    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/ubuntu.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+
+    <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-772003-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+    </head>
+    <body>
+        <div class="page">
+            <div class="navbar navbar-static-top">
+    <div class="navbar-inner main-navbar-inner">
+        <div class="container-fluid main-navbar">
+            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+           </a>
+
+            <div class="nav-collapse pull-right">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about.html">About</a></li>
+                    <li><a href="/posts.html">Posts</a></li>
+                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div class="page-header">
+  <h3>Andrew Bunday <small>tech notes</small></h3>
+</div>
+
+            <ul class="breadcrumb">
+  <li><a href="/">home</a> <span class="divider">/</span></li>
+  
+  
+    <li class="active">post history</li>
+  
+</ul>
+
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid">
+                    <div class="span9 span12-tablet">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h1>Post History</h1>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><ul class="nav nav-tabs" id="pastPostTab">
   <li><a href="#dated_posts" data-toggle="tab">Date</a></li>
   <li><a href="#tagged_posts" data-toggle="tab">Tags</a></li>
 </ul>
 
 <div class="tab-content">
     <div class="tab-pane active" id="dated_posts">
-        {% for post in site.posts %}
+        
             <span class="row">
                 <span class="span9">
-                    <a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a>
+                    <a href="/2012/11/12/reproweb-repository-browser.html">ReproWeb <small>a micro repository browser</small></a>
                 </span>
                 <span class="span3" style="text-align:right">
-                    {{ post.date | date: "%B %e, %Y" }}
+                    November 12, 2012
                 </span>
             </span>
-        {% endfor %}
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2012/10/18/introducting-proxmoxia.html">Proxmoxia <small>yet another Python API for Proxmox</small></a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 18, 2012
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2012/10/17/serpentine-the-other-way.html">Serpentine the Other Way</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 17, 2012
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2012/10/16/triggering-ppas-only-once-with-puppet.html">One time PPA additions in Puppet</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 16, 2012
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2012/10/15/daybreak-over-the-serpentine.html">Daybreak over the Serpentine</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 15, 2012
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/12/18/cake-baking-timelapse.html">Cake baking timelapse</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December 18, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/12/07/greenlet-based-pyqt-and-flask-application.html">Greenlet based PyQt and Flask Application</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  7, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/12/07/really-gets-on-my-wick.html">Really gets on my wick</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  7, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/12/04/chest-harness-test-ride.html">Chest Harness Test Ride</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  4, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/12/03/first-helmet-cam-test.html">First Helmet Cam Test</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  3, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/11/13/the-dog-show.html">The Dog Show</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    November 13, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/09/05/fireworks-in-vancouver.html">Fireworks in Vancouver</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    September  5, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/07/06/update-raging-on-jockey.html">Update: Raging on Jockey</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    July  6, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/07/06/raging-on-jockey.html">Raging on Jockey</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    July  6, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/06/25/final-words-on-final-cut-pro-x.html">Final words on Final Cut Pro X</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    June 25, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011.html">What Im looking forward to from the Summer of Code 2011</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    May  8, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/04/24/goodbye-buzz.html">Goodbye Buzz</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    April 24, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2011/02/15/a-painful-squeeze.html">A Painful Squeeze</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    February 15, 2011
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/12/05/making-windows-usable.html">Making Windows Usable</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  5, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/12/05/cycling-gnome-desktop-wallpapers.html">Cycling Gnome Desktop Wallpapers</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    December  5, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/10/19/scapa-flow-2010.html">Scapa Flow 2010</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 19, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me.html">Brilliant Kindle App Idea, now when will they get back to me?</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    October 19, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals.html">9 years ago they unleashed hell on our ear canals</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    September  2, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/07/07/lundy-and-back.html">Lundy and back</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    July  7, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/05/18/ill-take-a-serving-of-sports-diver-please.html">I'll take a serving of... Sports Diver please.</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    May 18, 2010
+                </span>
+            </span>
+        
+            <span class="row">
+                <span class="span9">
+                    <a href="/2010/03/03/lets-party-like-its-1234567890.html">Lets party like its 1234567890</a>
+                </span>
+                <span class="span3" style="text-align:right">
+                    March  3, 2010
+                </span>
+            </span>
+        
     </div>
     <div class="tab-pane" id="tagged_posts">
         <p><i>*Tags are not yet linked to.</i></p>
-        {% for tag in site.tags %}
+        
             <span class="label" >
-                {{tag[0]}}
+                Unix Time
             </span>
-        {% endfor %}
+        
+            <span class="label" >
+                code
+            </span>
+        
+            <span class="label" >
+                linkedin
+            </span>
+        
+            <span class="label" >
+                Bash
+            </span>
+        
+            <span class="label" >
+                python
+            </span>
+        
     </div>
 </div>
 
@@ -36,3 +354,51 @@ title: "Post History"
         $('#pastPostTab a:first').tab('show');
     })
 </script>
+</p>
+                        </div>
+                    </div>
+                    <div class="span3 hidden-phone hidden-tablet">
+                        <ul class="thumbnails pull-right hidden-800">
+    <li class="span12">
+        <div class="thumbnail avatar">
+            <img src="/assets/img/avatar.jpg" alt>
+            <h4>About Me</h4>
+            <h5><a href="/about.html">Andrew Bunday</a></h5>
+            <p>I'm a VFX technologist working London where I apply the majority of
+                   my time solving problems related to Pipeline and Systems development.</p>
+            <p>If you want to get in touch, please give me a shout via one of the
+               links at the bottom of the page.</p>
+        </a>
+    </li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-header">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
+</div>
+
+<div class="row-fluid page-contact-thumbs">
+    <div class="span4">
+        <a href="https://twitter.com/itwat" target="_blank">
+            <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
+        </a>
+    </div>
+    <div class="span4">
+        <a href="http://github.com/andrewbunday" target="_blank">
+            <img src="/assets/img/octocat.png" alt="">
+        </a>
+    </div>
+    <div class="span4">
+        <a href="http://www.linkedin.com/in/andrewbunday" target="_blank">
+            <img src="/assets/img/LinkedIn_Logo200x200.png" alt="">
+        </a>
+    </div>
+</div>
+
+
+        </div>
+     </body>
+</html>

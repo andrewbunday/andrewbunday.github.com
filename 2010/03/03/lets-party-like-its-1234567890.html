@@ -3,7 +3,7 @@
     <head>
         <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>404 / Andy Bunday</title>
+    <title>Lets party like its 1234567890 / Andy Bunday</title>
 
     <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
@@ -65,8 +65,10 @@
             <ul class="breadcrumb">
   <li><a href="/">home</a> <span class="divider">/</span></li>
   
+    <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
   
-    <li class="active">404</li>
+  
+    <li class="active">lets party like its 1234567890</li>
   
 </ul>
 
@@ -76,13 +78,29 @@
                     <div class="span9 span12-tablet">
                         <div class="row-fluid">
                             <div class="span12">
-                                <h1>404</h1>
+                                <h1>Lets party like its 1234567890</h1>
                             </div>
                         </div>
                         <div class="row-fluid">
-                            <p>The page you have requested does not exist.
+                            <div class="span8">
+                                <p class="muted">Wed 03 Mar 2010</p>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><p>On friday I was reminded of a script I used last February 13th to celebrate the
+unix timestamp reaching &#8216;1234567890&#8217; seconds since the epoch.</p>
 
-Please try returning to home and trying again.
+<p>````bash
+#!/bin/bash
+time=<code>date '+%s'</code>
+while [ $time -lt 1234567890 ]; do
+#echo &#8216;waiting&#8230;&#8217;
+time=<code>date '+%s'</code>
+done</p>
+
+<p>afplay &#8216;/Users/andrewbunday/Music/iTunes/iTunes Music/DMX/Cradle 2 the Grave/01 X Gonna Give It to Ya.mp3&#8217;
+````</p>
+
 </p>
                         </div>
                     </div>
@@ -104,12 +122,11 @@ Please try returning to home and trying again.
                     </div>
                 </div>
             </div>
-
             <div class="page-header">
   <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
 </div>
 
-<div class="row-fluid page-contact-thumbs">
+<div class="row-fluid post-contact-thumbs">
     <div class="span4">
         <a href="https://twitter.com/itwat" target="_blank">
             <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
@@ -131,3 +148,5 @@ Please try returning to home and trying again.
         </div>
      </body>
 </html>
+
+
