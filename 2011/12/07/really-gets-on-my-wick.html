@@ -3,7 +3,7 @@
     <head>
         <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>Really gets on my wick / Andy Bunday</title>
+    <title>Maya <small>Plugins without out shelves really get on my wick</small> / Andy Bunday</title>
 
     <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
@@ -68,7 +68,7 @@
     <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
   
   
-    <li class="active">really gets on my wick</li>
+    <li class="active">maya <small>plugins without out shelves really get on my wick</small></li>
   
 </ul>
 
@@ -78,7 +78,7 @@
                     <div class="span9 span12-tablet">
                         <div class="row-fluid">
                             <div class="span12">
-                                <h1>Really gets on my wick</h1>
+                                <h1>Maya <small>Plugins without out shelves really get on my wick</small></h1>
                             </div>
                         </div>
                         <div class="row-fluid">
@@ -88,20 +88,21 @@
                         </div>
                         <div class="row-fluid">
                             <p><p>This kinda thing really gets on my wick. Sometimes a plugin comes along which
-doesn&#8217;t source it&#8217;s own shelves. When that happens you have to hunt around in
+doesn’t source it’s own shelves. When that happens you have to hunt around in
 the file system to load the shelf. So instead popping this file into the scripts
 directory of the plugin</p>
 
-<pre><code>import maya
+<div class="highlight"><pre><code class="python"><span class="kn">import</span> <span class="nn">maya</span>
 
-def bbLoadShelf(name, filepath=""):
-    mainShelfLayout = maya.mel.eval('global string $gShelfTopLevel; string $tmp=$gShelfTopLevel;')
-    labels = maya.cmds.tabLayout(mainShelfLayout, query=True, tabLabel=True)
-    if not name in labels:
-        maya.mel.eval('addNewShelfTab "%s"' % name)
+<span class="k">def</span> <span class="nf">bbLoadShelf</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">mainShelfLayout</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">mel</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s">&#39;global string $gShelfTopLevel; string $tmp=$gShelfTopLevel;&#39;</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">tabLayout</span><span class="p">(</span><span class="n">mainShelfLayout</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">tabLabel</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">maya</span><span class="o">.</span><span class="n">mel</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s">&#39;addNewShelfTab &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
 
-maya.utils.executeDeferred( bbLoadShelf('MyPlugin')
+<span class="n">maya</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">executeDeferred</span><span class="p">(</span> <span class="n">bbLoadShelf</span><span class="p">(</span><span class="s">&#39;MyPlugin&#39;</span><span class="p">)</span>
 </code></pre>
+</div>
 
 </p>
                         </div>

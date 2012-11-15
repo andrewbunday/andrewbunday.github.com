@@ -87,20 +87,20 @@
                             </div>
                         </div>
                         <div class="row-fluid">
-                            <p><p>Recently I&#8217;ve been raging out quite frequently against some of the technology
-I&#8217;ve been having to come acquainted  with. In particular there is Puppet a
-centralised configuration tools which we&#8217;ve been using to orchestrate our
+                            <p><p>Recently I’ve been raging out quite frequently against some of the technology
+I’ve been having to come acquainted  with. In particular there is Puppet a
+centralised configuration tools which we’ve been using to orchestrate our
 automated deployment system in conjunction with apt-get and reprepro as our
 backend package respository here at Baseblack.</p>
 
-<p>However describing the system we&#8217;ve been building is the topic of another for
-longer and more interesting post. Where I can cover some of the hurdles we&#8217;ve
-encountered and how we&#8217;ve dealt with them, despite some of the frankly bizarre
+<p>However describing the system we’ve been building is the topic of another for
+longer and more interesting post. Where I can cover some of the hurdles we’ve
+encountered and how we’ve dealt with them, despite some of the frankly bizarre
 behaviours which Puppet exhibits.</p>
 
 <h3 id="bloatware">Bloatware</h3>
 
-<p>No, instead I&#8217;m going to pick on <strong>jockey-text</strong>. Jockey-text is the command
+<p>No, instead I’m going to pick on <strong>jockey-text</strong>. Jockey-text is the command
 script version of the gtk interface provided with Ubuntu for the last few
 releases for installing hardware drivers attached to the system. Specifically
 graphics card adaptors, printers and firmware updates are handled by jockey. To
@@ -108,7 +108,7 @@ cope with such a broad range of packages to install, kernel modules to enable
 and devices to probe for Jockey has become something of a behemoth.</p>
 
 <p>The jockey-text executable itself is quite short, mearly wrapping the jockey
-python module. However the module&#8217;s source runs at close to 4 1/2K lines of
+python module. However the module’s source runs at close to 4 1/2K lines of
 code. This 4500 lines is taken up by numerous; private nested functions, class
 methods and dbus-functions which bloat Jockey massively beyond what should be
 required of it.</p>
@@ -116,7 +116,7 @@ required of it.</p>
 <h3 id="exit-codes">Exit Codes</h3>
 
 <p>However none of this should have mattered to us. Instead jockey should be doing
-its thing and leaving us to get on with what we&#8217;ve been working on. To get a
+its thing and leaving us to get on with what we’ve been working on. To get a
 workstation net installed and completely configured without human interation.</p>
 
 <p>Unfortunately despite its near 4.5K of code, there is very little good exception
@@ -129,16 +129,16 @@ enabled, has already been. Then jockey will immediately exit with a value of 1.<
 <h3 id="installing-a-graphics-driver">Installing a graphics driver</h3>
 
 <p>In our the action we wanted jockey to do was enable the nvidia driver which
-we&#8217;re apt-getting from the x-swat ubuntu ppa. Getting annoyed with jockey, and
+we’re apt-getting from the x-swat ubuntu ppa. Getting annoyed with jockey, and
 not particularly wanting to have to fight with Puppet, I decided to have a dive
 into the jockey source and see what its really doing.</p>
 
-<p>Here I present an immensely cut down version of what it&#8217;s really doing (in our
+<p>Here I present an immensely cut down version of what it’s really doing (in our
 edge case).</p>
 
-<p>Pretty simple huh? I&#8217;m still undecided about how we&#8217;re going to go about
+<p>Pretty simple huh? I’m still undecided about how we’re going to go about
 installing our nvidia drivers. Although I have the sneaking susupission that
-we&#8217;ll probably be <em>apt-get installing</em> them ourselves and then calling <em>nvidia-
+we’ll probably be <em>apt-get installing</em> them ourselves and then calling <em>nvidia-
 xconfig</em> to enable them before rebooting at the end of the installation.</p>
 </p>
                         </div>
