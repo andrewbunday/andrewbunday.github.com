@@ -86,6 +86,14 @@ html {
     margin: 10px 0px 10px 0px;
 }
 
+.frontpage_thumbs{
+    height: 50px;
+    background-position: center center;
+    background-size: 100% 200%;
+    background-repeat:no-repeat;
+    overflow: hidden;
+}
+
 .default-contact-thumbs{
     margin-left:auto;
     margin-right:auto;
