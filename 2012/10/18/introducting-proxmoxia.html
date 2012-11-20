@@ -96,11 +96,11 @@
 
 <hr />
 
-<p>Today I’m happy to have finished up work on a small python wrapper for Proxmox’s rest based API. We’ve called it <a href="http://github.com/baseblack/proxmoxia">Proxmoxia</a>.</p>
+<p>Today I&#8217;m happy to have finished up work on a small python wrapper for Proxmox&#8217;s rest based API. We&#8217;ve called it <a href="http://github.com/baseblack/proxmoxia">Proxmoxia</a>.</p>
 
 <h2 id="background">Background</h2>
 
-<p>For those who don’t know, <a href="http://pve.proxmox.com/wiki/Main_Page">Proxmox</a> is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.</p>
+<p>For those who don&#8217;t know, <a href="http://pve.proxmox.com/wiki/Main_Page">Proxmox</a> is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.</p>
 
 <p>At Baseblack we utilise Proxmox to provide us with the majority of our central infrastructure. For example we run a pair of DNS servers, an almost countless number of license servers and farm manager all as openvz containers. Doing this provides us with a far higher level of service since if any one of our virtualization nodes go down we can quickly and pretty painlessly re-start the downed services on one of the other nodes whilst we work outs whats happening.</p>
 
@@ -110,36 +110,36 @@
   <p><em>This is where Proxmoxia comes in.</em></p>
 </blockquote>
 
-<p>Until recently anytime we’ve needed to spin up a new virtual server, we’ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.</p>
+<p>Until recently anytime we&#8217;ve needed to spin up a new virtual server, we&#8217;ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.</p>
 
 <p>We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.</p>
 
 <h2 id="creating-proxmoxia">Creating Proxmoxia</h2>
 
-<p>After a short burst of <em>‘Spanish Flea’</em> our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren’t keen on or flat out refused to use.</p>
+<p>After a short burst of <em>&#8216;Spanish Flea&#8217;</em> our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren&#8217;t keen on or flat out refused to use.</p>
 
 <blockquote>
   <p><em>Perl, Java, PHP need not apply</em></p>
 </blockquote>
 
-<p>Unfortunately I didn’t come across PyProxmox <em>(a major omission of mine)</em> until I’d already spent the better part of a day planning on how to make proxmoxia. And by then I well and truly had the bit between my teeth.</p>
+<p>Unfortunately I didn&#8217;t come across PyProxmox <em>(a major omission of mine)</em> until I&#8217;d already spent the better part of a day planning on how to make proxmoxia. And by then I well and truly had the bit between my teeth.</p>
 
 <p>I wanted to create a library which followed a few simple rules:</p>
 
 <ol>
-  <li>It should ‘feel’ pythonic.</li>
-  <li>I wanted the wrapper to extend itself. Or in a few more words; I didn’t want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.</li>
+  <li>It should &#8216;feel&#8217; pythonic.</li>
+  <li>I wanted the wrapper to extend itself. Or in a few more words; I didn&#8217;t want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.</li>
 </ol>
 
-<p>Personally I don’t like PyProxmox’s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.</p>
+<p>Personally I don&#8217;t like PyProxmox&#8217;s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.</p>
 
 <h2 id="whats-next">Whats Next?</h2>
 
-<p>We’re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it’s going to work out to be really useful.</p>
+<p>We&#8217;re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it&#8217;s going to work out to be really useful.</p>
 
 <h2 id="finally-some-examples">Finally Some Examples</h2>
 
-<p>Okay, so here are some examples to show what I’m talking about. Head over to the <a href="http://github.com/baseblack/proxmoxia">github</a> site for the source for these.</p>
+<p>Okay, so here are some examples to show what I&#8217;m talking about. Head over to the <a href="http://github.com/baseblack/proxmoxia">github</a> site for the source for these.</p>
 
 <p>First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request.</p>
 

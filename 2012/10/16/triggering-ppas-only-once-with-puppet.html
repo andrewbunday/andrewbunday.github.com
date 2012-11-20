@@ -97,15 +97,15 @@
 
 <p>We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.</p>
 
-<p>For internal software and tools we use Jordan Sissel’s <a href="https://github.com/jordansissel/fpm">fpm</a> to generate Debian packages which can then locally host in a <a href="http://mirrorer.alioth.debian.org/">reprepro</a> managed apt repository.</p>
+<p>For internal software and tools we use Jordan Sissel&#8217;s <a href="https://github.com/jordansissel/fpm">fpm</a> to generate Debian packages which can then locally host in a <a href="http://mirrorer.alioth.debian.org/">reprepro</a> managed apt repository.</p>
 
-<p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
+<p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu&#8217;s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
 
 <h2 id="ppas">PPAs</h2>
 
 <p>PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.</p>
 
-<p>The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa’s short name, builds the apt url to access it, stores it in <code>/etc/apt/sources.list.d/*</code> and retrieves its public signing key.</p>
+<p>The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa&#8217;s short name, builds the apt url to access it, stores it in <code>/etc/apt/sources.list.d/*</code> and retrieves its public signing key.</p>
 
 <blockquote>
   <p>add-apt-repository ppa:username/package</p>
@@ -131,7 +131,7 @@
 
 <h2 id="tldr">TL;DR</h2>
 
-<p>Puppet exec has a ‘creates =&gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
+<p>Puppet exec has a &#8216;creates =&gt; somefile&#8217; action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
 </p>
                         </div>
                     </div>

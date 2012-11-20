@@ -92,6 +92,7 @@ html {
     background-size: 100% 200%;
     background-repeat:no-repeat;
     overflow: hidden;
+    max-width: 500px
 }
 
 .default-contact-thumbs{
