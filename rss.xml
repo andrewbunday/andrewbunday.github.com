@@ -6,9 +6,147 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Mon, 26 Nov 2012 11:02:25 +0000</pubDate>
-    <lastBuildDate>Mon, 26 Nov 2012 11:02:25 +0000</lastBuildDate>
+    <pubDate>Tue, 04 Dec 2012 18:26:06 +0000</pubDate>
+    <lastBuildDate>Tue, 04 Dec 2012 18:26:06 +0000</lastBuildDate>
 
+    
+    <item>
+      <title>Puppet <small>masterless mode wrapper script</small></title>
+      <link>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper.html</link>
+      <pubDate>Tue, 04 Dec 2012 08:45:00 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper</guid>
+      <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#background&quot;&gt;Background&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#running-masterless&quot;&gt;Running Masterless&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#an-example-wrapper-script&quot;&gt;An Example Wrapper Script&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;background&quot;&gt;Background&lt;/h3&gt;
+&lt;p&gt;Typically the easiest way to run puppet is to use the default master and agent
+mechanism.&lt;/p&gt;
+
+&lt;p&gt;When you run puppet using a master the only way to switch between
+different sets of manifests/modules is to use environments. If  you setup puppet
+correctly these can allow you to pick and choose which environment you want to
+use on a given run, and/or for a given node.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately there are a few caveats when using environments.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;To pick out a particular enviroment for a specific node each time you ideally
+should be using an ENC. Once you setup your enviroment == node relationship it&amp;#8217;ll
+stick for each run.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If you are not using an ENC, since this is another server which you don&amp;#8217;t want
+to have to maintain then you are requried to specify the environment to use
+via the commandline. For example:&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;code&gt;puppet agent --test --environment canary_maya_001&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Each environment will need to have a different manifest/modulepath defined and
+located in your puppet manifests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;running-masterless&quot;&gt;Running Masterless&lt;/h3&gt;
+&lt;p&gt;Another way of running puppet is to setup it up in in a masterless mode. Here we
+instead checkout a copy of our manifest from a central repository and run puppet
+directly against it.&lt;/p&gt;
+
+&lt;p&gt;Whilst you gain the advantage of not needing a master, and of being able to split
+environments more easily with branches (this can be done with the master but requires
+multiple checkouts of the puppet repository). You do loose out on a few features
+of puppet, such as:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Reports, these really don&amp;#8217;t work as well.&lt;/li&gt;
+  &lt;li&gt;StoreConfigs is probably the biggest feature loss although you should be able
+to solve the problems you would have used it for in other ways (SSHFP for example
+when handling new server certificates).&lt;/li&gt;
+  &lt;li&gt;To use a particular environment on a node it becomes easier to create branches
+of your manifests/modules and then checkout the branch you want on the node
+just before you execute puppet. This still means you have multiple &amp;#8216;copies&amp;#8217; of
+files, but managing them tends to be easier via standard git branch&amp;amp;merge tools.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;an-example-wrapper-script&quot;&gt;An Example Wrapper Script&lt;/h3&gt;
+&lt;p&gt;The steps involved in running masterless are slightly more cumbersome than
+running with a master. In particular if you use a git server such as gitolite
+then you need to ensure that you have credentials setup which allow you to read
+from the repository.&lt;/p&gt;
+
+&lt;p&gt;For this we&amp;#8217;re using a locally served ssh config file and private rsa id which
+the config file informs ssh to use to identifty ourselves when we contact our
+gitolite host.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;served with a pinch of salt&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# check if sudo has been used or user is root&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -z &lt;span class=&quot;s2&quot;&gt;&amp;quot;${SUDO_USER}&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;${USER}&amp;quot;&lt;/span&gt; !&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;root&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Fail: Only root can execute puppet&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# change to &amp;#39;syslog&amp;#39; to redirect puppet&amp;#39;s internal logging directly to syslog&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LOGDEST&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;console&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# this may be overkill. A time/datestamp or even standard path may be more&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# suitable.&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;UUID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uuidgen&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# SSH credentials setup&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; ! -d &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mkdir --mode&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;700 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Stash $HOME/.ssh/config if it already exists. We&amp;#39;ll put it back when we&amp;#39;re&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# finished.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt; -x /usr/bin/wget &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config http://autoserver/d-i/bin/puppet_ssh.config
+wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+           http://autoserver/d-i/bin/puppet_readonly_id_rsa
+
+&lt;span class=&quot;c&quot;&gt;# OpenSSH will bork out if the permissions are not exactly right.&lt;/span&gt;
+chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa
+chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+
+&lt;span class=&quot;c&quot;&gt;# Clone a copy of the puppet manifests&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; ! -d /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git clone gitlab:puppet.git /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Get any updates to a previously checked out manifest repo&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; fetch
+    git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; merge origin/master
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Return the users .ssh settings.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;rm &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+    mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+    chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Finally run puppet. This *can* take a while.&lt;/span&gt;
+puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/modules --color &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+       --vardir /var/tmp/puppet/var --confdir /var/tmp/puppet/etc --no-report &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+       --logdest &lt;span class=&quot;nv&quot;&gt;$LOGDEST&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+    </item>
     
     <item>
       <title>ReproWeb <small>a micro repository browser</small></title>
