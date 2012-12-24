@@ -58,24 +58,28 @@
     </div>
 </div>
 
-            <div class="page-header">
-  <h3>Andrew Bunday <small>tech notes</small></h3>
-</div>
+            <!-- <div class="row"> -->
+    <div class="page-header">
+        <h3>Andrew Bunday <small>tech notes</small></h3>
+    </div>
 
-            <ul class="breadcrumb">
-  <li><a href="/">home</a> <span class="divider">/</span></li>
-  
-    <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
-  
-  
-    <li class="active">puppet <small>masterless mode wrapper script</small></li>
-  
-</ul>
+
+            <div class="row" id="breadcrumb">
+    <ul class="breadcrumb">
+      <li><a href="/">home</a> <span class="divider">/</span></li>
+      
+        <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
+      
+      
+        <li class="active">puppet <small>masterless mode wrapper script</small></li>
+      
+    </ul>
+</div>
 
 
             <div class="container-fluid main-content">
                 <div class="row-fluid">
-                    <div class="span9 span12-tablet">
+                    <div class="span12 span12-tablet">
                         <div class="row-fluid">
                             <div class="span12">
                                 <h1>Puppet <small>masterless mode wrapper script</small></h1>
@@ -106,10 +110,10 @@ use on a given run, and/or for a given node.</p>
 
 <ul>
   <li>To pick out a particular enviroment for a specific node each time you ideally
-should be using an ENC. Once you setup your enviroment == node relationship it&#8217;ll
+should be using an ENC. Once you setup your enviroment == node relationship it’ll
 stick for each run.</li>
   <li>
-    <p>If you are not using an ENC, since this is another server which you don&#8217;t want
+    <p>If you are not using an ENC, since this is another server which you don’t want
 to have to maintain then you are requried to specify the environment to use
 via the commandline. For example:</p>
 
@@ -132,13 +136,13 @@ multiple checkouts of the puppet repository). You do loose out on a few features
 of puppet, such as:</p>
 
 <ul>
-  <li>Reports, these really don&#8217;t work as well.</li>
+  <li>Reports, these really don’t work as well.</li>
   <li>StoreConfigs is probably the biggest feature loss although you should be able
 to solve the problems you would have used it for in other ways (SSHFP for example
 when handling new server certificates).</li>
   <li>To use a particular environment on a node it becomes easier to create branches
 of your manifests/modules and then checkout the branch you want on the node
-just before you execute puppet. This still means you have multiple &#8216;copies&#8217; of
+just before you execute puppet. This still means you have multiple ‘copies’ of
 files, but managing them tends to be easier via standard git branch&amp;merge tools.</li>
 </ul>
 
@@ -148,7 +152,7 @@ running with a master. In particular if you use a git server such as gitolite
 then you need to ensure that you have credentials setup which allow you to read
 from the repository.</p>
 
-<p>For this we&#8217;re using a locally served ssh config file and private rsa id which
+<p>For this we’re using a locally served ssh config file and private rsa id which
 the config file informs ssh to use to identifty ourselves when we contact our
 gitolite host.</p>
 
@@ -219,7 +223,7 @@ puppet apply --modulepath<span class="o">=</span>/var/tmp/puppet/<span class="nv
 </p>
                         </div>
                     </div>
-                    <div class="span3 hidden-phone hidden-tablet">
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
                         <ul class="thumbnails pull-right hidden-800">
     <li class="span12">
         <div class="thumbnail avatar">
@@ -234,14 +238,16 @@ puppet apply --modulepath<span class="o">=</span>/var/tmp/puppet/<span class="nv
     </li>
 </ul>
 
-                    </div>
+                    </div> -->
                 </div>
             </div>
-            <div class="page-header">
+            <hr>
+
+<div class="page-header">
   <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
 </div>
 
-<div class="row-fluid post-contact-thumbs">
+<!-- <div class="row-fluid post-contact-thumbs">
     <div class="span4">
         <a href="https://twitter.com/itwat" target="_blank">
             <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
@@ -257,7 +263,7 @@ puppet apply --modulepath<span class="o">=</span>/var/tmp/puppet/<span class="nv
             <img src="/assets/img/LinkedIn_Logo200x200.png" alt="">
         </a>
     </div>
-</div>
+</div> -->
 
 
         </div>

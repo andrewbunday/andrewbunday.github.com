@@ -52,19 +52,28 @@ html {
 
 .page-header {
     margin-bottom: 0px;
-    padding-left: 60px;
+    /*padding-left: 60px;*/
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .breadcrumb {
     margin-bottom: 10px;
-    padding-left: 60px;
+    /*padding-left: 60px;*/
+}
+
+#breadcrumb {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;    
 }
 
 .main-content {
     padding-left: 60px;
     padding-right:60px;
     height: 100%;
-    max-width: 1200px;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -157,6 +166,11 @@ img.twitter {
     width:45px;
     height:45px;
     background:url(img_navsprites.gif) 180px 45px;
+}
+
+p {
+    text-align: justify;
+
 }
 
 @media (max-width: 979px) {

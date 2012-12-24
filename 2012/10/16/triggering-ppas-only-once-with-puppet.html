@@ -58,24 +58,28 @@
     </div>
 </div>
 
-            <div class="page-header">
-  <h3>Andrew Bunday <small>tech notes</small></h3>
-</div>
+            <!-- <div class="row"> -->
+    <div class="page-header">
+        <h3>Andrew Bunday <small>tech notes</small></h3>
+    </div>
 
-            <ul class="breadcrumb">
-  <li><a href="/">home</a> <span class="divider">/</span></li>
-  
-    <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
-  
-  
-    <li class="active">puppet <small>one time ppa additions</small></li>
-  
-</ul>
+
+            <div class="row" id="breadcrumb">
+    <ul class="breadcrumb">
+      <li><a href="/">home</a> <span class="divider">/</span></li>
+      
+        <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
+      
+      
+        <li class="active">puppet <small>one time ppa additions</small></li>
+      
+    </ul>
+</div>
 
 
             <div class="container-fluid main-content">
                 <div class="row-fluid">
-                    <div class="span9 span12-tablet">
+                    <div class="span12 span12-tablet">
                         <div class="row-fluid">
                             <div class="span12">
                                 <h1>Puppet <small>One time PPA additions</small></h1>
@@ -97,15 +101,15 @@
 
 <p>We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.</p>
 
-<p>For internal software and tools we use Jordan Sissel&#8217;s <a href="https://github.com/jordansissel/fpm">fpm</a> to generate Debian packages which can then locally host in a <a href="http://mirrorer.alioth.debian.org/">reprepro</a> managed apt repository.</p>
+<p>For internal software and tools we use Jordan Sissel’s <a href="https://github.com/jordansissel/fpm">fpm</a> to generate Debian packages which can then locally host in a <a href="http://mirrorer.alioth.debian.org/">reprepro</a> managed apt repository.</p>
 
-<p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu&#8217;s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
+<p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
 
 <h2 id="ppas">PPAs</h2>
 
 <p>PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.</p>
 
-<p>The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa&#8217;s short name, builds the apt url to access it, stores it in <code>/etc/apt/sources.list.d/*</code> and retrieves its public signing key.</p>
+<p>The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa’s short name, builds the apt url to access it, stores it in <code>/etc/apt/sources.list.d/*</code> and retrieves its public signing key.</p>
 
 <blockquote>
   <p>add-apt-repository ppa:username/package</p>
@@ -131,11 +135,11 @@
 
 <h2 id="tldr">TL;DR</h2>
 
-<p>Puppet exec has a &#8216;creates =&gt; somefile&#8217; action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
+<p>Puppet exec has a ‘creates =&gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
 </p>
                         </div>
                     </div>
-                    <div class="span3 hidden-phone hidden-tablet">
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
                         <ul class="thumbnails pull-right hidden-800">
     <li class="span12">
         <div class="thumbnail avatar">
@@ -150,14 +154,16 @@
     </li>
 </ul>
 
-                    </div>
+                    </div> -->
                 </div>
             </div>
-            <div class="page-header">
+            <hr>
+
+<div class="page-header">
   <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
 </div>
 
-<div class="row-fluid post-contact-thumbs">
+<!-- <div class="row-fluid post-contact-thumbs">
     <div class="span4">
         <a href="https://twitter.com/itwat" target="_blank">
             <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
@@ -173,7 +179,7 @@
             <img src="/assets/img/LinkedIn_Logo200x200.png" alt="">
         </a>
     </div>
-</div>
+</div> -->
 
 
         </div>
