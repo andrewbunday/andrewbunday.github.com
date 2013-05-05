@@ -3,11 +3,11 @@
     <head>
         <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>Puppet <small>One time PPA additions</small> / Andy Bunday</title>
+    <title>Andrew Bunday [Puppet <small>One time PPA additions</small>]</title>
 
     <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/ubuntu.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/cosmo.min.css"/>
     <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
     <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
@@ -59,19 +59,22 @@
 </div>
 
             <!-- <div class="row"> -->
-    <div class="page-header">
-        <h3>Andrew Bunday <small>tech notes</small></h3>
+    <div class="page-header row-fluid">
+        <h1>Andrew Bunday <small>tech notes</small></h1>
     </div>
 
 
-            <div class="row" id="breadcrumb">
-    <ul class="breadcrumb">
-      <li><a href="/">home</a> <span class="divider">/</span></li>
-      
-        <li><a href="/posts.html">posts</a> <span class="divider">/</span></li>
+            <div class="row-fluid" id="breadcrumb">
+    <ul class="nav nav-pills">
+      <li><a href="/">home</a></li>
       
       
-        <li class="active">puppet <small>one time ppa additions</small></li>
+        <li><a href="/posts.html">posts</a></li>
+      
+      
+        <li class="active">
+            <a href="#">puppet <small>one time ppa additions</small></a>
+        </li>
       
     </ul>
 </div>
@@ -91,11 +94,25 @@
                             </div>
                         </div>
                         <div class="row-fluid">
-                            <p><h2 id="background">Background</h2>
+                            <p><h3 class="no_toc" id="contents">Contents</h3>
+
+<hr />
+
+<ul class="nav nav-list well" id="markdown-toc">
+  <li><a href="#background">Background</a></li>
+  <li><a href="#apt">Apt</a></li>
+  <li><a href="#ppas">PPAs</a></li>
+  <li><a href="#puppet">Puppet</a></li>
+  <li><a href="#tldr">TL;DR</a></li>
+</ul>
+
+<h2 id="background">Background</h2>
+<hr />
 
 <p>When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.</p>
 
 <h2 id="apt">Apt</h2>
+<hr />
 
 <p>At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.</p>
 
@@ -106,6 +123,7 @@
 <p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
 
 <h2 id="ppas">PPAs</h2>
+<hr />
 
 <p>PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.</p>
 
@@ -116,6 +134,7 @@
 </blockquote>
 
 <h2 id="puppet">Puppet</h2>
+<hr />
 
 <p>We make use of the puppet-apt manifests put together by evolvingweb.</p>
 
@@ -134,6 +153,7 @@
 <p>Finally here is the amended definition in all of its terrible glory:</p>
 
 <h2 id="tldr">TL;DR</h2>
+<hr />
 
 <p>Puppet exec has a ‘creates =&gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
 </p>
@@ -159,27 +179,10 @@
             </div>
             <hr>
 
-<div class="page-header">
-  <h4>&copy; 2012. All rights reserved <small>All comments are my own and feel free to contact me via the links below.</small></h4>
+<div class="page-header" style="text-align: center">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>
 </div>
 
-<!-- <div class="row-fluid post-contact-thumbs">
-    <div class="span4">
-        <a href="https://twitter.com/itwat" target="_blank">
-            <img src="/assets/img/twitter-bird-blue-on-white.png" alt="">
-        </a>
-    </div>
-    <div class="span4">
-        <a href="http://github.com/andrewbunday" target="_blank">
-            <img src="/assets/img/octocat.png" alt="">
-        </a>
-    </div>
-    <div class="span4">
-        <a href="http://www.linkedin.com/in/andrewbunday" target="_blank">
-            <img src="/assets/img/LinkedIn_Logo200x200.png" alt="">
-        </a>
-    </div>
-</div> -->
 
 
         </div>

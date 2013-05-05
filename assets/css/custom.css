@@ -2,6 +2,13 @@ html {
     overflow-y: scroll;
 }
 
+h1 small{color: #969696; /*dfdfdf*/}
+h2 small{color: #969696; /*dfdfdf*/}
+h3 small{color: #969696; /*dfdfdf*/}
+h4 small{color: #969696; /*dfdfdf*/}
+
+.btn h2 small{color: #ffffff}
+
 .page-header h4{
     margin-right:60px;
 }
@@ -23,13 +30,62 @@ html {
     border-bottom-color: #e3e3e3;
 }
 
+.navbar {
+
+}
+
+.navbar-inner {
+    background-color: #ffffff;
+}
+
+.navbar .nav>li>a {
+    color: #555555;
+    text-shadow: none;
+}
+
+.navbar .nav>li>a:hover {
+    color: #ffffff;
+    text-shadow: none;
+    background-color: #555555;
+}
+
+.nav-list > .active > a {
+    color: #ffffff;
+    text-shadow: none;
+    background-color: #555555;
+}
+
+
+.nav-pills {
+  border-style: dashed none;
+  border-width: 1px;
+  border-spacing: 1px;
+  border-color: #969696;
+}
+
+.main-content hr {
+    margin-top: 0px;
+}
+
+.main-content h3 {
+    margin-top: 20px;
+    margin-bottom:10px;
+}
+
+.main-content h2 {
+    margin-top: 20px;
+    margin-bottom:10px;
+}
+
+
 
 .secondary-story-header {
     min-height: 200px;
     max-height: 220px;
+    vertical-align: text-top;
 }
 
-.secondary-story-header h4{
+.secondary-story-header h3{
     min-height: 40px;
     vertical-align: text-top;
     margin-top: 0px;
@@ -51,11 +107,13 @@ html {
 }
 
 .page-header {
-    margin-bottom: 0px;
+    margin-bottom: 20px;
     /*padding-left: 60px;*/
-    max-width: 800px;
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 30px;
+    border-bottom: 0px solid #EEE;
 }
 
 .breadcrumb {
@@ -64,16 +122,22 @@ html {
 }
 
 #breadcrumb {
-    max-width: 800px;
+    max-width: 1000px;
     margin-left: auto;
-    margin-right: auto;    
+    margin-right: auto;
+    margin-bottom: 5px;
+}
+
+#recent-posts {
+    margin-bottom: 25px;
 }
 
 .main-content {
     padding-left: 60px;
     padding-right:60px;
     height: 100%;
-    max-width: 800px;
+    max-width: 1000px;
+    width: 1000px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -104,7 +168,7 @@ html {
     background-size: 100% 200%;
     background-repeat:no-repeat;
     overflow: hidden;
-    max-width: 500px
+    /*max-width: 500px*/
 }
 
 .default-contact-thumbs{
@@ -148,11 +212,25 @@ html {
 }
 
 .main-navbar {
-    padding-right: 20px;
 }
 
 .main-navbar-inner {
-    padding-right: 20px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container-fluid.main-navbar {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.navbar-inner.main-navbar-inner{
+    padding: 0px;
+}
+
+.navbar.nav{
+    margin-right: 0px;
 }
 
 .avatar {
@@ -173,8 +251,12 @@ p {
 
 }
 
+a {
+    color: #000
+}
+
 @media (max-width: 979px) {
-  .hidden-800 {
+  .hidden-1000 {
         display:none !important;
     }
 
@@ -209,5 +291,6 @@ code{color:rgba(0, 0, 0, 0.75);padding:1px 3px;}
 
     .secondary-story-header {
       min-height: 150px;
+      vertical-align: text-top;
     }
 }

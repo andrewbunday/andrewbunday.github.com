@@ -6,8 +6,8 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Mon, 24 Dec 2012 23:15:36 +0000</pubDate>
-    <lastBuildDate>Mon, 24 Dec 2012 23:15:36 +0000</lastBuildDate>
+    <pubDate>Sun, 05 May 2013 13:43:54 +0100</pubDate>
+    <lastBuildDate>Sun, 05 May 2013 13:43:54 +0100</lastBuildDate>
 
     
     <item>
@@ -16,13 +16,20 @@
       <pubDate>Tue, 04 Dec 2012 08:45:00 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper</guid>
-      <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+      <description>&lt;h3 class=&quot;no_toc&quot; id=&quot;contents&quot;&gt;Contents&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#background&quot;&gt;Background&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#running-masterless&quot;&gt;Running Masterless&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#an-example-wrapper-script&quot;&gt;An Example Wrapper Script&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;background&quot;&gt;Background&lt;/h3&gt;
+
+&lt;hr /&gt;
+
 &lt;p&gt;Typically the easiest way to run puppet is to use the default master and agent
 mechanism.&lt;/p&gt;
 
@@ -51,6 +58,9 @@ located in your puppet manifests.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;running-masterless&quot;&gt;Running Masterless&lt;/h3&gt;
+
+&lt;hr /&gt;
+
 &lt;p&gt;Another way of running puppet is to setup it up in in a masterless mode. Here we
 instead checkout a copy of our manifest from a central repository and run puppet
 directly against it.&lt;/p&gt;
@@ -72,6 +82,9 @@ files, but managing them tends to be easier via standard git branch&amp;amp;merg
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;an-example-wrapper-script&quot;&gt;An Example Wrapper Script&lt;/h3&gt;
+
+&lt;hr /&gt;
+
 &lt;p&gt;The steps involved in running masterless are slightly more cumbersome than
 running with a master. In particular if you use a git server such as gitolite
 then you need to ensure that you have credentials setup which allow you to read
@@ -83,65 +96,65 @@ gitolite host.&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;served with a pinch of salt&lt;/em&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# check if sudo has been used or user is root&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -z &lt;span class=&quot;s2&quot;&gt;&amp;quot;${SUDO_USER}&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;${USER}&amp;quot;&lt;/span&gt; !&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;root&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Fail: Only root can execute puppet&amp;quot;&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# change to &amp;#39;syslog&amp;#39; to redirect puppet&amp;#39;s internal logging directly to syslog&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;LOGDEST&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;console&amp;#39;&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# this may be overkill. A time/datestamp or even standard path may be more&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# suitable.&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;UUID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uuidgen&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# SSH credentials setup&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; ! -d &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mkdir --mode&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;700 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# Stash $HOME/.ssh/config if it already exists. We&amp;#39;ll put it back when we&amp;#39;re&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;# finished.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt; -x /usr/bin/wget &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
-wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config http://autoserver/d-i/bin/puppet_ssh.config
-wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-           http://autoserver/d-i/bin/puppet_readonly_id_rsa
-
-&lt;span class=&quot;c&quot;&gt;# OpenSSH will bork out if the permissions are not exactly right.&lt;/span&gt;
-chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa
-chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
-
-&lt;span class=&quot;c&quot;&gt;# Clone a copy of the puppet manifests&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; ! -d /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git clone gitlab:puppet.git /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# Get any updates to a previously checked out manifest repo&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-        --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; fetch
-    git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-        --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; merge origin/master
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# Return the users .ssh settings.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;rm &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
-    mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
-    chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
-&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# Finally run puppet. This *can* take a while.&lt;/span&gt;
-puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/modules --color &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-       --vardir /var/tmp/puppet/var --confdir /var/tmp/puppet/etc --no-report &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-       --logdest &lt;span class=&quot;nv&quot;&gt;$LOGDEST&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# check if sudo has been used or user is root&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -z &lt;span class=&quot;s2&quot;&gt;&amp;quot;${SUDO_USER}&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;${USER}&amp;quot;&lt;/span&gt; !&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;root&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Fail: Only root can execute puppet&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt;     &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# change to &amp;#39;syslog&amp;#39; to redirect puppet&amp;#39;s internal logging directly to syslog&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;LOGDEST&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;console&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# this may be overkill. A time/datestamp or even standard path may be more&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# suitable.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;UUID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uuidgen&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# SSH credentials setup&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; ! -d &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mkdir --mode&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;700 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Stash $HOME/.ssh/config if it already exists. We&amp;#39;ll put it back when we&amp;#39;re&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# finished.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt; -x /usr/bin/wget &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt; wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config http://autoserver/d-i/bin/puppet_ssh.config
+&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; wget -q -O &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt;            http://autoserver/d-i/bin/puppet_readonly_id_rsa
+&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;32&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# OpenSSH will bork out if the permissions are not exactly right.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;33&lt;/span&gt; chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa
+&lt;span class=&quot;lineno&quot;&gt;34&lt;/span&gt; chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;lineno&quot;&gt;35&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;36&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Clone a copy of the puppet manifests&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;37&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; ! -d /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;38&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git clone gitlab:puppet.git /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;39&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;40&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;41&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Get any updates to a previously checked out manifest repo&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;42&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;43&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;44&lt;/span&gt;         --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; fetch
+&lt;span class=&quot;lineno&quot;&gt;45&lt;/span&gt;     git --git-dir&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;46&lt;/span&gt;         --work-tree&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; merge origin/master
+&lt;span class=&quot;lineno&quot;&gt;47&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;48&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;49&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Return the users .ssh settings.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;51&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;    &lt;/span&gt;rm &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;lineno&quot;&gt;52&lt;/span&gt;     mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;lineno&quot;&gt;53&lt;/span&gt;     chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;lineno&quot;&gt;54&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;55&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;56&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Finally run puppet. This *can* take a while.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;57&lt;/span&gt; puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/modules --color &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;58&lt;/span&gt;        --vardir /var/tmp/puppet/var --confdir /var/tmp/puppet/etc --no-report &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;59&lt;/span&gt;        --logdest &lt;span class=&quot;nv&quot;&gt;$LOGDEST&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -154,7 +167,11 @@ puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/
       <pubDate>Mon, 12 Nov 2012 18:05:00 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/11/12/reproweb-repository-browser</guid>
-      <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+      <description>&lt;h3 class=&quot;no_toc&quot; id=&quot;contents&quot;&gt;Contents&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#current-feature-set&quot;&gt;Current Feature Set&lt;/a&gt;    &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#browsing&quot;&gt;Browsing&lt;/a&gt;&lt;/li&gt;
@@ -166,9 +183,9 @@ puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/
   &lt;li&gt;&lt;a href=&quot;#technical-details&quot;&gt;Technical Details&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;hr /&gt;
-
 &lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+
+&lt;hr /&gt;
 
 &lt;p&gt;A few weeks ago we finished a first draft release of &lt;a href=&quot;http://github.com/andrewbunday/reproweb&quot;&gt;ReproWeb&lt;/a&gt;, a small, light weight apt repository browser. The browser was build out of an increasing need we were finding, to be able to introspect into our main production repository.&lt;/p&gt;
 
@@ -186,9 +203,9 @@ puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/
 
 &lt;p&gt;Almost all of these tasks can be carried out from a terminal using commands such as &lt;code&gt;apt-get show&lt;/code&gt;, but the web interface allows for far quicker navigation, comparison and has already started us asking more questions as our understanding of the data in our repository grows.&lt;/p&gt;
 
-&lt;hr /&gt;
-
 &lt;h2 id=&quot;current-feature-set&quot;&gt;Current Feature Set&lt;/h2&gt;
+
+&lt;hr /&gt;
 
 &lt;p&gt;At present Reproweb allows a user to perform filters on the content of a repository based on either;&lt;/p&gt;
 
@@ -202,6 +219,7 @@ puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/
 &lt;/blockquote&gt;
 
 &lt;h3 id=&quot;browsing&quot;&gt;Browsing&lt;/h3&gt;
+&lt;hr /&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Do you find yourself wanting to know more about your repository? Perhaps how many packages are in a particular component? or perhaps you don’t know the structure of your repository and you want to get to know it more intimately?&lt;/p&gt;
@@ -223,6 +241,7 @@ Metadata associated with the distribution is also listed along with information 
 &lt;p&gt;&lt;img src=&quot;https://github.com/andrewbunday/ReproWeb/raw/master/documentation/images/image_08.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;searching&quot;&gt;Searching&lt;/h3&gt;
+&lt;hr /&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Do you have a specific package you are looking for? Do you know it’s name or version and don’t want to have to go browsing around for it?&lt;/p&gt;
@@ -232,9 +251,8 @@ Metadata associated with the distribution is also listed along with information 
 
 &lt;p&gt;&lt;img src=&quot;https://github.com/andrewbunday/ReproWeb/raw/master/documentation/images/image_05.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;hr /&gt;
-
 &lt;h2 id=&quot;future-ideas&quot;&gt;Future Ideas&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;This is a list of the features which I’d like to add in time.&lt;/p&gt;
 
@@ -248,31 +266,30 @@ available in Releases.gz&lt;/li&gt;
   &lt;li&gt;Listing of pre/post install/remove scripts.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;hr /&gt;
-
 &lt;h2 id=&quot;get-hold-of-it-yourself&quot;&gt;Get hold of it yourself&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;I strongly recommending visiting &lt;a href=&quot;http://github.com/andrewbunday/reproweb&quot;&gt;http://github.com/andrewbunday/reproweb&lt;/a&gt; and start by reading the README and documentation on the repo.&lt;/p&gt;
 
 &lt;p&gt;Or for the impatient in life:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;# clone the repository&lt;/span&gt;
-
-git clone https://github.com/andrewbunday/ReproWeb.git
-
-&lt;span class=&quot;c&quot;&gt;# ensure that the cache directory has been created, or that you edit the setting in the configuration before you start up the app.&lt;/span&gt;
-
-sudo mkdir /var/cache/reproweb
-
-&lt;span class=&quot;c&quot;&gt;# start it up&lt;/span&gt;
-
-python debug-run.py
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# clone the repository&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; git clone https://github.com/andrewbunday/ReproWeb.git
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# ensure that the cache directory has been created, or that you edit the setting in the configuration before you start up the app.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; sudo mkdir /var/cache/reproweb
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# start it up&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; python debug-run.py
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;hr /&gt;
-
 &lt;h2 id=&quot;technical-details&quot;&gt;Technical Details&lt;/h2&gt;
+
+&lt;hr /&gt;
 
 &lt;p&gt;Underneath the hood ReproWeb is built using only a handful of &lt;em&gt;(at the time of writing)&lt;/em&gt; actively developed tools.&lt;/p&gt;
 
@@ -281,32 +298,31 @@ python debug-run.py
 &lt;p&gt;This drove our decisions behind each of the components we used to build the application.&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;reprepro&lt;/strong&gt; - This is the repository management tool which the browser has been designed to be used with. All of the interactions with reprepro are handled through via the 3rd party script reepocheep.py which could be swapped out with an equivalent script which provides the same api.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;reprepro&lt;/strong&gt; - This is the repository management tool which the browser has been designed to be used with. All of the interactions with reprepro are handled through via the 3rd party script reepocheep.py which could be swapped out with an equivalent script which provides the same api.&lt;/p&gt;
+
+    &lt;p&gt;Since we were using reprepro already to manage our software package repositories it made complete sense to tailor the app to its strengths.&lt;/p&gt;
+
+    &lt;p&gt;The majority of the heavy lifting for the app is handled by calls to reprepro via subprocess and then handling of the returned data.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;flask&lt;/strong&gt; - A small web application backend framework which handles all of the functionality we need for it for this project. Something as feature rich as django would have been more cumbersome that the project required. Other parts of the Flask eco system were utilised, such as jinja2 to handle dynamic page generation.&lt;/p&gt;
+
+    &lt;p&gt;This is one of my personally favourite frameworks to use when building these kinds of applications. Having worked previously with django and really having not gotten on well with it I’ve always been attracted to these lighter weight frameworks.&lt;/p&gt;
+
+    &lt;p&gt;Another choice a few years ago might have been &lt;a href=&quot;http://webpy.org&quot;&gt;web.py&lt;/a&gt; which truely is a micro framework would have ended up being replaced as it reached its limits a little sooner than flask will.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;bootstrap&lt;/strong&gt; - A very user friendly web front-end framework which handles features such as responsive layout, navbar and general css styling consistency.&lt;/p&gt;
+
+    &lt;p&gt;A few years ago if someone had told me that all of the css and jquery plugins I would need to build a webpage/app quickly with little stress I could download and get started with in minutes, I would have laughed and said ‘your sooo funny’. However now Bootstrap does all those things and it has made the lives of non-web developers such as myself far easier.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;datatables.js&lt;/strong&gt; - A damn awesome jquery plugin which completely powers the tabulated, sortable, filterable, paginated list of packages seen in the search view.&lt;/p&gt;
+
+    &lt;p&gt;Does what it says on the tin. Credit goes to &lt;a href=&quot;http://paulnendick.github.com&quot;&gt;@PaulNendick&lt;/a&gt; for the find.&lt;/p&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;p&gt;Since we were using reprepro already to manage our software package repositories it made complete sense to tailor the app to its strengths.&lt;/p&gt;
-
-&lt;p&gt;The majority of the heavy lifting for the app is handled by calls to reprepro via subprocess and then handling of the returned data.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;flask&lt;/strong&gt; - A small web application backend framework which handles all of the functionality we need for it for this project. Something as feature rich as django would have been more cumbersome that the project required. Other parts of the Flask eco system were utilised, such as jinja2 to handle dynamic page generation.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;This is one of my personally favourite frameworks to use when building these kinds of applications. Having worked previously with django and really having not gotten on well with it I’ve always been attracted to these lighter weight frameworks.&lt;/p&gt;
-
-&lt;p&gt;Another choice a few years ago might have been &lt;a href=&quot;http://webpy.org&quot;&gt;web.py&lt;/a&gt; which truely is a micro framework would have ended up being replaced as it reached its limits a little sooner than flask will.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;bootstrap&lt;/strong&gt; - A very user friendly web front-end framework which handles features such as responsive layout, navbar and general css styling consistency.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;A few years ago if someone had told me that all of the css and jquery plugins I would need to build a webpage/app quickly with little stress I could download and get started with in minutes, I would have laughed and said ‘your sooo funny’. However now Bootstrap does all those things and it has made the lives of non-web developers such as myself far easier.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;datatables.js&lt;/strong&gt; - A damn awesome jquery plugin which completely powers the tabulated, sortable, filterable, paginated list of packages seen in the search view.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Does what it says on the tin. Credit goes to &lt;a href=&quot;http://paulnendick.github.com&quot;&gt;@PaulNendick&lt;/a&gt; for the find.&lt;/p&gt;
 </description>
     </item>
     
@@ -316,18 +332,21 @@ python debug-run.py
       <pubDate>Thu, 18 Oct 2012 22:27:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia</guid>
-      <description>&lt;ul id=&quot;markdown-toc&quot;&gt;
+      <description>&lt;p&gt;Today I’m happy to have finished up work on a small python wrapper for Proxmox’s rest based API. We’ve called it &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;Proxmoxia&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 class=&quot;no_toc&quot; id=&quot;contents&quot;&gt;Contents&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#background&quot;&gt;Background&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#whats-next&quot;&gt;Whats Next?&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#finally-some-examples&quot;&gt;Finally Some Examples&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;hr /&gt;
-
-&lt;p&gt;Today I’m happy to have finished up work on a small python wrapper for Proxmox’s rest based API. We’ve called it &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;Proxmoxia&lt;/a&gt;.&lt;/p&gt;
-
 &lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;For those who don’t know, &lt;a href=&quot;http://pve.proxmox.com/wiki/Main_Page&quot;&gt;Proxmox&lt;/a&gt; is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.&lt;/p&gt;
 
@@ -344,6 +363,7 @@ python debug-run.py
 &lt;p&gt;We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.&lt;/p&gt;
 
 &lt;h2 id=&quot;creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;After a short burst of &lt;em&gt;‘Spanish Flea’&lt;/em&gt; our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren’t keen on or flat out refused to use.&lt;/p&gt;
 
@@ -363,10 +383,12 @@ python debug-run.py
 &lt;p&gt;Personally I don’t like PyProxmox’s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.&lt;/p&gt;
 
 &lt;h2 id=&quot;whats-next&quot;&gt;Whats Next?&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;We’re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it’s going to work out to be really useful.&lt;/p&gt;
 
 &lt;h2 id=&quot;finally-some-examples&quot;&gt;Finally Some Examples&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;Okay, so here are some examples to show what I’m talking about. Head over to the &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;github&lt;/a&gt; site for the source for these.&lt;/p&gt;
 
@@ -402,31 +424,31 @@ python debug-run.py
 
 &lt;p&gt;Find a vm template filepath and use this as the ostemplate for a new vm you create. And then start it up once it has finished being created:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;c&quot;&gt;# find the path for the template you want to use.&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;virtual-nfs&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;vztmpl&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;re&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;volid&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;virtual-nfs&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;volid&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# create the container, giving it some sensible settings&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ostemplate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;path&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-                           &lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;204&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                           &lt;span class=&quot;n&quot;&gt;hostname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;test-4&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                           &lt;span class=&quot;n&quot;&gt;ip_address&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;192.168.123.204&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                           &lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;local&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# keep an eye on task and see when its completed&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;status&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;running&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;c&quot;&gt;# print out the logs&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;# start up the container&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;204&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;ne&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Unable to start container&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# find the path for the template you want to use.&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;virtual-nfs&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;vztmpl&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;re&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;volid&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;virtual-nfs&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;volid&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# create the container, giving it some sensible settings&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ostemplate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;path&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt;                            &lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;204&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt;                            &lt;span class=&quot;n&quot;&gt;hostname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;test-4&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt;                            &lt;span class=&quot;n&quot;&gt;ip_address&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;192.168.123.204&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt;                            &lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;local&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# keep an eye on task and see when its completed&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;status&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;running&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# print out the logs&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt;     &lt;span class=&quot;c&quot;&gt;# start up the container&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;204&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;ne&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Unable to start container&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
@@ -446,7 +468,7 @@ python debug-run.py
       <pubDate>Wed, 17 Oct 2012 09:46:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way</guid>
-      <description>&lt;p&gt;&lt;img class=&quot;img-rounded&quot; src=&quot;/assets/photostream/2012-10-17_08.06.52.jpg&quot; /&gt;&lt;/p&gt;
+      <description>&lt;p&gt;&lt;img src=&quot;/assets/photostream/2012-10-17_08.06.52.jpg&quot; /&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -456,11 +478,25 @@ python debug-run.py
       <pubDate>Tue, 16 Oct 2012 10:00:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet</guid>
-      <description>&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+      <description>&lt;h3 class=&quot;no_toc&quot; id=&quot;contents&quot;&gt;Contents&lt;/h3&gt;
+
+&lt;hr /&gt;
+
+&lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#background&quot;&gt;Background&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#apt&quot;&gt;Apt&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#ppas&quot;&gt;PPAs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#puppet&quot;&gt;Puppet&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#tldr&quot;&gt;TL;DR&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.&lt;/p&gt;
 
 &lt;h2 id=&quot;apt&quot;&gt;Apt&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.&lt;/p&gt;
 
@@ -471,6 +507,7 @@ python debug-run.py
 &lt;p&gt;For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s &lt;a href=&quot;https://help.launchpad.net/Packaging/PPA&quot;&gt;PPA&lt;/a&gt; mechanism for adding additional unofficial packages to the system.&lt;/p&gt;
 
 &lt;h2 id=&quot;ppas&quot;&gt;PPAs&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.&lt;/p&gt;
 
@@ -481,6 +518,7 @@ python debug-run.py
 &lt;/blockquote&gt;
 
 &lt;h2 id=&quot;puppet&quot;&gt;Puppet&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;We make use of the puppet-apt manifests put together by evolvingweb.&lt;/p&gt;
 
@@ -499,6 +537,7 @@ python debug-run.py
 &lt;p&gt;Finally here is the amended definition in all of its terrible glory:&lt;/p&gt;
 
 &lt;h2 id=&quot;tldr&quot;&gt;TL;DR&lt;/h2&gt;
+&lt;hr /&gt;
 
 &lt;p&gt;Puppet exec has a ‘creates =&amp;gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.&lt;/p&gt;
 </description>
