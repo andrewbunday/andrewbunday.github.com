@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Andrew Bunday [Code <small>Raging on Jockey</small>]</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/cosmo.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+
+    <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-772003-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+    </head>
+    <body>
+        <div class="page">
+            <div class="navbar navbar-static-top">
+    <div class="navbar-inner main-navbar-inner">
+        <div class="container-fluid main-navbar">
+            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+           </a>
+
+            <div class="nav-collapse pull-right">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/posts">Posts</a></li>
+                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- <div class="row"> -->
+    <div class="page-header row-fluid">
+        <h1>Andrew Bunday <small>tech notes</small></h1>
+    </div>
+
+
+            <div class="row-fluid" id="breadcrumb">
+    <ul class="nav nav-pills">
+      <li><a href="/">home</a></li>
+      
+      
+        <li><a href="/posts">posts</a></li>
+      
+      
+        <li class="active">
+            <a href="#">code raging on jockey</a>
+        </li>
+      
+    </ul>
+</div>
+
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid">
+                    <div class="span12 span12-tablet">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h1>Code <small>Raging on Jockey</small></h1>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span8">
+                                <p class="muted">Wed 06 Jul 2011</p>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><p>Recently I’ve been raging out quite frequently against some of the technology
+I’ve been having to come acquainted  with. In particular there is Puppet a
+centralised configuration tools which we’ve been using to orchestrate our
+automated deployment system in conjunction with apt-get and reprepro as our
+backend package respository here at Baseblack.</p>
+
+<p>However describing the system we’ve been building is the topic of another for
+longer and more interesting post. Where I can cover some of the hurdles we’ve
+encountered and how we’ve dealt with them, despite some of the frankly bizarre
+behaviours which Puppet exhibits.</p>
+
+<h3 id="bloatware">Bloatware</h3>
+
+<p>No, instead I’m going to pick on <strong>jockey-text</strong>. Jockey-text is the command
+script version of the gtk interface provided with Ubuntu for the last few
+releases for installing hardware drivers attached to the system. Specifically
+graphics card adaptors, printers and firmware updates are handled by jockey. To
+cope with such a broad range of packages to install, kernel modules to enable
+and devices to probe for Jockey has become something of a behemoth.</p>
+
+<p>The jockey-text executable itself is quite short, mearly wrapping the jockey
+python module. However the module’s source runs at close to 4 1/2K lines of
+code. This 4500 lines is taken up by numerous; private nested functions, class
+methods and dbus-functions which bloat Jockey massively beyond what should be
+required of it.</p>
+
+<h3 id="exit-codes">Exit Codes</h3>
+
+<p>However none of this should have mattered to us. Instead jockey should be doing
+its thing and leaving us to get on with what we’ve been working on. To get a
+workstation net installed and completely configured without human interation.</p>
+
+<p>Unfortunately despite its near 4.5K of code, there is very little good exception
+handling or adherence with the rules of program exit codes. You see should it
+not get to the end of its run, because for example the driver your asking to be
+enabled, has already been. Then jockey will immediately exit with a value of 1.</p>
+
+<p>That makes it pretty darned hard to use with any confidence.</p>
+
+<h3 id="installing-a-graphics-driver">Installing a graphics driver</h3>
+
+<p>In our the action we wanted jockey to do was enable the nvidia driver which
+we’re apt-getting from the x-swat ubuntu ppa. Getting annoyed with jockey, and
+not particularly wanting to have to fight with Puppet, I decided to have a dive
+into the jockey source and see what its really doing.</p>
+
+<p>Here I present an immensely cut down version of what it’s really doing (in our
+edge case).</p>
+
+<p>Pretty simple huh? I’m still undecided about how we’re going to go about
+installing our nvidia drivers. Although I have the sneaking susupission that
+we’ll probably be <em>apt-get installing</em> them ourselves and then calling <em>nvidia-
+xconfig</em> to enable them before rebooting at the end of the installation.</p>
+</p>
+                        </div>
+                    </div>
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
+                        <ul class="thumbnails pull-right hidden-800">
+    <li class="span12">
+        <div class="thumbnail avatar">
+            <img src="/assets/img/avatar.jpg" alt>
+            <h4>About Me</h4>
+            <h5><a href="/about.html">Andrew Bunday</a></h5>
+            <p>I'm a VFX technologist working London where I apply the majority of
+                   my time solving problems related to Pipeline and Systems development.</p>
+            <p>If you want to get in touch, please give me a shout via one of the
+               links at the bottom of the page.</p>
+        </a>
+    </li>
+</ul>
+
+                    </div> -->
+                </div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dumbtechnotes'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+            <hr>
+
+<div class="page-header" style="text-align: center">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>
+</div>
+
+
+
+        </div>
+     </body>
+</html>
+
+

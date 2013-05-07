@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Andrew Bunday [Puppet <small>One time PPA additions</small>]</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/cosmo.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+
+    <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-772003-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+    </head>
+    <body>
+        <div class="page">
+            <div class="navbar navbar-static-top">
+    <div class="navbar-inner main-navbar-inner">
+        <div class="container-fluid main-navbar">
+            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+           </a>
+
+            <div class="nav-collapse pull-right">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/posts">Posts</a></li>
+                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- <div class="row"> -->
+    <div class="page-header row-fluid">
+        <h1>Andrew Bunday <small>tech notes</small></h1>
+    </div>
+
+
+            <div class="row-fluid" id="breadcrumb">
+    <ul class="nav nav-pills">
+      <li><a href="/">home</a></li>
+      
+      
+        <li><a href="/posts">posts</a></li>
+      
+      
+        <li class="active">
+            <a href="#">puppet one time ppa additions</a>
+        </li>
+      
+    </ul>
+</div>
+
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid">
+                    <div class="span12 span12-tablet">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h1>Puppet <small>One time PPA additions</small></h1>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span8">
+                                <p class="muted">Tue 16 Oct 2012</p>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><h3 class="no_toc" id="contents">Contents</h3>
+
+<hr />
+
+<ul class="nav nav-list well" id="markdown-toc">
+  <li><a href="#background">Background</a></li>
+  <li><a href="#apt">Apt</a></li>
+  <li><a href="#ppas">PPAs</a></li>
+  <li><a href="#puppet">Puppet</a></li>
+  <li><a href="#tldr">TL;DR</a></li>
+</ul>
+
+<h2 id="background">Background</h2>
+<hr />
+
+<p>When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.</p>
+
+<h2 id="apt">Apt</h2>
+<hr />
+
+<p>At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.</p>
+
+<p>We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.</p>
+
+<p>For internal software and tools we use Jordan Sissel’s <a href="https://github.com/jordansissel/fpm">fpm</a> to generate Debian packages which can then locally host in a <a href="http://mirrorer.alioth.debian.org/">reprepro</a> managed apt repository.</p>
+
+<p>For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s <a href="https://help.launchpad.net/Packaging/PPA">PPA</a> mechanism for adding additional unofficial packages to the system.</p>
+
+<h2 id="ppas">PPAs</h2>
+<hr />
+
+<p>PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.</p>
+
+<p>The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa’s short name, builds the apt url to access it, stores it in <code>/etc/apt/sources.list.d/*</code> and retrieves its public signing key.</p>
+
+<blockquote>
+  <p>add-apt-repository ppa:username/package</p>
+</blockquote>
+
+<h2 id="puppet">Puppet</h2>
+<hr />
+
+<p>We make use of the puppet-apt manifests put together by evolvingweb.</p>
+
+<blockquote>
+  <p>https://github.com/evolvingweb/puppet-apt</p>
+</blockquote>
+
+<p>Unfortunately each time puppet was running we were finding that it would not only take longer than we expected, but that the time it took was variable. Often during the middle of the day when our internet connection was more heavily being utilised the runs would take substantially longer.</p>
+
+<p>We quickly saw when inspecting the run logs that on each run the ppas were being re-added into <em>sources.list.d</em>.</p>
+
+<p>Using what little skill I have at writing puppet configurations and from <strong><em>reading</em></strong> the documentation I amended the apt::ppa definition to make use of the <strong>creates =&gt;</strong> parameter for the <strong>exec</strong> action. This parameter causes the action to only be executed if the file which it points towards does not exist at the specified location.</p>
+
+<p>After adding the condition we found that our runs became much shorter and consistent in run time.</p>
+
+<p>Finally here is the amended definition in all of its terrible glory:</p>
+
+<div class="highlight"><pre><code class="puppet">    <span class="k">define</span> <span class="na">apt</span><span class="p">::</span><span class="na">ppa</span><span class="p">()</span> <span class="p">{</span>
+        <span class="na">require</span> <span class="na">apt</span>
+
+        <span class="nv">$ppa_prefix</span> <span class="o">=</span> <span class="k">split</span><span class="p">(</span><span class="nv">$name,</span> <span class="s">&#39;:&#39;</span><span class="p">)</span>
+        <span class="nv">$ppa_name_repo</span> <span class="o">=</span> <span class="k">split</span><span class="p">(</span><span class="nv">$ppa_prefix</span><span class="p">[</span><span class="s">1</span><span class="p">],</span> <span class="s">&#39;/&#39;</span><span class="p">)</span>
+        <span class="nv">$ppa_name</span> <span class="o">=</span> <span class="nv">$ppa_name_repo</span><span class="p">[</span><span class="s">0</span><span class="p">]</span>
+        <span class="nv">$ppa_repo</span> <span class="o">=</span> <span class="nv">$ppa_name_repo</span><span class="p">[</span><span class="s">1</span><span class="p">]</span>
+
+        <span class="k">exec</span> <span class="p">{</span> <span class="s">&quot;apt-update-${name}&quot;</span><span class="p">:</span>
+            <span class="na">command</span>     <span class="o">=&gt;</span> <span class="s">&quot;/usr/bin/aptitude update&quot;</span><span class="p">,</span>
+            <span class="na">refreshonly</span> <span class="o">=&gt;</span> <span class="k">true</span><span class="p">,</span>
+            <span class="na">creates</span> <span class="o">=&gt;</span> <span class="s">&quot;/etc/apt/sources.list.d/${ppa_name}-${ppa_repo}-${lsbdistcodename}.list&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">exec</span> <span class="p">{</span> <span class="s">&quot;add-apt-repository-${name}&quot;</span><span class="p">:</span>
+            <span class="na">command</span> <span class="o">=&gt;</span> <span class="s">&quot;/usr/bin/add-apt-repository ${name}&quot;</span><span class="p">,</span>
+            <span class="k">notify</span>  <span class="o">=&gt;</span> <span class="k">Exec</span><span class="p">[</span><span class="s">&quot;apt-update-${name}&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<h2 id="tldr">TL;DR</h2>
+<hr />
+
+<p>Puppet exec has a ‘creates =&gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.</p>
+</p>
+                        </div>
+                    </div>
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
+                        <ul class="thumbnails pull-right hidden-800">
+    <li class="span12">
+        <div class="thumbnail avatar">
+            <img src="/assets/img/avatar.jpg" alt>
+            <h4>About Me</h4>
+            <h5><a href="/about.html">Andrew Bunday</a></h5>
+            <p>I'm a VFX technologist working London where I apply the majority of
+                   my time solving problems related to Pipeline and Systems development.</p>
+            <p>If you want to get in touch, please give me a shout via one of the
+               links at the bottom of the page.</p>
+        </a>
+    </li>
+</ul>
+
+                    </div> -->
+                </div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dumbtechnotes'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+            <hr>
+
+<div class="page-header" style="text-align: center">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>
+</div>
+
+
+
+        </div>
+     </body>
+</html>
+
+
