@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% include head.html %}
+    </head>
+    <body>
+        <div class="page">
+            {% include navbar.html %}
+            {% include header.html %}
+            {% include breadcrumb.html %}
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid">
+                    <div class="span12 span12-tablet">
+                        <div class="row-fluid h4-3em" style="margin-top:-20px;">
+                            {{ content }}
+                        </div>
+                    </div>
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
+                        {% include mini-bio.html %}
+                    </div> -->
+                </div>
+            </div>
+            {% include footer.html %}
+        </div>
+     </body>
+</html>

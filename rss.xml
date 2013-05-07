@@ -6,13 +6,88 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Sun, 05 May 2013 13:43:54 +0100</pubDate>
-    <lastBuildDate>Sun, 05 May 2013 13:43:54 +0100</lastBuildDate>
+    <pubDate>Tue, 07 May 2013 21:45:51 +0100</pubDate>
+    <lastBuildDate>Tue, 07 May 2013 21:45:51 +0100</lastBuildDate>
 
     
     <item>
+      <title>Python <small>generating a simple overlay histogram for an image</small></title>
+      <link>http://andrewbunday.github.com/2013/01/22/simple-image-color-historgram/</link>
+      <pubDate>Tue, 22 Jan 2013 08:53:00 +0000</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2013/01/22/simple-image-color-historgram</guid>
+      <description>&lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
+  &lt;li&gt;&lt;a href=&quot;#backstory&quot;&gt;Backstory&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#example&quot;&gt;Example&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#quick-explanation&quot;&gt;Quick Explanation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#the-code&quot;&gt;The Code&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;backstory&quot;&gt;Backstory&lt;/h3&gt;
+
+&lt;p&gt;This little example came about following a request from a supervisor who was remembering the ‘old’ days of when they used to use Shake and how they used to have a little histogram overlay which they could apply over the top of their comp during tech checks to quickly see if there where were any illegal values or obvious clipping occurring.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately Nuke doesn’t have anything out of the box which quite matches this behaviour, and whilst the histogram Node is lacking, it is not a big enough bug bear to cause anyone to really want to ever launch Shake again.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;That is a minor lie, the 2D tracker definitely is still good enough when compared to the one in Nuke that we still catch Compositors firing it up for a quick track.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;example&quot;&gt;Example&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.github.com/andrewbunday/PyHistogram/master/reference/example.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;quick-explanation&quot;&gt;Quick Explanation&lt;/h3&gt;
+
+&lt;p&gt;So here’s whats happening:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;PIL.Image is used to open the input image, in this case a jpg but other formats could be used, and the Image class replaced with a reader for your particular image. The only important feature of the reader class is that it must be capable of formatting the pixel data as an array compatible with pylab.array().&lt;/li&gt;
+  &lt;li&gt;Each of the channels is extracted from the image for separate manipulation.&lt;/li&gt;
+  &lt;li&gt;We start a new figure, this initialises pylab.&lt;/li&gt;
+  &lt;li&gt;For each channel we compute a histogram of the pixel values. These will be displayed, overlaid on the figure, but will not be scaled to fit nicely within the bounds of our reference image.&lt;/li&gt;
+  &lt;li&gt;We compute the scale to apply to the x/y axis by finding out the maximum number of samples for each channel (X) and the maximum value of each sample (Y).&lt;/li&gt;
+  &lt;li&gt;All of the image data is displayed, and we modify the labels and properties of the graph axis to improve their legibility. &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;the-code&quot;&gt;The Code&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;lineno&quot;&gt; 1&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;PIL&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 2&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pylab&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 3&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;os&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 4&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 5&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file_path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%s&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/../reference/aa_van_and_bike.jpg&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dirname&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;abspath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__file__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 6&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ncolors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;255&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 7&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt; 8&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;im&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;blue&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;im&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,:,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;green&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;im&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,:,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;12&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;red&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;im&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,:,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;channel&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;13&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;14&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;15&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_bins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;blue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ncolors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;histtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;stepfilled&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;align&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aa&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;none&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g_bins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;green&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ncolors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;histtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;stepfilled&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;align&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aa&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;none&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;17&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_bins&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;red&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ncolors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;histtype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;stepfilled&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;align&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aa&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;none&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;18&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;19&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max_samples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)])&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;20&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max_density&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;amax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g_n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()])&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;21&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;imshow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;im&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interpolation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;bilinear&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max_samples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max_density&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;22&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;tight&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gca&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_xaxis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_ticks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([])&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;26&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_yaxis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_ticks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([])&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;27&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xlabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Saturation (0-1)&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;28&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Density&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;29&lt;/span&gt; 
+&lt;span class=&quot;lineno&quot;&gt;30&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Color Density Analysis of &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%s&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;basename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;file_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;lineno&quot;&gt;31&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pylab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Puppet <small>masterless mode wrapper script</small></title>
-      <link>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper.html</link>
+      <link>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper/</link>
       <pubDate>Tue, 04 Dec 2012 08:45:00 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/12/04/masterless-puppet-wrapper</guid>
@@ -155,15 +230,14 @@ gitolite host.&lt;/p&gt;
 &lt;span class=&quot;lineno&quot;&gt;57&lt;/span&gt; puppet apply --modulepath&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/modules --color &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
 &lt;span class=&quot;lineno&quot;&gt;58&lt;/span&gt;        --vardir /var/tmp/puppet/var --confdir /var/tmp/puppet/etc --no-report &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
 &lt;span class=&quot;lineno&quot;&gt;59&lt;/span&gt;        --logdest &lt;span class=&quot;nv&quot;&gt;$LOGDEST&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
     
     <item>
       <title>ReproWeb <small>a micro repository browser</small></title>
-      <link>http://andrewbunday.github.com/2012/11/12/reproweb-repository-browser.html</link>
+      <link>http://andrewbunday.github.com/2012/11/12/reproweb-repository-browser/</link>
       <pubDate>Mon, 12 Nov 2012 18:05:00 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/11/12/reproweb-repository-browser</guid>
@@ -284,8 +358,7 @@ available in Releases.gz&lt;/li&gt;
 &lt;span class=&quot;lineno&quot;&gt; 9&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# start it up&lt;/span&gt;
 &lt;span class=&quot;lineno&quot;&gt;10&lt;/span&gt; 
 &lt;span class=&quot;lineno&quot;&gt;11&lt;/span&gt; python debug-run.py
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;technical-details&quot;&gt;Technical Details&lt;/h2&gt;
 
@@ -328,7 +401,7 @@ available in Releases.gz&lt;/li&gt;
     
     <item>
       <title>Proxmoxia <small>yet another Python API for Proxmox</small></title>
-      <link>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia.html</link>
+      <link>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia/</link>
       <pubDate>Thu, 18 Oct 2012 22:27:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/18/introducting-proxmoxia</guid>
@@ -400,22 +473,19 @@ available in Releases.gz&lt;/li&gt;
 
 &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Connector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;proxmox-1&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8006&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;auth_token&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_auth_token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;user@pam&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;strawberries&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Next create Proxmox and Node access objects, these are the bread and butter of the library:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Proxmox&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;proxmox-7&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# this is on a different host.&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;108&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Which is converted to the URL:&lt;/p&gt;
 
@@ -449,22 +519,20 @@ available in Releases.gz&lt;/li&gt;
 &lt;span class=&quot;lineno&quot;&gt;23&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;204&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
 &lt;span class=&quot;lineno&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
 &lt;span class=&quot;lineno&quot;&gt;25&lt;/span&gt;     &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;ne&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;Unable to start container&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Find if a user exists and create them if they do not:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;andrew.bunday@pve&amp;#39;&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;userid&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()]:&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;andrew.bunday@pve&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;test user&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;strawberries&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
     
     <item>
       <title>Photo <small>Serpentine from the other way</small></title>
-      <link>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way.html</link>
+      <link>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way/</link>
       <pubDate>Wed, 17 Oct 2012 09:46:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/17/serpentine-the-other-way</guid>
@@ -474,7 +542,7 @@ available in Releases.gz&lt;/li&gt;
     
     <item>
       <title>Puppet <small>One time PPA additions</small></title>
-      <link>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet.html</link>
+      <link>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet/</link>
       <pubDate>Tue, 16 Oct 2012 10:00:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/16/triggering-ppas-only-once-with-puppet</guid>
@@ -536,6 +604,27 @@ available in Releases.gz&lt;/li&gt;
 
 &lt;p&gt;Finally here is the amended definition in all of its terrible glory:&lt;/p&gt;
 
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;puppet&quot;&gt;    &lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;apt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ppa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;apt&lt;/span&gt;
+
+        &lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$name,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;:&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_repo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;apt-update-${name}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;command&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;/usr/bin/aptitude update&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;refreshonly&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;creates&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;/etc/apt/sources.list.d/${ppa_name}-${ppa_repo}-${lsbdistcodename}.list&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;add-apt-repository-${name}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;na&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;/usr/bin/add-apt-repository ${name}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;notify&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;Exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;apt-update-${name}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h2 id=&quot;tldr&quot;&gt;TL;DR&lt;/h2&gt;
 &lt;hr /&gt;
 
@@ -545,7 +634,7 @@ available in Releases.gz&lt;/li&gt;
     
     <item>
       <title>Photo <small>Daybreak over the Serpentine</small></title>
-      <link>http://andrewbunday.github.com/2012/10/15/daybreak-over-the-serpentine.html</link>
+      <link>http://andrewbunday.github.com/2012/10/15/daybreak-over-the-serpentine/</link>
       <pubDate>Mon, 15 Oct 2012 08:09:00 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2012/10/15/daybreak-over-the-serpentine</guid>
@@ -555,7 +644,7 @@ available in Releases.gz&lt;/li&gt;
     
     <item>
       <title>Video <small>Cake baking timelapse</small></title>
-      <link>http://andrewbunday.github.com/2011/12/18/cake-baking-timelapse.html</link>
+      <link>http://andrewbunday.github.com/2011/12/18/cake-baking-timelapse/</link>
       <pubDate>Sun, 18 Dec 2011 16:17:53 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/12/18/cake-baking-timelapse</guid>
@@ -568,7 +657,7 @@ available in Releases.gz&lt;/li&gt;
     
     <item>
       <title>Code <small>Greenlet based PyQt and Flask Application</small></title>
-      <link>http://andrewbunday.github.com/2011/12/07/greenlet-based-pyqt-and-flask-application.html</link>
+      <link>http://andrewbunday.github.com/2011/12/07/greenlet-based-pyqt-and-flask-application/</link>
       <pubDate>Wed, 07 Dec 2011 19:02:18 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/12/07/greenlet-based-pyqt-and-flask-application</guid>
@@ -647,15 +736,14 @@ the system.&lt;/p&gt;
     &lt;span class=&quot;n&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PyQtGreenlet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
     
     <item>
       <title>Maya <small>Plugins without out shelves really get on my wick</small></title>
-      <link>http://andrewbunday.github.com/2011/12/07/really-gets-on-my-wick.html</link>
+      <link>http://andrewbunday.github.com/2011/12/07/really-gets-on-my-wick/</link>
       <pubDate>Wed, 07 Dec 2011 18:33:52 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/12/07/really-gets-on-my-wick</guid>
@@ -673,15 +761,14 @@ directory of the plugin&lt;/p&gt;
         &lt;span class=&quot;n&quot;&gt;maya&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;addNewShelfTab &amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%s&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
 &lt;span class=&quot;n&quot;&gt;maya&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;utils&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;executeDeferred&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bbLoadShelf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;MyPlugin&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
     
     <item>
       <title>GoPro <small>Chest Harness Test Ride</small></title>
-      <link>http://andrewbunday.github.com/2011/12/04/chest-harness-test-ride.html</link>
+      <link>http://andrewbunday.github.com/2011/12/04/chest-harness-test-ride/</link>
       <pubDate>Sun, 04 Dec 2011 10:55:10 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/12/04/chest-harness-test-ride</guid>
@@ -697,7 +784,7 @@ best to use the chest harness for my GoPro.&lt;/p&gt;
     
     <item>
       <title>GoPro <small>First Helmet Cam Test</small></title>
-      <link>http://andrewbunday.github.com/2011/12/03/first-helmet-cam-test.html</link>
+      <link>http://andrewbunday.github.com/2011/12/03/first-helmet-cam-test/</link>
       <pubDate>Sat, 03 Dec 2011 15:36:45 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/12/03/first-helmet-cam-test</guid>
@@ -713,7 +800,7 @@ sessions sometime to see just how much I throw myself about during class.&lt;/p&
     
     <item>
       <title>Video <small>The Dog Show</small></title>
-      <link>http://andrewbunday.github.com/2011/11/13/the-dog-show.html</link>
+      <link>http://andrewbunday.github.com/2011/11/13/the-dog-show/</link>
       <pubDate>Sun, 13 Nov 2011 21:13:48 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/11/13/the-dog-show</guid>
@@ -728,7 +815,7 @@ Nikon D5100 and 50mm prime.&lt;/p&gt;
     
     <item>
       <title>Code <small>Update Raging on Jockey</small></title>
-      <link>http://andrewbunday.github.com/2011/07/06/update-raging-on-jockey.html</link>
+      <link>http://andrewbunday.github.com/2011/07/06/update-raging-on-jockey/</link>
       <pubDate>Wed, 06 Jul 2011 19:49:50 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/07/06/update-raging-on-jockey</guid>
@@ -747,8 +834,7 @@ now been replaced with these two lines of effective shell script:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;    &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;apt-get install nvidia-current
     &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvidia-xconfig
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Awesome.&lt;/p&gt;
 </description>
@@ -756,7 +842,7 @@ now been replaced with these two lines of effective shell script:&lt;/p&gt;
     
     <item>
       <title>Code <small>Raging on Jockey</small></title>
-      <link>http://andrewbunday.github.com/2011/07/06/raging-on-jockey.html</link>
+      <link>http://andrewbunday.github.com/2011/07/06/raging-on-jockey/</link>
       <pubDate>Wed, 06 Jul 2011 18:16:15 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/07/06/raging-on-jockey</guid>
@@ -818,7 +904,7 @@ xconfig&lt;/em&gt; to enable them before rebooting at the end of the installatio
     
     <item>
       <title>OpEd <small>Final words on Final Cut Pro X</small></title>
-      <link>http://andrewbunday.github.com/2011/06/25/final-words-on-final-cut-pro-x.html</link>
+      <link>http://andrewbunday.github.com/2011/06/25/final-words-on-final-cut-pro-x/</link>
       <pubDate>Sat, 25 Jun 2011 16:43:32 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/06/25/final-words-on-final-cut-pro-x</guid>
@@ -900,7 +986,7 @@ to move into the modern digital era.&lt;/p&gt;
     
     <item>
       <title>OpEd <small>What Im looking forward to from the Summer of Code 2011</small></title>
-      <link>http://andrewbunday.github.com/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011.html</link>
+      <link>http://andrewbunday.github.com/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011/</link>
       <pubDate>Sun, 08 May 2011 19:06:19 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/05/08/what-im-looking-forward-to-from-the-summer-of-code-2011</guid>
@@ -944,7 +1030,7 @@ our collective knowledge towards a &lt;em&gt;greater good&lt;/em&gt;.&lt;/p&gt;
     
     <item>
       <title>OpEd <small>Goodbye Buzz</small></title>
-      <link>http://andrewbunday.github.com/2011/04/24/goodbye-buzz.html</link>
+      <link>http://andrewbunday.github.com/2011/04/24/goodbye-buzz/</link>
       <pubDate>Sun, 24 Apr 2011 20:13:42 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/04/24/goodbye-buzz</guid>
@@ -1005,7 +1091,7 @@ clever UX there by making sure that I NEVER fucking forget about you).&lt;/p&gt;
     
     <item>
       <title>Webserver <small>A Painful Squeeze</small></title>
-      <link>http://andrewbunday.github.com/2011/02/15/a-painful-squeeze.html</link>
+      <link>http://andrewbunday.github.com/2011/02/15/a-painful-squeeze/</link>
       <pubDate>Tue, 15 Feb 2011 20:54:50 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2011/02/15/a-painful-squeeze</guid>
@@ -1069,7 +1155,7 @@ security of knowing that if everything did go tits up that I’d probably be OK.
     
     <item>
       <title>Microsoft <small>Making Windows Usable</small></title>
-      <link>http://andrewbunday.github.com/2010/12/05/making-windows-usable.html</link>
+      <link>http://andrewbunday.github.com/2010/12/05/making-windows-usable/</link>
       <pubDate>Sun, 05 Dec 2010 00:45:33 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2010/12/05/making-windows-usable</guid>
@@ -1161,7 +1247,7 @@ nicest image viewer for WinXP.
     
     <item>
       <title>Gnome <small>Cycling Desktop Wallpapers</small></title>
-      <link>http://andrewbunday.github.com/2010/12/05/cycling-gnome-desktop-wallpapers.html</link>
+      <link>http://andrewbunday.github.com/2010/12/05/cycling-gnome-desktop-wallpapers/</link>
       <pubDate>Sun, 05 Dec 2010 00:14:43 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2010/12/05/cycling-gnome-desktop-wallpapers</guid>
@@ -1206,7 +1292,7 @@ the display interval for each.&lt;/p&gt;
     
     <item>
       <title>Kindle <small>Brilliant Idea, now when will they get back to me?</small></title>
-      <link>http://andrewbunday.github.com/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me.html</link>
+      <link>http://andrewbunday.github.com/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me/</link>
       <pubDate>Tue, 19 Oct 2010 18:21:57 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2010/10/19/brilliant-kindle-app-idea-now-when-will-they-get-back-to-me</guid>
@@ -1267,7 +1353,7 @@ program.&lt;/p&gt;
     
     <item>
       <title>OpEd <small>9 years ago they unleashed hell on our ear canals</small></title>
-      <link>http://andrewbunday.github.com/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals.html</link>
+      <link>http://andrewbunday.github.com/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals/</link>
       <pubDate>Thu, 02 Sep 2010 16:26:01 +0100</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2010/09/02/9-years-ago-they-unleashed-hell-on-our-ear-canals</guid>
@@ -1319,7 +1405,7 @@ the point.&lt;/em&gt;&lt;/p&gt;
     
     <item>
       <title>Geek <small>Lets party like its 1234567890</small></title>
-      <link>http://andrewbunday.github.com/2010/03/03/lets-party-like-its-1234567890.html</link>
+      <link>http://andrewbunday.github.com/2010/03/03/lets-party-like-its-1234567890/</link>
       <pubDate>Wed, 03 Mar 2010 19:19:02 +0000</pubDate>
       <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
       <guid>http://andrewbunday.github.com/2010/03/03/lets-party-like-its-1234567890</guid>
@@ -1334,8 +1420,7 @@ unix timestamp reaching ‘1234567890’ seconds since the epoch.&lt;/p&gt;
 &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;
 
 afplay &lt;span class=&quot;s1&quot;&gt;&amp;#39;/Users/andrewbunday/Music/iTunes/iTunes Music/DMX/Cradle 2 the Grave/01 X Gonna Give It to Ya.mp3&amp;#39;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>

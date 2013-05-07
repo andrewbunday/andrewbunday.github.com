@@ -1,0 +1,25 @@
+---
+comments: false
+date: 2010-03-03 19:19:02
+layout: post
+slug: lets-party-like-its-1234567890
+title: Geek <small>Lets party like its 1234567890</small>
+tags:
+- Bash
+- Unix Time
+---
+
+On friday I was reminded of a script I used last February 13th to celebrate the
+unix timestamp reaching '1234567890' seconds since the epoch.
+
+{% highlight bash %}
+#!/bin/bash
+time=`date '+%s'`
+while [ $time -lt 1234567890 ]; do
+#echo 'waiting...'
+time=`date '+%s'`
+done
+
+afplay '/Users/andrewbunday/Music/iTunes/iTunes Music/DMX/Cradle 2 the Grave/01 X Gonna Give It to Ya.mp3'
+{% endhighlight %}
+

@@ -1,0 +1,13 @@
+---
+layout: page
+title: "Tags"
+---
+
+
+{% for tag in site.tags %}
+<div class="row-fluid">
+    {{ tag }}
+    {{ site.categories }}
+</div>
+<hr/>
+{% endfor %}
