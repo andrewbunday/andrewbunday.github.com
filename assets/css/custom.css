@@ -7,6 +7,10 @@ h2 small{color: #969696; /*dfdfdf*/}
 h3 small{color: #969696; /*dfdfdf*/}
 h4 small{color: #969696; /*dfdfdf*/}
 
+#thumbnailContainer img {
+    padding: 10px;
+}
+
 .btn h2 small{color: #ffffff}
 
 .page-header h4{
@@ -110,7 +114,7 @@ h4 small{color: #969696; /*dfdfdf*/}
     margin-bottom: 20px;
     /*padding-left: 60px;*/
     max-width: 1000px;
-    margin-left: auto;
+    /*margin-left: auto;*/
     margin-right: auto;
     margin-top: 30px;
     border-bottom: 0px solid #EEE;
@@ -118,14 +122,14 @@ h4 small{color: #969696; /*dfdfdf*/}
 
 .breadcrumb {
     margin-bottom: 10px;
-    /*padding-left: 60px;*/
 }
 
 #breadcrumb {
     max-width: 1000px;
-    margin-left: auto;
+    /*margin-left: auto;*/
     margin-right: auto;
     margin-bottom: 5px;
+    /*padding-left: 60px;*/
 }
 
 #recent-posts {

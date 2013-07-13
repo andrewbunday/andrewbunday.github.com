@@ -58,23 +58,25 @@
     </div>
 </div>
 
-            <!-- <div class="row"> -->
+            <div class="container-fluid main-content">
     <div class="page-header row-fluid">
         <h1>Andrew Bunday <small>tech notes</small></h1>
     </div>
+</div>
 
-
-            <div class="row-fluid" id="breadcrumb">
-    <ul class="nav nav-pills">
-      <li><a href="/">home</a></li>
-      
-      
-      
-        <li class="active">
-            <a href="#">tags</a>
-        </li>
-      
-    </ul>
+            <div class="container-fluid main-content">
+  <div class="row-fluid" id="breadcrumb">
+      <ul class="nav nav-pills">
+        <li><a href="/">home</a></li>
+        
+        
+        
+          <li class="active">
+              <a href="#">tags</a>
+          </li>
+        
+      </ul>
+  </div>
 </div>
 
 
@@ -1328,6 +1330,7 @@ available in Releases.gz</li>
 
 <ul class="nav nav-list well" id="markdown-toc">
   <li><a href="#background">Background</a></li>
+  <li><a href="#download">Download</a></li>
   <li><a href="#creating-proxmoxia">Creating Proxmoxia</a></li>
   <li><a href="#whats-next">Whats Next?</a></li>
   <li><a href="#finally-some-examples">Finally Some Examples</a></li>
@@ -1349,6 +1352,13 @@ available in Releases.gz</li>
 <p>Until recently anytime we’ve needed to spin up a new virtual server, we’ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.</p>
 
 <p>We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.</p>
+
+<h2 id="download">Download</h2>
+<hr />
+
+<p>Clone or fork from my github account:</p>
+
+<p><a href="https://github.com/andrewbunday/Proxmoxia">https://github.com/andrewbunday/Proxmoxia</a></p>
 
 <h2 id="creating-proxmoxia">Creating Proxmoxia</h2>
 <hr />
@@ -2110,6 +2120,7 @@ available in Releases.gz</li>
 
 <ul class="nav nav-list well" id="markdown-toc">
   <li><a href="#background">Background</a></li>
+  <li><a href="#download">Download</a></li>
   <li><a href="#creating-proxmoxia">Creating Proxmoxia</a></li>
   <li><a href="#whats-next">Whats Next?</a></li>
   <li><a href="#finally-some-examples">Finally Some Examples</a></li>
@@ -2131,6 +2142,13 @@ available in Releases.gz</li>
 <p>Until recently anytime we’ve needed to spin up a new virtual server, we’ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.</p>
 
 <p>We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.</p>
+
+<h2 id="download">Download</h2>
+<hr />
+
+<p>Clone or fork from my github account:</p>
+
+<p><a href="https://github.com/andrewbunday/Proxmoxia">https://github.com/andrewbunday/Proxmoxia</a></p>
 
 <h2 id="creating-proxmoxia">Creating Proxmoxia</h2>
 <hr />
@@ -3056,6 +3074,516 @@ gitolite host.</p>
 <span class="lineno">30</span> <span class="n">pylab</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Color Density Analysis of </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
 <span class="lineno">31</span> <span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
+
+    {}
+</div>
+<hr/>
+
+<div class="row-fluid">
+    photosphere<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+
+<div id="viewerContainer"></div>
+
+<h3 id="other-photospheres-in-the-set">Other photospheres in the set:</h3>
+<div id="thumbnailContainer"></div>
+
+<script>
+  var FEED_SCHEMA = 'http://schemas.google.com/g/2005#feed';
+
+  // Fetch all albums for a given user. Parameter 'user' should either be
+  // the email address or user ID.
+  function fetchAlbumsFor(user, searchForPanos) {
+    $('#getAllPanos').attr('disabled', '');
+    $('#thumbnailContainer').empty();
+
+    var baseURL = 'https://picasaweb.google.com/data/feed/api/user/';        
+    var url = baseURL + user + '?v=4&alt=json';
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        alert('Data invalid.');
+        return;
+      }
+
+      // Remove all previous dropdown elements.
+      $('#albumSelect').empty();
+
+      // Add albums to dropdown element.
+      $('#albumSelect').append($('<option></option>')
+                       .attr('value', '')
+                       .text('<Select an album>'));
+      $.each(response.feed.entry, function(index, entry) {
+        var feedUrl = getFeedUrl(entry);
+        $('#albumSelect').append($('<option></option>')
+                         .attr('value', feedUrl)
+                         .text(entry.title.$t));
+        if (searchForPanos) {
+          fetchPhotos(feedUrl, false);
+        }
+      });
+      $('#getAllPanos').removeAttr('disabled');
+    }).fail(function() {
+      alert('Could not fetch data.');
+    });
+  }
+
+  // Returns the feed URL of an entry.
+  function getFeedUrl(entry) {
+    for(var i = 0; i < entry.link.length; ++i) {
+      if (entry.link[i].rel == FEED_SCHEMA) {
+        return entry.link[i].href;
+      }
+    }
+    return '';
+  }
+
+  // Returns whether the given entry is a photo sphere.
+  function isPhotoSphere(entry) {
+    if (!entry.gphoto$streamId) {
+      return false;
+    }
+
+    var streamIds = entry.gphoto$streamId;
+    for (var i = 0; i < streamIds.length; ++i) {
+      if (streamIds[i].$t == "photosphere") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fetches the feed data for a photo sphere based on the given feed URL
+  // and displays the photo sphere given the returned metadata.
+  function displayPhotoSphere(panoFeedUrl) {
+    console.log(panoFeedUrl);
+    $('#viewerContainer').empty();
+
+    // Request the full exif of the photo sphere, which contains the
+    // metadata we need to properly display it.
+    $.getJSON(panoFeedUrl + '&full-exif=true', function(response) {
+      if (!response || !response.feed || !response.feed.exif$tags) {
+        return;
+      }
+
+      // Extract the required metadata.
+      var exif = response.feed.exif$tags;
+      $('#viewerContainer')
+          .append($('<g:panoembed></g:panoembed>')
+          .attr('imageurl',
+                response.feed.media$group.media$content[0].url)
+          .attr('fullsize',
+                exif.exif$FullPanoWidthPixels.$t + ',' +
+                exif.exif$FullPanoHeightPixels.$t)
+          .attr('croppedsize',
+                 exif.exif$CroppedAreaImageWidthPixels.$t + ',' +
+                 exif.exif$CroppedAreaImageHeightPixels.$t)
+          .attr('offset',
+                 exif.exif$CroppedAreaLeftPixels.$t + ',' +
+                 exif.exif$CroppedAreaTopPixels.$t)
+          .attr('displaysize', '800,600')
+      );
+
+      // Searches the whole DOM tree for g:panoembed elements and
+      // initializes them.
+      gapi.panoembed.go();
+    });
+  }
+
+  // Fetches photos, filters photo spheres and displays them.
+  function fetchPhotos(url, removePrevious) {
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        return;
+      }
+
+      // Add the thumbnails to the container and hook up the click
+      // listeners.
+      if (removePrevious) {
+        $('#thumbnailContainer').empty();
+      }
+      $.each(response.feed.entry, function(index, entry) {
+        if (isPhotoSphere(entry)) {
+          $('#thumbnailContainer')
+              .append($('<img></img>')
+              .attr('src', entry.media$group.media$thumbnail[1].url)
+              .attr('panoFeedUrl', getFeedUrl(entry))
+              .click(function() {
+            displayPhotoSphere($(this).attr('panoFeedUrl'));
+          }));
+        }
+      });
+    });
+  }
+
+  // // Fetch JSON for user if the OK button is clicked or the user hits the
+  // // enter key in the input field.
+  // $('#submitUserEmail').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), false);
+  // });
+  // $('#userEmail').bind('keypress', function(e) {
+  //   // Fetch if enter key was pressed.
+  //   var code = (e.keyCode ? e.keyCode : e.which);
+  //   if (code == 13) {
+  //     fetchAlbumsFor($('#userEmail').val(), false);
+  //   }
+  // });
+
+  // fetchAlbumsFor('andrew.bunday@gmail.com', false);
+
+  var photoset_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121?alt=json&v=4';
+  var photosphere_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121/photoid/5899440569799198994?alt=json&v=4&full-exif=true';
+  fetchPhotos(photoset_url, false);
+  displayPhotoSphere(photosphere_url);
+
+  // // Fetch the photo spheres when the user selects an album.
+  // $('#albumSelect').change(function() {
+  //   console.log($('#albumSelect').val());
+  //   fetchPhotos($('#albumSelect').val(), true);
+  // });
+  // $('#getAllPanos').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), true);
+  // });
+</script>
+
+
+    {}
+</div>
+<hr/>
+
+<div class="row-fluid">
+    google<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+
+<div id="viewerContainer"></div>
+
+<h3 id="other-photospheres-in-the-set">Other photospheres in the set:</h3>
+<div id="thumbnailContainer"></div>
+
+<script>
+  var FEED_SCHEMA = 'http://schemas.google.com/g/2005#feed';
+
+  // Fetch all albums for a given user. Parameter 'user' should either be
+  // the email address or user ID.
+  function fetchAlbumsFor(user, searchForPanos) {
+    $('#getAllPanos').attr('disabled', '');
+    $('#thumbnailContainer').empty();
+
+    var baseURL = 'https://picasaweb.google.com/data/feed/api/user/';        
+    var url = baseURL + user + '?v=4&alt=json';
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        alert('Data invalid.');
+        return;
+      }
+
+      // Remove all previous dropdown elements.
+      $('#albumSelect').empty();
+
+      // Add albums to dropdown element.
+      $('#albumSelect').append($('<option></option>')
+                       .attr('value', '')
+                       .text('<Select an album>'));
+      $.each(response.feed.entry, function(index, entry) {
+        var feedUrl = getFeedUrl(entry);
+        $('#albumSelect').append($('<option></option>')
+                         .attr('value', feedUrl)
+                         .text(entry.title.$t));
+        if (searchForPanos) {
+          fetchPhotos(feedUrl, false);
+        }
+      });
+      $('#getAllPanos').removeAttr('disabled');
+    }).fail(function() {
+      alert('Could not fetch data.');
+    });
+  }
+
+  // Returns the feed URL of an entry.
+  function getFeedUrl(entry) {
+    for(var i = 0; i < entry.link.length; ++i) {
+      if (entry.link[i].rel == FEED_SCHEMA) {
+        return entry.link[i].href;
+      }
+    }
+    return '';
+  }
+
+  // Returns whether the given entry is a photo sphere.
+  function isPhotoSphere(entry) {
+    if (!entry.gphoto$streamId) {
+      return false;
+    }
+
+    var streamIds = entry.gphoto$streamId;
+    for (var i = 0; i < streamIds.length; ++i) {
+      if (streamIds[i].$t == "photosphere") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fetches the feed data for a photo sphere based on the given feed URL
+  // and displays the photo sphere given the returned metadata.
+  function displayPhotoSphere(panoFeedUrl) {
+    console.log(panoFeedUrl);
+    $('#viewerContainer').empty();
+
+    // Request the full exif of the photo sphere, which contains the
+    // metadata we need to properly display it.
+    $.getJSON(panoFeedUrl + '&full-exif=true', function(response) {
+      if (!response || !response.feed || !response.feed.exif$tags) {
+        return;
+      }
+
+      // Extract the required metadata.
+      var exif = response.feed.exif$tags;
+      $('#viewerContainer')
+          .append($('<g:panoembed></g:panoembed>')
+          .attr('imageurl',
+                response.feed.media$group.media$content[0].url)
+          .attr('fullsize',
+                exif.exif$FullPanoWidthPixels.$t + ',' +
+                exif.exif$FullPanoHeightPixels.$t)
+          .attr('croppedsize',
+                 exif.exif$CroppedAreaImageWidthPixels.$t + ',' +
+                 exif.exif$CroppedAreaImageHeightPixels.$t)
+          .attr('offset',
+                 exif.exif$CroppedAreaLeftPixels.$t + ',' +
+                 exif.exif$CroppedAreaTopPixels.$t)
+          .attr('displaysize', '800,600')
+      );
+
+      // Searches the whole DOM tree for g:panoembed elements and
+      // initializes them.
+      gapi.panoembed.go();
+    });
+  }
+
+  // Fetches photos, filters photo spheres and displays them.
+  function fetchPhotos(url, removePrevious) {
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        return;
+      }
+
+      // Add the thumbnails to the container and hook up the click
+      // listeners.
+      if (removePrevious) {
+        $('#thumbnailContainer').empty();
+      }
+      $.each(response.feed.entry, function(index, entry) {
+        if (isPhotoSphere(entry)) {
+          $('#thumbnailContainer')
+              .append($('<img></img>')
+              .attr('src', entry.media$group.media$thumbnail[1].url)
+              .attr('panoFeedUrl', getFeedUrl(entry))
+              .click(function() {
+            displayPhotoSphere($(this).attr('panoFeedUrl'));
+          }));
+        }
+      });
+    });
+  }
+
+  // // Fetch JSON for user if the OK button is clicked or the user hits the
+  // // enter key in the input field.
+  // $('#submitUserEmail').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), false);
+  // });
+  // $('#userEmail').bind('keypress', function(e) {
+  //   // Fetch if enter key was pressed.
+  //   var code = (e.keyCode ? e.keyCode : e.which);
+  //   if (code == 13) {
+  //     fetchAlbumsFor($('#userEmail').val(), false);
+  //   }
+  // });
+
+  // fetchAlbumsFor('andrew.bunday@gmail.com', false);
+
+  var photoset_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121?alt=json&v=4';
+  var photosphere_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121/photoid/5899440569799198994?alt=json&v=4&full-exif=true';
+  fetchPhotos(photoset_url, false);
+  displayPhotoSphere(photosphere_url);
+
+  // // Fetch the photo spheres when the user selects an album.
+  // $('#albumSelect').change(function() {
+  //   console.log($('#albumSelect').val());
+  //   fetchPhotos($('#albumSelect').val(), true);
+  // });
+  // $('#getAllPanos').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), true);
+  // });
+</script>
+
+
+    {}
+</div>
+<hr/>
+
+<div class="row-fluid">
+    scotland<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+
+<div id="viewerContainer"></div>
+
+<h3 id="other-photospheres-in-the-set">Other photospheres in the set:</h3>
+<div id="thumbnailContainer"></div>
+
+<script>
+  var FEED_SCHEMA = 'http://schemas.google.com/g/2005#feed';
+
+  // Fetch all albums for a given user. Parameter 'user' should either be
+  // the email address or user ID.
+  function fetchAlbumsFor(user, searchForPanos) {
+    $('#getAllPanos').attr('disabled', '');
+    $('#thumbnailContainer').empty();
+
+    var baseURL = 'https://picasaweb.google.com/data/feed/api/user/';        
+    var url = baseURL + user + '?v=4&alt=json';
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        alert('Data invalid.');
+        return;
+      }
+
+      // Remove all previous dropdown elements.
+      $('#albumSelect').empty();
+
+      // Add albums to dropdown element.
+      $('#albumSelect').append($('<option></option>')
+                       .attr('value', '')
+                       .text('<Select an album>'));
+      $.each(response.feed.entry, function(index, entry) {
+        var feedUrl = getFeedUrl(entry);
+        $('#albumSelect').append($('<option></option>')
+                         .attr('value', feedUrl)
+                         .text(entry.title.$t));
+        if (searchForPanos) {
+          fetchPhotos(feedUrl, false);
+        }
+      });
+      $('#getAllPanos').removeAttr('disabled');
+    }).fail(function() {
+      alert('Could not fetch data.');
+    });
+  }
+
+  // Returns the feed URL of an entry.
+  function getFeedUrl(entry) {
+    for(var i = 0; i < entry.link.length; ++i) {
+      if (entry.link[i].rel == FEED_SCHEMA) {
+        return entry.link[i].href;
+      }
+    }
+    return '';
+  }
+
+  // Returns whether the given entry is a photo sphere.
+  function isPhotoSphere(entry) {
+    if (!entry.gphoto$streamId) {
+      return false;
+    }
+
+    var streamIds = entry.gphoto$streamId;
+    for (var i = 0; i < streamIds.length; ++i) {
+      if (streamIds[i].$t == "photosphere") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fetches the feed data for a photo sphere based on the given feed URL
+  // and displays the photo sphere given the returned metadata.
+  function displayPhotoSphere(panoFeedUrl) {
+    console.log(panoFeedUrl);
+    $('#viewerContainer').empty();
+
+    // Request the full exif of the photo sphere, which contains the
+    // metadata we need to properly display it.
+    $.getJSON(panoFeedUrl + '&full-exif=true', function(response) {
+      if (!response || !response.feed || !response.feed.exif$tags) {
+        return;
+      }
+
+      // Extract the required metadata.
+      var exif = response.feed.exif$tags;
+      $('#viewerContainer')
+          .append($('<g:panoembed></g:panoembed>')
+          .attr('imageurl',
+                response.feed.media$group.media$content[0].url)
+          .attr('fullsize',
+                exif.exif$FullPanoWidthPixels.$t + ',' +
+                exif.exif$FullPanoHeightPixels.$t)
+          .attr('croppedsize',
+                 exif.exif$CroppedAreaImageWidthPixels.$t + ',' +
+                 exif.exif$CroppedAreaImageHeightPixels.$t)
+          .attr('offset',
+                 exif.exif$CroppedAreaLeftPixels.$t + ',' +
+                 exif.exif$CroppedAreaTopPixels.$t)
+          .attr('displaysize', '800,600')
+      );
+
+      // Searches the whole DOM tree for g:panoembed elements and
+      // initializes them.
+      gapi.panoembed.go();
+    });
+  }
+
+  // Fetches photos, filters photo spheres and displays them.
+  function fetchPhotos(url, removePrevious) {
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        return;
+      }
+
+      // Add the thumbnails to the container and hook up the click
+      // listeners.
+      if (removePrevious) {
+        $('#thumbnailContainer').empty();
+      }
+      $.each(response.feed.entry, function(index, entry) {
+        if (isPhotoSphere(entry)) {
+          $('#thumbnailContainer')
+              .append($('<img></img>')
+              .attr('src', entry.media$group.media$thumbnail[1].url)
+              .attr('panoFeedUrl', getFeedUrl(entry))
+              .click(function() {
+            displayPhotoSphere($(this).attr('panoFeedUrl'));
+          }));
+        }
+      });
+    });
+  }
+
+  // // Fetch JSON for user if the OK button is clicked or the user hits the
+  // // enter key in the input field.
+  // $('#submitUserEmail').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), false);
+  // });
+  // $('#userEmail').bind('keypress', function(e) {
+  //   // Fetch if enter key was pressed.
+  //   var code = (e.keyCode ? e.keyCode : e.which);
+  //   if (code == 13) {
+  //     fetchAlbumsFor($('#userEmail').val(), false);
+  //   }
+  // });
+
+  // fetchAlbumsFor('andrew.bunday@gmail.com', false);
+
+  var photoset_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121?alt=json&v=4';
+  var photosphere_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121/photoid/5899440569799198994?alt=json&v=4&full-exif=true';
+  fetchPhotos(photoset_url, false);
+  displayPhotoSphere(photosphere_url);
+
+  // // Fetch the photo spheres when the user selects an album.
+  // $('#albumSelect').change(function() {
+  //   console.log($('#albumSelect').val());
+  //   fetchPhotos($('#albumSelect').val(), true);
+  // });
+  // $('#getAllPanos').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), true);
+  // });
+</script>
+
 
     {}
 </div>

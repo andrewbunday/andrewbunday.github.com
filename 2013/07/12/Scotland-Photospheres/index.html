@@ -3,7 +3,7 @@
     <head>
         <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>Andrew Bunday [home]</title>
+    <title>Andrew Bunday [Photospheres <small>from around Scotland</small>]</title>
 
     <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
@@ -33,14 +33,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-        <script>
-            $(document).ready(function() {
-                // icky icky icky bit of jquery to clean up page
-                var post_div = $('#latest-post-content').get();
-                $(post_div).find('h3#contents')[0].remove();
-                $(post_div).find('hr')[0].remove();
-            });
-        </script>
     </head>
     <body>
         <div class="page">
@@ -77,9 +69,13 @@
       <ul class="nav nav-pills">
         <li><a href="/">home</a></li>
         
-          <li class="active"><a href="/posts">posts</a></li>
+        
+          <li><a href="/posts">posts</a></li>
         
         
+          <li class="active">
+              <a href="#">photospheres from around scotland</a>
+          </li>
         
       </ul>
   </div>
@@ -87,77 +83,20 @@
 
 
             <div class="container-fluid main-content">
-                <div class="row-fluid" id="recent-posts" >
-                    
+                <div class="row-fluid">
+                    <div class="span12 span12-tablet">
                         <div class="row-fluid">
-                            <div class="span6 secondary-story-header">
-                                <h3><a href="/2013/01/22/simple-image-color-historgram/">Python <small>generating a simple overlay histogram for an image</small></a></h3>
-                            </div>
-                            
-                            <div class="span6">
-                            
-                                Using pylab we can extract the values for each of the channels and create an overlay graph which we can then render on top of the original image.
-                            </div>
-                        </div>
-                        <hr id="frontpage_posts">
-                    
-                        <div class="row-fluid">
-                            <div class="span6 secondary-story-header">
-                                <h3><a href="/2012/12/04/masterless-puppet-wrapper/">Puppet <small>masterless mode wrapper script</small></a></h3>
-                            </div>
-                            
-                            <div class="span6">
-                            
-                                Running puppet in a masterless mode has its advantages. And disadvantages. 
-                            </div>
-                        </div>
-                        <hr id="frontpage_posts">
-                    
-                        <div class="row-fluid">
-                            <div class="span6 secondary-story-header">
-                                <h3><a href="/2012/11/12/reproweb-repository-browser/">ReproWeb <small>a micro repository browser</small></a></h3>
-                            </div>
-                            
-                            <div class="span6">
-                            
-                                Reproweb is designed to provide insight into your self hosted apt repository. It is built on top of the standard debian dpkg toolchain and the repository builder/mirroror reprepro.
-                            </div>
-                        </div>
-                        <hr id="frontpage_posts">
-                    
-                    </ul>
-                </div>
-            </div>
-                <div class="row-fluid" id="main-post">
-                    <div class="span12" style="margin-top: 10px">
-                        <!--<div class="well well-large"> 
-    <blockquote class="pull-right">
-        <p>the most interesting people I know didnt know at 22 what they
-           wanted to do with their lives, some of the most interesting 40 year 
-           olds I know still dont. </p>
-        <small>Baz Luhrmann</small>
-    </blockquote>
-</div>
--->
-                        
-                        <div class="container-fluid main-content">
-                            <div class="row-fluid" id="breadcrumb">
-                                <ul class="nav nav-pills">
-                                  <li><a href="/2013/07/12/Scotland-Photospheres/">latest</a></li>
-                                  <li class="active"><a href="/2013/07/12/Scotland-Photospheres/">photospheres from around scotland</a></li>
-                                  <li><a href="/2013/07/12/Scotland-Photospheres/">12 Jul 2013</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                            <div class="container main-content" id='latest-post-content'>
+                            <div class="span12">
                                 <h1>Photospheres <small>from around Scotland</small></h1>
-                                <div class="row-fluid">
-                                    <div class="span8">
-                                        <p class="muted">Fri 12 Jul 2013</p>
-                                    </div>
-                                </div>
-                                <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span8">
+                                <p class="muted">Fri 12 Jul 2013</p>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 
 <div id="viewerContainer"></div>
 
@@ -321,14 +260,43 @@
   // });
 </script>
 
-
-                            </div>
-                        
+</p>
+                        </div>
                     </div>
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
+                        <ul class="thumbnails pull-right hidden-800">
+    <li class="span12">
+        <div class="thumbnail avatar">
+            <img src="/assets/img/avatar.jpg" alt>
+            <h4>About Me</h4>
+            <h5><a href="/about.html">Andrew Bunday</a></h5>
+            <p>I'm a VFX technologist working London where I apply the majority of
+                   my time solving problems related to Pipeline and Systems development.</p>
+            <p>If you want to get in touch, please give me a shout via one of the
+               links at the bottom of the page.</p>
+        </a>
+    </li>
+</ul>
+
+                    </div> -->
                 </div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dumbtechnotes'; // required: replace example with your forum shortname
 
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
-        <hr>
+            </div>
+            <hr>
 
 <div class="page-header" style="text-align: center">
   <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>

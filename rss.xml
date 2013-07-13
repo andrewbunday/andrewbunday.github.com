@@ -6,9 +6,182 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Tue, 07 May 2013 22:29:30 +0100</pubDate>
-    <lastBuildDate>Tue, 07 May 2013 22:29:30 +0100</lastBuildDate>
+    <pubDate>Sat, 13 Jul 2013 13:52:43 +0100</pubDate>
+    <lastBuildDate>Sat, 13 Jul 2013 13:52:43 +0100</lastBuildDate>
 
+    
+    <item>
+      <title>Photospheres <small>from around Scotland</small></title>
+      <link>http://andrewbunday.github.com/2013/07/12/Scotland-Photospheres/</link>
+      <pubDate>Fri, 12 Jul 2013 09:01:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2013/07/12/Scotland-Photospheres</guid>
+      <description>&lt;script type=&quot;text/javascript&quot; src=&quot;https://apis.google.com/js/plusone.js&quot;&gt;&lt;/script&gt;
+
+&lt;div id=&quot;viewerContainer&quot;&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;other-photospheres-in-the-set&quot;&gt;Other photospheres in the set:&lt;/h3&gt;
+&lt;div id=&quot;thumbnailContainer&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  var FEED_SCHEMA = 'http://schemas.google.com/g/2005#feed';
+
+  // Fetch all albums for a given user. Parameter 'user' should either be
+  // the email address or user ID.
+  function fetchAlbumsFor(user, searchForPanos) {
+    $('#getAllPanos').attr('disabled', '');
+    $('#thumbnailContainer').empty();
+
+    var baseURL = 'https://picasaweb.google.com/data/feed/api/user/';        
+    var url = baseURL + user + '?v=4&amp;alt=json';
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        alert('Data invalid.');
+        return;
+      }
+
+      // Remove all previous dropdown elements.
+      $('#albumSelect').empty();
+
+      // Add albums to dropdown element.
+      $('#albumSelect').append($('&lt;option&gt;&lt;/option&gt;')
+                       .attr('value', '')
+                       .text('&lt;Select an album&gt;'));
+      $.each(response.feed.entry, function(index, entry) {
+        var feedUrl = getFeedUrl(entry);
+        $('#albumSelect').append($('&lt;option&gt;&lt;/option&gt;')
+                         .attr('value', feedUrl)
+                         .text(entry.title.$t));
+        if (searchForPanos) {
+          fetchPhotos(feedUrl, false);
+        }
+      });
+      $('#getAllPanos').removeAttr('disabled');
+    }).fail(function() {
+      alert('Could not fetch data.');
+    });
+  }
+
+  // Returns the feed URL of an entry.
+  function getFeedUrl(entry) {
+    for(var i = 0; i &lt; entry.link.length; ++i) {
+      if (entry.link[i].rel == FEED_SCHEMA) {
+        return entry.link[i].href;
+      }
+    }
+    return '';
+  }
+
+  // Returns whether the given entry is a photo sphere.
+  function isPhotoSphere(entry) {
+    if (!entry.gphoto$streamId) {
+      return false;
+    }
+
+    var streamIds = entry.gphoto$streamId;
+    for (var i = 0; i &lt; streamIds.length; ++i) {
+      if (streamIds[i].$t == &quot;photosphere&quot;) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fetches the feed data for a photo sphere based on the given feed URL
+  // and displays the photo sphere given the returned metadata.
+  function displayPhotoSphere(panoFeedUrl) {
+    console.log(panoFeedUrl);
+    $('#viewerContainer').empty();
+
+    // Request the full exif of the photo sphere, which contains the
+    // metadata we need to properly display it.
+    $.getJSON(panoFeedUrl + '&amp;full-exif=true', function(response) {
+      if (!response || !response.feed || !response.feed.exif$tags) {
+        return;
+      }
+
+      // Extract the required metadata.
+      var exif = response.feed.exif$tags;
+      $('#viewerContainer')
+          .append($('&lt;g:panoembed&gt;&lt;/g:panoembed&gt;')
+          .attr('imageurl',
+                response.feed.media$group.media$content[0].url)
+          .attr('fullsize',
+                exif.exif$FullPanoWidthPixels.$t + ',' +
+                exif.exif$FullPanoHeightPixels.$t)
+          .attr('croppedsize',
+                 exif.exif$CroppedAreaImageWidthPixels.$t + ',' +
+                 exif.exif$CroppedAreaImageHeightPixels.$t)
+          .attr('offset',
+                 exif.exif$CroppedAreaLeftPixels.$t + ',' +
+                 exif.exif$CroppedAreaTopPixels.$t)
+          .attr('displaysize', '800,600')
+      );
+
+      // Searches the whole DOM tree for g:panoembed elements and
+      // initializes them.
+      gapi.panoembed.go();
+    });
+  }
+
+  // Fetches photos, filters photo spheres and displays them.
+  function fetchPhotos(url, removePrevious) {
+    $.getJSON(url, function(response) {
+      if (!response || !response.feed || !response.feed.entry) {
+        return;
+      }
+
+      // Add the thumbnails to the container and hook up the click
+      // listeners.
+      if (removePrevious) {
+        $('#thumbnailContainer').empty();
+      }
+      $.each(response.feed.entry, function(index, entry) {
+        if (isPhotoSphere(entry)) {
+          $('#thumbnailContainer')
+              .append($('&lt;img&gt;&lt;/img&gt;')
+              .attr('src', entry.media$group.media$thumbnail[1].url)
+              .attr('panoFeedUrl', getFeedUrl(entry))
+              .click(function() {
+            displayPhotoSphere($(this).attr('panoFeedUrl'));
+          }));
+        }
+      });
+    });
+  }
+
+  // // Fetch JSON for user if the OK button is clicked or the user hits the
+  // // enter key in the input field.
+  // $('#submitUserEmail').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), false);
+  // });
+  // $('#userEmail').bind('keypress', function(e) {
+  //   // Fetch if enter key was pressed.
+  //   var code = (e.keyCode ? e.keyCode : e.which);
+  //   if (code == 13) {
+  //     fetchAlbumsFor($('#userEmail').val(), false);
+  //   }
+  // });
+
+  // fetchAlbumsFor('andrew.bunday@gmail.com', false);
+
+  var photoset_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121?alt=json&amp;v=4';
+  var photosphere_url = 'https://picasaweb.google.com/data/feed/api/user/113352345146665803058/albumid/5899440571351727121/photoid/5899440569799198994?alt=json&amp;v=4&amp;full-exif=true';
+  fetchPhotos(photoset_url, false);
+  displayPhotoSphere(photosphere_url);
+
+  // // Fetch the photo spheres when the user selects an album.
+  // $('#albumSelect').change(function() {
+  //   console.log($('#albumSelect').val());
+  //   fetchPhotos($('#albumSelect').val(), true);
+  // });
+  // $('#getAllPanos').click(function() {
+  //   fetchAlbumsFor($('#userEmail').val(), true);
+  // });
+&lt;/script&gt;
+
+</description>
+    </item>
     
     <item>
       <title>Python <small>generating a simple overlay histogram for an image</small></title>
@@ -413,6 +586,7 @@ available in Releases.gz&lt;/li&gt;
 
 &lt;ul class=&quot;nav nav-list well&quot; id=&quot;markdown-toc&quot;&gt;
   &lt;li&gt;&lt;a href=&quot;#background&quot;&gt;Background&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#download&quot;&gt;Download&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#whats-next&quot;&gt;Whats Next?&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#finally-some-examples&quot;&gt;Finally Some Examples&lt;/a&gt;&lt;/li&gt;
@@ -434,6 +608,13 @@ available in Releases.gz&lt;/li&gt;
 &lt;p&gt;Until recently anytime we’ve needed to spin up a new virtual server, we’ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.&lt;/p&gt;
 
 &lt;p&gt;We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.&lt;/p&gt;
+
+&lt;h2 id=&quot;download&quot;&gt;Download&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Clone or fork from my github account:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/andrewbunday/Proxmoxia&quot;&gt;https://github.com/andrewbunday/Proxmoxia&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/h2&gt;
 &lt;hr /&gt;
