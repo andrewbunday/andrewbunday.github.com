@@ -6,8 +6,8 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Sun, 14 Jul 2013 11:40:15 +0100</pubDate>
-    <lastBuildDate>Sun, 14 Jul 2013 11:40:15 +0100</lastBuildDate>
+    <pubDate>Sun, 14 Jul 2013 11:57:34 +0100</pubDate>
+    <lastBuildDate>Sun, 14 Jul 2013 11:57:34 +0100</lastBuildDate>
 
     
     <item>
@@ -26,9 +26,15 @@
                                   helpers : {
                                     title: {
                                       type: 'outside'
-                                    }
+                                    },
+                                    overlay : {
+                                      css : {
+                                        'background' : 'rgba(0, 0, 0, 0.9)'
+                                      },
+                                    },
                                   },
-                                  padding: 0 
+                                  padding: 0,
+
                                 });
     });
 &lt;/script&gt;
