@@ -6,9 +6,45 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Sun, 14 Jul 2013 11:57:34 +0100</pubDate>
-    <lastBuildDate>Sun, 14 Jul 2013 11:57:34 +0100</lastBuildDate>
+    <pubDate>Thu, 05 Sep 2013 22:33:48 +0100</pubDate>
+    <lastBuildDate>Thu, 05 Sep 2013 22:33:48 +0100</lastBuildDate>
 
+    
+    <item>
+      <title>Flickr <small>Pretty Lights</small></title>
+      <link>http://andrewbunday.github.com/2013/09/04/pretty-lights/</link>
+      <pubDate>Wed, 04 Sep 2013 23:00:00 +0100</pubDate>
+      <author>andrewbunday.github@andrewbunday.github.com (Andrew Bunday)</author>
+      <guid>http://andrewbunday.github.com/2013/09/04/pretty-lights</guid>
+      <description>&lt;link rel=&quot;stylesheet&quot; href=&quot;/fancybox/source/jquery.fancybox.css?v=2.1.5&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;/fancybox/source/jquery.fancybox.pack.js?v=2.1.5&quot;&gt;&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+    $(document).ready(function() {
+        $(&quot;.fancybox&quot;).fancybox({
+                                  helpers : {
+                                    title: {
+                                      type: 'outside'
+                                    },
+                                    overlay : {
+                                      css : {
+                                        'background' : 'rgba(0, 0, 0, 0.9)'
+                                      },
+                                    },
+                                  },
+                                  padding: 0,
+
+                                });
+    });
+&lt;/script&gt;
+
+&lt;p&gt;Last night we headed over to Camden Town to see Pretty Light’s gig.&lt;/p&gt;
+
+&lt;div class=&quot;flickr_gallery&quot;&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm4.staticflickr.com/3795/9673542871_d029272ffc_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9673542871/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm4.staticflickr.com/3795/9673542871_d029272ffc_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm6.staticflickr.com/5521/9676783318_02643e859b_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676783318/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm6.staticflickr.com/5521/9676783318_02643e859b_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm3.staticflickr.com/2828/9673577601_114c5ba96b_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9673577601/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm3.staticflickr.com/2828/9673577601_114c5ba96b_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm3.staticflickr.com/2819/9673583819_a88cf6bfb8_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9673583819/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm3.staticflickr.com/2819/9673583819_a88cf6bfb8_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm8.staticflickr.com/7452/9676823770_25802ed323_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676823770/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm8.staticflickr.com/7452/9676823770_25802ed323_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm6.staticflickr.com/5548/9676834934_82b4dd731b_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676834934/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm6.staticflickr.com/5548/9676834934_82b4dd731b_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm8.staticflickr.com/7321/9676843368_df568487e3_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676843368/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm8.staticflickr.com/7321/9676843368_df568487e3_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm8.staticflickr.com/7400/9676851258_bd60da9bc7_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676851258/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm8.staticflickr.com/7400/9676851258_bd60da9bc7_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm3.staticflickr.com/2828/9676858906_55ef6ffd07_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676858906/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm3.staticflickr.com/2828/9676858906_55ef6ffd07_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;a class=&quot;fancybox&quot; rel=&quot;group&quot; href=&quot;http://farm4.staticflickr.com/3787/9676867136_f5678014a2_b.jpg&quot; title=&quot;&amp;lt;a href=http://flickr.com/photos/andrewbunday/9676867136/ target=_blank&amp;gt;Click here for the full size image on Flickr&amp;lt;/a&amp;gt;&quot;&gt;  &lt;img src=&quot;http://farm4.staticflickr.com/3787/9676867136_f5678014a2_q.jpg&quot; width=&quot;150&quot; height=&quot;150&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+
+</description>
+    </item>
     
     <item>
       <title>Flickr <small>Touring Scotland on 2 Wheels</small></title>
