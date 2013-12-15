@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
     <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+    <link href="http://fonts.googleapis.com/css?family=Lato:100,300|Raleway:100" rel="stylesheet" type="text/css">
 
     <script type="text/javascript" src="/assets/js/jquery.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
@@ -27,7 +28,21 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
+   $(document).ready(function() {
+      searchStyle = $("style#search-style");
+
+      $("input#search").on("keyup", function() {
+        if (this.value === "") {
+          searchStyle.html("");
+        } else {
+          searchStyle.html("article.post:not([data-index*=\"" + (this.value.toLowerCase().replace(/\\/g, "")) + "\"]) { display: none !important; }");
+        }
+      });
+   });
+
 </script>
+
+
 
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,7 +75,7 @@
 
             <div class="container-fluid main-content">
     <div class="page-header row-fluid">
-        <h1>Andrew Bunday <small>tech notes</small></h1>
+         <h1>Andrew Bunday <small>tech notes</small></h1>
     </div>
 </div>
 
@@ -179,7 +194,7 @@ gitolite host.</p>
 <div class="highlight"><pre><code class="bash"><span class="lineno"> 1</span> <span class="c">#!/usr/bin/env bash</span>
 <span class="lineno"> 2</span> 
 <span class="lineno"> 3</span> <span class="c"># check if sudo has been used or user is root</span>
-<span class="lineno"> 4</span> <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;${SUDO_USER}&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="s2">&quot;${USER}&quot;</span> !<span class="o">=</span> <span class="s2">&quot;root&quot;</span> <span class="o">]</span>; <span class="k">then</span>
+<span class="lineno"> 4</span> <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;${SUDO_USER}&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="s2">&quot;${USER}&quot;</span> !<span class="o">=</span> <span class="s2">&quot;root&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno"> 5</span> <span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;Fail: Only root can execute puppet&quot;</span>
 <span class="lineno"> 6</span>     <span class="nb">exit </span>1
 <span class="lineno"> 7</span> <span class="k">fi</span>
@@ -192,13 +207,13 @@ gitolite host.</p>
 <span class="lineno">14</span> <span class="nv">UUID</span><span class="o">=</span><span class="sb">`</span>uuidgen<span class="sb">`</span>
 <span class="lineno">15</span> 
 <span class="lineno">16</span> <span class="c"># SSH credentials setup</span>
-<span class="lineno">17</span> <span class="k">if</span> <span class="o">[[</span> ! -d <span class="nv">$HOME</span>/.ssh <span class="o">]]</span>; <span class="k">then</span>
+<span class="lineno">17</span> <span class="k">if</span> <span class="o">[[</span> ! -d <span class="nv">$HOME</span>/.ssh <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno">18</span> <span class="k">    </span>mkdir --mode<span class="o">=</span>700 <span class="nv">$HOME</span>/.ssh
 <span class="lineno">19</span> <span class="k">fi</span>
 <span class="lineno">20</span> 
 <span class="lineno">21</span> <span class="c"># Stash $HOME/.ssh/config if it already exists. We&#39;ll put it back when we&#39;re</span>
 <span class="lineno">22</span> <span class="c"># finished.</span>
-<span class="lineno">23</span> <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$HOME</span>/.ssh/config <span class="o">]</span>; <span class="k">then</span>
+<span class="lineno">23</span> <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$HOME</span>/.ssh/config <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno">24</span> <span class="k">    </span>mv <span class="nv">$HOME</span>/.ssh/config <span class="nv">$HOME</span>/.ssh/<span class="nv">$UUID</span>.config
 <span class="lineno">25</span> <span class="k">fi</span>
 <span class="lineno">26</span> 
@@ -212,12 +227,12 @@ gitolite host.</p>
 <span class="lineno">34</span> chmod 0600 <span class="nv">$HOME</span>/.ssh/config
 <span class="lineno">35</span> 
 <span class="lineno">36</span> <span class="c"># Clone a copy of the puppet manifests</span>
-<span class="lineno">37</span> <span class="k">if</span> <span class="o">[</span> ! -d /var/tmp/puppet/<span class="nv">$UUID</span>/.git <span class="o">]</span>; <span class="k">then</span>
+<span class="lineno">37</span> <span class="k">if</span> <span class="o">[</span> ! -d /var/tmp/puppet/<span class="nv">$UUID</span>/.git <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno">38</span> <span class="k">    </span>git clone gitlab:puppet.git /var/tmp/puppet/<span class="nv">$UUID</span>
 <span class="lineno">39</span> <span class="k">fi</span>
 <span class="lineno">40</span> 
 <span class="lineno">41</span> <span class="c"># Get any updates to a previously checked out manifest repo</span>
-<span class="lineno">42</span> <span class="k">if</span> <span class="o">[</span> -f /var/tmp/puppet/<span class="nv">$UUID</span>/manifests/site.pp <span class="o">]</span>; <span class="k">then</span>
+<span class="lineno">42</span> <span class="k">if</span> <span class="o">[</span> -f /var/tmp/puppet/<span class="nv">$UUID</span>/manifests/site.pp <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno">43</span> <span class="k">    </span>git --git-dir<span class="o">=</span>/var/tmp/puppet/<span class="nv">$UUID</span>/.git <span class="se">\</span>
 <span class="lineno">44</span>         --work-tree<span class="o">=</span>/var/tmp/puppet/<span class="nv">$UUID</span> fetch
 <span class="lineno">45</span>     git --git-dir<span class="o">=</span>/var/tmp/puppet/<span class="nv">$UUID</span>/.git <span class="se">\</span>
@@ -225,7 +240,7 @@ gitolite host.</p>
 <span class="lineno">47</span> <span class="k">fi</span>
 <span class="lineno">48</span> 
 <span class="lineno">49</span> <span class="c"># Return the users .ssh settings.</span>
-<span class="lineno">50</span> <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$HOME</span>/.ssh/<span class="nv">$UUID</span>.config <span class="o">]</span>; <span class="k">then</span>
+<span class="lineno">50</span> <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$HOME</span>/.ssh/<span class="nv">$UUID</span>.config <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
 <span class="lineno">51</span> <span class="k">    </span>rm <span class="nv">$HOME</span>/.ssh/config
 <span class="lineno">52</span>     mv <span class="nv">$HOME</span>/.ssh/<span class="nv">$UUID</span>.config <span class="nv">$HOME</span>/.ssh/config
 <span class="lineno">53</span>     chmod 0600 <span class="nv">$HOME</span>/.ssh/config

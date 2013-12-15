@@ -281,7 +281,7 @@ a.fancybox {
 }
 
 .fancybox-title a {
-    color: #fff;
+    color: #696969;
 }
 
 @media (max-width: 979px) {
@@ -297,6 +297,9 @@ a.fancybox {
   body {
     padding-left: 0px;
     padding-right: 0px;
+    color: #696969;
+    font-family: Lato, "Open Sans", Calibri, Candara, Arial, sans-serif;
+    font-size: 18px;
   }
 
   .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
@@ -315,7 +318,7 @@ code{color:rgba(0, 0, 0, 0.75);padding:1px 3px;}
     .secondary-story-header h4{
       min-height: 30px;
       vertical-align: text-top;
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .secondary-story-header {
