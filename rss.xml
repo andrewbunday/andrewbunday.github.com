@@ -6,8 +6,8 @@
     <atom:link href="http://andrewbunday.github.com/rss.xml" rel="self" type="application/rss+xml" />
     <description>tech notes and photos</description>
     <language>en-us</language>
-    <pubDate>Sat, 14 Dec 2013 22:19:37 -0800</pubDate>
-    <lastBuildDate>Sat, 14 Dec 2013 22:19:37 -0800</lastBuildDate>
+    <pubDate>Sat, 14 Dec 2013 22:33:46 -0800</pubDate>
+    <lastBuildDate>Sat, 14 Dec 2013 22:33:46 -0800</lastBuildDate>
 
     
     <item>
@@ -34,7 +34,9 @@
                                     },
                                   },
                                   padding: 0,
-
+                                  closeBtn: false,
+                                  arrows: false,
+                                  nextClick: true,
                                 });
     });
 &lt;/script&gt;
@@ -70,7 +72,9 @@
                                     },
                                   },
                                   padding: 0,
-
+                                  closeBtn: false,
+                                  arrows: false,
+                                  nextClick: true,
                                 });
     });
 &lt;/script&gt;
@@ -106,7 +110,9 @@
                                     },
                                   },
                                   padding: 0,
-
+                                  closeBtn: false,
+                                  arrows: false,
+                                  nextClick: true,
                                 });
     });
 &lt;/script&gt;
