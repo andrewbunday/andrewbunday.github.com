@@ -284,6 +284,31 @@ a.fancybox {
     color: #696969;
 }
 
+.photo {
+    background-attachment: fixed;
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+    height: 450px;
+    position: relative;
+}
+.photo span {
+    bottom: 0;
+    color: white;
+    display: block;
+    left: 50%;
+    margin-left: -640px;
+    font-size: 38px;
+    padding: 10px;
+    position: absolute;
+    text-shadow: 0 2px 0 black, 0 0 10px black;
+    width: 1280px;
+}
+.title {
+    background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);
+    background-size: cover;
+    background-position:center; 
+}
+
 @media (max-width: 979px) {
   .hidden-1000 {
         display:none !important;

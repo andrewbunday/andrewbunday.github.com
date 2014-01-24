@@ -1,105 +1,311 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Andrew Bunday [News]</title>
+
+    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/cosmo.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
+    <link href="http://fonts.googleapis.com/css?family=Lato:100,300|Raleway:100" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />   
+
+    <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.stellar.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-772003-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+   $(document).ready(function() {
+      searchStyle = $("style#search-style");
+
+      $("input#search").on("keyup", function() {
+        if (this.value === "") {
+          searchStyle.html("");
+        } else {
+          searchStyle.html("article.post:not([data-index*=\"" + (this.value.toLowerCase().replace(/\\/g, "")) + "\"]) { display: none !important; }");
+        }
+      });
+   });
+
+</script>
+
+
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+    </head>
+    <body>
+        <div class="page">
+            <div class="navbar navbar-static-top">
+    <div class="navbar-inner main-navbar-inner">
+        <div class="container-fluid main-navbar">
+            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+           </a>
+
+            <div class="nav-collapse pull-right">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/posts">Posts</a></li>
+                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div class="container-fluid main-content">
+    <div class="page-header row-fluid">
+         <h1>Andrew Bunday <small>tech notes</small></h1>
+    </div>
+</div>
+
+            <div class="container-fluid main-content">
+  <div class="row-fluid" id="breadcrumb">
+      <ul class="nav nav-pills">
+        <li><a href="/">home</a></li>
+        
+        
+          <li><a href="/posts">posts</a></li>
+        
+        
+          <li class="active">
+              <a href="#">news</a>
+          </li>
+        
+      </ul>
+  </div>
+</div>
+
+
+            <div class="container-fluid main-content">
+                <div class="row-fluid">
+                    <div class="span12 span12-tablet">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <h1>News</h1>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span8">
+                                <p class="muted"></p>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <p><!DOCTYPE html>
+<html>
+    <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="/assets3/photoblog.css"/>
-        <style>
-            body {
-                -webkit-font-smoothing: antialiased;
-                overflow: hidden;
-            }
-
-            .container {
-                /*height: 100%;*/
-                overflow: auto;
-
-            }
-
-            .post-cover-image {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                -webkit-background-size: cover;
-                -moz-background-size: cover;
-                -o-background-size: cover;
-                background-size: cover;
-                background-position: center;
-            }
-
-            .post-cover {
-                width: 100%;
-                max-height: 900px;
-                background-color: black;
-                background-position: center;
-                margin-bottom: 60px;
-            }
-
-            .post-header {
-                -webkit-transform: translate3d(0, 0px, 0);
-                opacity: 1;
-            }
+        <script type="text/javascript" src="/assets/js/jquery.stellar.min.js"></script>
+        <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: helvetica, arial;
+/*            padding-top: 40px;
+            background-image: url(http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_b.jpg);
+            background-size: cover;
+            background-position:center; */
+        }
+        h1 {
+            background-color: black;
+            color: white;
+            height: 40px;
+            font-size: 24px;
+            font-weight: normal;
+            left: 0;
+            line-height: 40px;
+            position: fixed;
+            text-align: center;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+        }
+        h1 a {
+            border-bottom: 1px solid white;
+            color: white;
+            display: inline-block;
+            line-height: 30px;
+            text-decoration: none;
+        }
+        .photo {
+            background-attachment: fixed;
+            background-position: 50% 0;
+            background-repeat: no-repeat;
+            height: 450px;
+            position: relative;
+        }
+        .photo span {
+            bottom: 0;
+            color: white;
+            display: block;
+            left: 50%;
+            margin-left: -640px;
+            font-size: 38px;
+            padding: 10px;
+            position: absolute;
+            text-shadow: 0 2px 0 black, 0 0 10px black;
+            width: 1280px;
+        }
+        .summer {
+            background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);
+            background-size: cover;
+            background-position:center; 
+        }
+        .autumn {
+            background-image: url(http://farm4.staticflickr.com/3801/11793173504_ee17e06a47_b.jpg);
+            background-size: cover;
+            background-position: bottom center; 
+        }
+        .winter {
+            background-image: url(http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_b.jpg);
+            background-size: cover;
+            background-position:center; 
+        }
+        .spring {
+            background-image: url(http://farm4.staticflickr.com/3815/11589331076_92dd5913eb_b.jpg);
+            background-size: cover;
+            background-position:center; 
+        }
 
         </style>
     </head>
 
-    <body style>
+    <body>
+        <script type="text/javascript">
 
-        <div class="post-cover animated fadeIn delay-1s" data-scroll="native">
-            <div class="post-cover-image"  style="background-image: url(http://farm3.staticflickr.com/2857/9697135179_8b446a5317_h.jpg)"></div>
+            $(window).stellar();
 
-            <header class="post-header">
-                <h1 itemprop="name" name="title" class="post-title">Medium 1.0</h1>
-                <h2 name="subtitle" class="post-field subtitle">A New Storytelling Experience</h2>
-            </header>
-        </div>
+        </script>
 
-        <div class="container">
-            <div class="row" id="main-post">
-                <div class="col-md-12">
-                    
-                        <div class="container main-content" id='latest-post-content'>
-                            <h1>Flickr <small>Vancouver</small></h1>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <p class="muted">Wed 01 Jan 2014</p>
-                                </div>
-                            </div>
-                            <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+        <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen">
+        <script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(".fancybox").fancybox({
+                                          helpers : {
+                                            title: {
+                                              type: 'outside'
+                                            },
+                                            overlay : {
+                                              css : {
+                                                'background' : 'rgba(255, 255, 255, 0.9)'
+                                              },
+                                            },
+                                          },
+                                          padding: 0,
+                                          closeBtn: false,
+                                          arrows: false,
+                                          nextClick: true,
+                                        });
+            });
+        </script>
 
-<script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        <div class="photo summer" data-stellar-background-ratio="0.5"><span>Summer</span></div>
+        <div>
+            some other stuff some other stuff some other stuff some other stuff some other stuff
+            some other stuff some other stuff some other stuff some other stuff some other stuff 
+            some other stuff some other stuff some other stuff some other stuff some other stuff 
+            some other stuff some other stuff some other stuff some     other stuff some other stuff 
+            some other stuff some other stuff some other stuff some other stuff some other stuff 
+        <div>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $(".fancybox").fancybox({
-                                  helpers : {
-                                    title: {
-                                      type: 'outside'
-                                    },
-                                    overlay : {
-                                      css : {
-                                        'background' : 'rgba(255, 255, 255, 0.9)'
-                                      },
-                                    },
-                                  },
-                                  padding: 0,
-                                  closeBtn: false,
-                                  arrows: false,
-                                  nextClick: true,
-                                });
-    });
-</script>
-
-<p>A set of Vancouver photos</p>
-
-<div class="flickr_gallery"><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5540/11541554454_0e6ce5e8de_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541554454/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5540/11541554454_0e6ce5e8de_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3738/11541646526_e8a42dca98_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541646526/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3738/11541646526_e8a42dca98_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7306/11541658973_ba36aac0e8_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541658973/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7306/11541658973_ba36aac0e8_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7440/11541659903_e968345101_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541659903/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7440/11541659903_e968345101_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5500/11541660663_50a8481c88_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541660663/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5500/11541660663_50a8481c88_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2822/11541661523_ba859c7365_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541661523/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2822/11541661523_ba859c7365_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7330/11541650376_d6d86174cf_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541650376/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7330/11541650376_d6d86174cf_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541521015/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7351/11541561514_8c276f1042_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541561514/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7351/11541561514_8c276f1042_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5475/11541562744_8b6b57749a_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541562744/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5475/11541562744_8b6b57749a_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3804/11541563524_72fece9a2e_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541563524/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3804/11541563524_72fece9a2e_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2855/11541666513_9286f5063c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541666513/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2855/11541666513_9286f5063c_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7311/11541525445_919c793047_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541525445/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7311/11541525445_919c793047_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3832/11541526305_5d3e771a4c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541526305/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3832/11541526305_5d3e771a4c_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3688/11541669003_104a5a9736_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541669003/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3688/11541669003_104a5a9736_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3673/11541669773_58b6def95a_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541669773/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3673/11541669773_58b6def95a_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5502/11541528945_9810a491cf_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541528945/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5502/11541528945_9810a491cf_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5478/11541671283_59edf735af_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541671283/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5478/11541671283_59edf735af_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5505/11541569574_6f5810e0ff_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541569574/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5505/11541569574_6f5810e0ff_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7290/11541531375_1382738d1f_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541531375/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7290/11541531375_1382738d1f_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3832/11541661946_e021ce57c6_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541661946/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3832/11541661946_e021ce57c6_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3793/11541662666_caa959f015_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541662666/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3793/11541662666_caa959f015_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5547/11541675293_0fb8fdc1b9_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541675293/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5547/11541675293_0fb8fdc1b9_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3756/11541573694_ce204a62c0_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541573694/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3756/11541573694_ce204a62c0_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2850/11588852724_3cfbec7df3_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11588852724/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2850/11588852724_3cfbec7df3_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7390/11588739253_4cb196318c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11588739253/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7390/11588739253_4cb196318c_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3815/11589331076_92dd5913eb_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11589331076/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3815/11589331076_92dd5913eb_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7452/11589333096_6bb4dab0a4_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11589333096/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7452/11589333096_6bb4dab0a4_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3778/11793164784_fa73bb0de2_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793164784/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3778/11793164784_fa73bb0de2_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3757/11793166074_fb18765904_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793166074/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3757/11793166074_fb18765904_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7377/11793511966_940c79f6a9_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793511966/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7377/11793511966_940c79f6a9_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5537/11792755775_425e8f8829_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11792755775/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5537/11792755775_425e8f8829_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3779/11792757065_1b6b09c342_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11792757065/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3779/11792757065_1b6b09c342_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793171484/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7392/11793003233_866079ee04_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793003233/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7392/11793003233_866079ee04_q.jpg" width="150" height="150" /></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3801/11793173504_ee17e06a47_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793173504/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3801/11793173504_ee17e06a47_q.jpg" width="150" height="150" /></a></div>
+        <div class="flickr_gallery"><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5540/11541554454_0e6ce5e8de_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541554454/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5540/11541554454_0e6ce5e8de_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3738/11541646526_e8a42dca98_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541646526/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3738/11541646526_e8a42dca98_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7306/11541658973_ba36aac0e8_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541658973/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7306/11541658973_ba36aac0e8_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7440/11541659903_e968345101_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541659903/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7440/11541659903_e968345101_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5500/11541660663_50a8481c88_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541660663/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5500/11541660663_50a8481c88_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2822/11541661523_ba859c7365_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541661523/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2822/11541661523_ba859c7365_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7330/11541650376_d6d86174cf_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541650376/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7330/11541650376_d6d86174cf_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541521015/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7351/11541561514_8c276f1042_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541561514/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7351/11541561514_8c276f1042_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5475/11541562744_8b6b57749a_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541562744/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5475/11541562744_8b6b57749a_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3804/11541563524_72fece9a2e_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541563524/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3804/11541563524_72fece9a2e_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2855/11541666513_9286f5063c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541666513/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2855/11541666513_9286f5063c_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7311/11541525445_919c793047_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541525445/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7311/11541525445_919c793047_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3832/11541526305_5d3e771a4c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541526305/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3832/11541526305_5d3e771a4c_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3688/11541669003_104a5a9736_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541669003/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3688/11541669003_104a5a9736_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3673/11541669773_58b6def95a_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541669773/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3673/11541669773_58b6def95a_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5502/11541528945_9810a491cf_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541528945/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5502/11541528945_9810a491cf_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5478/11541671283_59edf735af_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541671283/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5478/11541671283_59edf735af_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5505/11541569574_6f5810e0ff_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541569574/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5505/11541569574_6f5810e0ff_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7290/11541531375_1382738d1f_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541531375/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7290/11541531375_1382738d1f_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3832/11541661946_e021ce57c6_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541661946/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3832/11541661946_e021ce57c6_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3793/11541662666_caa959f015_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541662666/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3793/11541662666_caa959f015_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5547/11541675293_0fb8fdc1b9_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541675293/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5547/11541675293_0fb8fdc1b9_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3756/11541573694_ce204a62c0_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11541573694/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3756/11541573694_ce204a62c0_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2850/11588852724_3cfbec7df3_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11588852724/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2850/11588852724_3cfbec7df3_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7390/11588739253_4cb196318c_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11588739253/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7390/11588739253_4cb196318c_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3815/11589331076_92dd5913eb_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11589331076/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3815/11589331076_92dd5913eb_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7452/11589333096_6bb4dab0a4_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11589333096/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7452/11589333096_6bb4dab0a4_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3778/11793164784_fa73bb0de2_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793164784/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3778/11793164784_fa73bb0de2_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3757/11793166074_fb18765904_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793166074/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3757/11793166074_fb18765904_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7377/11793511966_940c79f6a9_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793511966/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7377/11793511966_940c79f6a9_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm6.staticflickr.com/5537/11792755775_425e8f8829_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11792755775/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm6.staticflickr.com/5537/11792755775_425e8f8829_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3779/11792757065_1b6b09c342_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11792757065/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3779/11792757065_1b6b09c342_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793171484/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm3.staticflickr.com/2892/11793171484_f3b40b71bb_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm8.staticflickr.com/7392/11793003233_866079ee04_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793003233/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm8.staticflickr.com/7392/11793003233_866079ee04_q.jpg" width="150" height="150"></a><a class="fancybox" rel="group" href="http://farm4.staticflickr.com/3801/11793173504_ee17e06a47_b.jpg" title="&lt;a href=http://flickr.com/photos/andrewbunday/11793173504/ target=_blank&gt;Click here for the full size image on Flickr&lt;/a&gt;">  <img src="http://farm4.staticflickr.com/3801/11793173504_ee17e06a47_q.jpg" width="150" height="150"></a></div>
 
 
-                        </div>
-                    
-                </div>
-            </div>
-        </div>
+   <!--      <div class="photo autumn" data-stellar-background-ratio="0.5"><span>Autumn</span></div>
+        
+
+        <div class="photo winter" data-stellar-background-ratio="2"><span>Winter</span></div>
+        <div class="photo spring" data-stellar-background-ratio="0.5"><span>Spring</span></div>
+        <div class="photo summer" data-stellar-background-ratio="0.5"><span>Summer</span></div>
+   -->      <!-- <div class="photo autumn" data-stellar-background-ratio="0.5"><span>Autumn</span></div>
+        <div class="photo winter" data-stellar-background-ratio="0.5"><span>Winter</span></div>
+        <div class="photo spring" data-stellar-background-ratio="0.5"><span>Spring</span></div> -->
     </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+</p>
+                        </div>
+                    </div>
+                    <!-- <div class="span3 hidden-phone hidden-tablet">
+                        <ul class="thumbnails pull-right hidden-800">
+    <li class="span12">
+        <div class="thumbnail avatar">
+            <img src="/assets/img/avatar.jpg" alt>
+            <h4>About Me</h4>
+            <h5><a href="/about.html">Andrew Bunday</a></h5>
+            <p>I'm a VFX technologist working London where I apply the majority of
+                   my time solving problems related to Pipeline and Systems development.</p>
+            <p>If you want to get in touch, please give me a shout via one of the
+               links at the bottom of the page.</p>
+        </a>
+    </li>
+</ul>
+
+                    </div> -->
+                </div>
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'dumbtechnotes'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            </div>
+            <hr>
+
+<div class="page-header" style="text-align: center">
+  <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>
+</div>
+
+
+
+        </div>
+     </body>
+</html>
+
+
