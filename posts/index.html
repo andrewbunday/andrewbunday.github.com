@@ -1,108 +1,109 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>Andrew Bunday [Posts]</title>
-
-    <link rel="shortcut icon" href="/assets/img/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/cosmo.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/custom.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
-    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
-    <link href="http://fonts.googleapis.com/css?family=Lato:100,300|Raleway:100" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Andrew Bunday Posts</title>    
 
     <script type="text/javascript" src="/assets/js/jquery.js"></script>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.stellar.min.js"></script>
-    <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/photo/css_browser_selector.js"></script>
 
-    <script type="text/javascript">
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/pygments.css"/>
+    <link rel="stylesheet" type="text/css" href="/fancybox/source/jquery.fancybox.css?v=2.1.5" media="screen" />  
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-772003-4']);
-  _gaq.push(['_trackPageview']);
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for andrewbunday.co.uk" href="/rss.xml" />
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    <link rel="stylesheet" type="text/css" href="/photo/boostrap.css"/>
+    <link rel="stylesheet" type="text/css" href="/photo/photo.css"/>
 
-   $(document).ready(function() {
-      searchStyle = $("style#search-style");
-
-      $("input#search").on("keyup", function() {
-        if (this.value === "") {
-          searchStyle.html("");
-        } else {
-          searchStyle.html("article.post:not([data-index*=\"" + (this.value.toLowerCase().replace(/\\/g, "")) + "\"]) { display: none !important; }");
-        }
-      });
-   });
-
-</script>
-
-
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-    </head>
     <body>
-        <div class="page">
-            <div class="navbar navbar-static-top">
-    <div class="navbar-inner main-navbar-inner">
-        <div class="container-fluid main-navbar">
-            <a class="btn btn-navbar pull-right" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-           </a>
 
-            <div class="nav-collapse pull-right">
-                <ul class="nav">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/posts">Posts</a></li>
-                    <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
-                    <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
-                </ul>
+        <script type="text/javascript">
+            $(window).stellar();
+
+            $(document).ready(function () {
+                // scale the banner to fit the window
+                $('.photo').css({ "height": $(window).innerHeight() - 50,
+                                  "background-image": "url(http://farm5.staticflickr.com/4139/4771442470_25c89f32ae_o.jpg)" 
+                                });
+                $('.photo-navbar').css({ "background-image": "url(http://farm5.staticflickr.com/4139/4771442470_25c89f32ae_o.jpg)" });
+                $('.footer').css({ "background-image": "url(http://farm5.staticflickr.com/4139/4771442470_25c89f32ae_o.jpg)" });
+            });
+
+            $(document).ready(function () {
+                // highlight the current pange
+                $('a[href="' + this.location.pathname + '"]').addClass('activePage');
+            });
+
+            $(document).ready(function() {
+                $(".fancybox").fancybox({
+                                          helpers : {
+                                            title: {
+                                              type: 'outside'
+                                            },
+                                            overlay : {
+                                              css : {
+                                                'background' : 'rgba(46,46,46,0.8)',
+                                              },
+                                            },
+                                          },
+                                          padding: 0,
+                                          closeBtn: false,
+                                          arrows: false,
+                                          nextClick: true,
+                                          openEffect: 'elastic',
+                                          openSpeed: 500
+                                        });
+            });
+        </script>
+
+        <div class="navbar transparent navbar-static-top photo-navbar">
+            <div class="navbar-inner transparent main-navbar-inner">
+                <div class="pull-right">
+                    <ul class="nav transparent">
+                        <!-- <li><a href="/new/">New</a></li> -->
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/posts/">Posts</a></li>
+                        <li><a href="https://github.com/andrewbunday" target="_blank">Github</a></li>
+                        <li><a href="http://www.linkedin.com/in/andrewbunday" target="_blank">LinkedIn</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-            <div class="container-fluid main-content">
-    <div class="page-header row-fluid">
-         <h1>Andrew Bunday <small>tech notes</small></h1>
-    </div>
-</div>
+        <div class="container-fluid main-content">
 
-            <div class="container-fluid main-content">
-  <div class="row-fluid" id="breadcrumb">
-      <ul class="nav nav-pills">
-        <li><a href="/">home</a></li>
-        
-        
-        
-          <li class="active">
-              <a href="#">posts</a>
-          </li>
-        
-      </ul>
-  </div>
-</div>
+            <div class="row-fluid" style="margin-top:-20px;">
+                <div id="photo-banner" class="container photo" data-stellar-background-ratio="0.5" style="padding-top: 80px">
 
+                    <div class="container">
+                        <div class="row-fluid">
+                            <div class="span6">Posts</div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span6"></div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span6">---</div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span6"></div>
+                        </div>
+                    </div>  
 
-            <div class="container-fluid main-content">
-                <div class="row-fluid">
-                    <div class="span12 span12-tablet">
-                        <div class="row-fluid" style="margin-top:-20px;">
-                            <div class="row-fluid">
+                </div>
+
+                <div class="container" style="padding-top:20px; padding-bottom:25px">
+                    <h1 id="title">Posts</h1>
+                    <div class="row-fluid">
     <div class="span12" style="padding-top: 20px">
         <input id="search" type="input" placeholder="Search by title."/>
         <style id="search-style"></style>
@@ -110,30 +111,11 @@
 </div>
 
 
-<article class="post" data-index="python <small>guess who finally got metaclasses</small>">
+<article class="post" data-index="a set of photos covering vancouver">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2014/01/16/python-metaclasses/">Python <small>Guess who finally got Metaclasses</small></a></h3>
-            </span>
-        </div>
-        <div class="row-fluid">
-            <span class="span4">
-                <i class="icon-calendar"></i> January 16, 2014
-            </span>
-            
-            <span class="span6"><i class="icon-tag"></i> python</span>
-            
-        </div>
-    </div>
-    <hr/>
-</article>
-
-<article class="post" data-index="flickr <small>vancouver</small>">
-    <div class="row-fluid" >
-        <div class="row-fluid">
-            <span class="span12">
-                <h3><a href="/2014/01/01/vancouver/">Flickr <small>Vancouver</small></a></h3>
+                <h3><a href="/2014/01/01/vancouver/">A set of photos covering Vancouver</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -148,11 +130,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="flickr <small>the singing bar</small>">
+<article class="post" data-index="a trip to the singing bar">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/10/25/the-singing-bar/">Flickr <small>The Singing Bar</small></a></h3>
+                <h3><a href="/2013/10/25/the-singing-bar/">A trip to the singing bar</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -160,18 +142,18 @@
                 <i class="icon-calendar"></i> October 25, 2013
             </span>
             
-            <span class="span6"><i class="icon-tag"></i> photo, london</span>
+            <span class="span6"><i class="icon-tag"></i> photo, london, flickr</span>
             
         </div>
     </div>
     <hr/>
 </article>
 
-<article class="post" data-index="flickr <small>monkey world</small>">
+<article class="post" data-index="monkey world!">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/09/08/monkey-world/">Flickr <small>Monkey World</small></a></h3>
+                <h3><a href="/2013/09/08/monkey-world/">Monkey World!</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -186,11 +168,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="flickr <small>pretty lights</small>">
+<article class="post" data-index="pretty lights and music">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/09/04/pretty-lights/">Flickr <small>Pretty Lights</small></a></h3>
+                <h3><a href="/2013/09/04/pretty-lights/">Pretty Lights and Music</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -205,11 +187,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="flickr <small>touring scotland on 2 wheels</small>">
+<article class="post" data-index="touring scotland on 2 wheels">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/07/14/a-scottish-adventure/">Flickr <small>Touring Scotland on 2 Wheels</small></a></h3>
+                <h3><a href="/2013/07/14/a-scottish-adventure/">Touring Scotland on 2 Wheels</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -224,11 +206,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="photospheres <small>from around scotland</small>">
+<article class="post" data-index="photosphere's from around scotland">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/07/12/Scotland-Photospheres/">Photospheres <small>from around Scotland</small></a></h3>
+                <h3><a href="/2013/07/12/Scotland-Photospheres/">Photosphere's from around Scotland</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -243,11 +225,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="python <small>generating a simple overlay histogram for an image</small>">
+<article class="post" data-index="how to generate a simple overlay histogram for an image">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2013/01/22/simple-image-color-historgram/">Python <small>generating a simple overlay histogram for an image</small></a></h3>
+                <h3><a href="/2013/01/22/simple-image-color-historgram/">How to generate a simple overlay histogram for an image</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -262,11 +244,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="puppet <small>masterless mode wrapper script</small>">
+<article class="post" data-index="masterless mode puppet wrapper script">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2012/12/04/masterless-puppet-wrapper/">Puppet <small>masterless mode wrapper script</small></a></h3>
+                <h3><a href="/2012/12/04/masterless-puppet-wrapper/">Masterless mode puppet wrapper script</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -281,11 +263,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="reproweb <small>a micro repository browser</small>">
+<article class="post" data-index="reproweb - a micro repository browser">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2012/11/12/reproweb-repository-browser/">ReproWeb <small>a micro repository browser</small></a></h3>
+                <h3><a href="/2012/11/12/reproweb-repository-browser/">ReproWeb - A micro repository browser</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -293,18 +275,18 @@
                 <i class="icon-calendar"></i> November 12, 2012
             </span>
             
-            <span class="span6"><i class="icon-tag"></i> python, apt, bootstrap, flask</span>
+            <span class="span6"><i class="icon-tag"></i> python, apt, bootstrap, flask, reproweb</span>
             
         </div>
     </div>
     <hr/>
 </article>
 
-<article class="post" data-index="proxmoxia <small>yet another python api for proxmox</small>">
+<article class="post" data-index="proxmoxia, yet another python api for proxmox">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2012/10/18/introducting-proxmoxia/">Proxmoxia <small>yet another Python API for Proxmox</small></a></h3>
+                <h3><a href="/2012/10/18/introducting-proxmoxia/">Proxmoxia, yet another Python API for Proxmox</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -312,7 +294,7 @@
                 <i class="icon-calendar"></i> October 18, 2012
             </span>
             
-            <span class="span6"><i class="icon-tag"></i> proxmox, python</span>
+            <span class="span6"><i class="icon-tag"></i> proxmox, python, api</span>
             
         </div>
     </div>
@@ -338,11 +320,11 @@
     <hr/>
 </article>
 
-<article class="post" data-index="puppet <small>one time ppa additions</small>">
+<article class="post" data-index="one time ppa additions using puppet">
     <div class="row-fluid" >
         <div class="row-fluid">
             <span class="span12">
-                <h3><a href="/2012/10/16/triggering-ppas-only-once-with-puppet/">Puppet <small>One time PPA additions</small></a></h3>
+                <h3><a href="/2012/10/16/triggering-ppas-only-once-with-puppet/">One time PPA additions using Puppet</a></h3>
             </span>
         </div>
         <div class="row-fluid">
@@ -694,18 +676,17 @@
 </article>
 
 
-                        </div>
-                    </div>
                 </div>
+
             </div>
 
-            <hr>
-
-<div class="page-header" style="text-align: center">
-  <h4>&copy; 2012. All rights reserved <small>All comments are my own and not those of my employer.</small></h4>
+            <div class="container footer" data-stellar-background-ratio="0.5">
+    <div class="row-fluid">
+        <div class="span12 rights-reserved" style="text-align: center">
+            &copy; 2014. All rights reserved. All comments are my own and not those of my employer.
+        </div>
+    </div>
 </div>
-
-
 
         </div>
      </body>
