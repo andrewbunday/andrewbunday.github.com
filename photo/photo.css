@@ -41,7 +41,7 @@ h1 a {
     max-height: 550px;
     /*height: 300px;*/
 
-    background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);
+    /*background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);*/
     background-size: cover;
     background-position:center; 
 }
@@ -55,7 +55,7 @@ h1 a {
     width: 100% !important;
     height: 250px;
 
-    background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);
+    /*background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);*/
     background-size: cover;
     background-position:center; 
 }
@@ -81,7 +81,7 @@ h1 a {
     min-height: auto !important;
     /*height: auto !important;*/
 
-    background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);
+    /*background-image: url(http://farm8.staticflickr.com/7309/11541521015_0d2a87ebfd_b.jpg);*/
     background-size: cover;
     background-position:center; 
 }
