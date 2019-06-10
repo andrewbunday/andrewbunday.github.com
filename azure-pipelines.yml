@@ -8,7 +8,8 @@ steps:
 - checkout: self
   persistCredentials: true
 
-- task: UseRubyVersion@0 # See: https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-ruby-version?view=azdevops
+# See: https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-ruby-version?view=azdevops
+- task: UseRubyVersion@0
   displayName: 'Use Ruby >= 2.5'
 
 - script: 'gem install bundler'
