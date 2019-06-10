@@ -1,0 +1,22 @@
+trigger:
+- master
+
+pool:
+  vmImage:  'Ubuntu-16.04'
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+- task: UseRubyVersion@0 # See: https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/tool/use-ruby-version?view=azdevops
+  displayName: 'Use Ruby >= 2.5'
+
+- script: 'gem install bundler'
+  displayName: 'Install Bundler'
+
+- script: 'bundle install'
+  displayName: 'Install Jekyll and Dependencies'
+
+- script: 'bundle exec jekyll build -d $(Build.ArtifactStagingDirectory)'
+  displayName: 'Build Jekyll Static Site'
+
