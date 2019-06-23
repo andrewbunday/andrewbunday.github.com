@@ -2,7 +2,7 @@ thoughts:
   name: thoughts
   description: Thoughts about general topics.
   cover: assets/images/speeches.jpg
-getting-started:
-  name: getting-started
-  description: False
-  cover: False
+# getting-started:
+#   name: getting-started
+#   description: False
+#   cover: False

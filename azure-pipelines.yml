@@ -21,13 +21,13 @@ steps:
 - script: 'bundle exec jekyll build -d $(Build.ArtifactStagingDirectory)'
   displayName: 'Build Jekyll Static Site'
 
-- task: AmazonWebServices.aws-vsts-tools.S3Upload.S3Upload@1
-  displayName: 'S3 Upload: blog-andrewbunday'
-  inputs:
-    awsCredentials: andrewbunday.aws.s3
-    regionName: 'us-east-1'
-    bucketName: 'blog-andrewbunday'
-    sourceFolder: '$(Build.ArtifactStagingDirectory)'
-    filesAcl: 'public-read'
-    createBucket: true
+# - task: AmazonWebServices.aws-vsts-tools.S3Upload.S3Upload@1
+#   displayName: 'S3 Upload: blog-andrewbunday'
+#   inputs:
+#     awsCredentials: andrewbunday.aws.s3
+#     regionName: 'us-east-1'
+#     bucketName: 'blog-andrewbunday'
+#     sourceFolder: '$(Build.ArtifactStagingDirectory)'
+#     filesAcl: 'public-read'
+#     createBucket: true
 

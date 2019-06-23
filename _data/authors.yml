@@ -5,7 +5,7 @@ andrew:
   url: andrewbunday.com
   bio: Software Development Manager and Weekend Maker
   picture: assets/images/andrew.jpg
-  cover: False
+  cover: assets/images/whistler.jpg
 hannah:
   username: hannah
   name: Hannah Wolfe
