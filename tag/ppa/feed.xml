@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<feed xmlns="http://www.w3.org/2005/Atom" >
+  <generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator>
+  <link href="/tag/ppa/feed.xml" rel="self" type="application/atom+xml" />
+  <link href="/" rel="alternate" type="text/html" />
+  <updated>2019-06-23T21:55:29+00:00</updated>
+  <id>/tag/ppa/feed.xml</id>
+
+  
+  
+  
+
+  
+    <title type="html">Andrew Bunday | </title>
+  
+
+  
+    <subtitle>Thoughts and Ideas</subtitle>
+  
+
+  
+
+  
+    
+      
+    
+      
+    
+  
+
+  
+  
+
+  
+    <entry>
+      <title type="html">One time PPA additions using Puppet</title>
+      <link href="/2012/10/16/triggering-ppas-only-once-with-puppet" rel="alternate" type="text/html" title="One time PPA additions using Puppet" />
+      <published>2012-10-16T10:00:00+00:00</published>
+      <updated>2012-10-16T10:00:00+00:00</updated>
+      <id>/2012/10/16/triggering-ppas-only-once-with-puppet</id>
+      <content type="html" xml:base="/2012/10/16/triggering-ppas-only-once-with-puppet">&lt;p&gt;When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.&lt;/p&gt;
+
+&lt;p&gt;Here’s the tl;dr version:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Puppet exec has a ‘creates =&amp;gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;apt&quot;&gt;Apt&lt;/h2&gt;
+
+&lt;p&gt;At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.&lt;/p&gt;
+
+&lt;p&gt;We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.&lt;/p&gt;
+
+&lt;p&gt;For internal software and tools we use Jordan Sissel’s &lt;a href=&quot;https://github.com/jordansissel/fpm&quot;&gt;fpm&lt;/a&gt; to generate Debian packages which can then locally host in a &lt;a href=&quot;http://mirrorer.alioth.debian.org/&quot;&gt;reprepro&lt;/a&gt; managed apt repository.&lt;/p&gt;
+
+&lt;p&gt;For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s &lt;a href=&quot;https://help.launchpad.net/Packaging/PPA&quot;&gt;PPA&lt;/a&gt; mechanism for adding additional unofficial packages to the system.&lt;/p&gt;
+
+&lt;h2 id=&quot;ppas&quot;&gt;PPAs&lt;/h2&gt;
+
+&lt;p&gt;PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa’s short name, builds the apt url to access it, stores it in &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/apt/sources.list.d/*&lt;/code&gt; and retrieves its public signing key.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;add-apt-repository ppa:username/package&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;puppet&quot;&gt;Puppet&lt;/h2&gt;
+
+&lt;p&gt;We make use of the puppet-apt manifests put together by evolvingweb.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;https://github.com/evolvingweb/puppet-apt&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unfortunately each time puppet was running we were finding that it would not only take longer than we expected, but that the time it took was variable. Often during the middle of the day when our internet connection was more heavily being utilised the runs would take substantially longer.&lt;/p&gt;
+
+&lt;p&gt;We quickly saw when inspecting the run logs that on each run the ppas were being re-added into &lt;em&gt;sources.list.d&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Using what little skill I have at writing puppet configurations and from &lt;strong&gt;&lt;em&gt;reading&lt;/em&gt;&lt;/strong&gt; the documentation I amended the apt::ppa definition to make use of the &lt;strong&gt;creates =&amp;gt;&lt;/strong&gt; parameter for the &lt;strong&gt;exec&lt;/strong&gt; action. This parameter causes the action to only be executed if the file which it points towards does not exist at the specified location.&lt;/p&gt;
+
+&lt;p&gt;After adding the condition we found that our runs became much shorter and consistent in run time.&lt;/p&gt;
+
+&lt;p&gt;Finally here is the amended definition in all of its terrible glory:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;    &lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apt::ppa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;
+
+        &lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;':'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_repo&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;apt-update-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;command&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/bin/aptitude update&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;refreshonly&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;creates&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/etc/apt/sources.list.d/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${ppa_name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${ppa_repo}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${lsbdistcodename}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;add-apt-repository-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/bin/add-apt-repository &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;kp&quot;&gt;notify&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;apt-update-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content>
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name>Andrew Bunday</name>
+        
+        
+      </author>
+
+      
+
+      
+        <category term="puppet" />
+      
+        <category term="apt" />
+      
+        <category term="ppa" />
+      
+
+      
+        <summary type="html">When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.</summary>
+      
+
+      
+      
+    </entry>
+  
+</feed>

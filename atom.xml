@@ -1,28 +1,89 @@
----
-layout: null
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.name | xml_escape }} - Articles</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
+    <title> - Articles</title>
+    <description>Thoughts and Ideas</description>
     <link>
-    {{ site.url }}</link>
-    {% for post in site.posts %}
-      {% unless post.link %}
+    </link>
+    
+      
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        {% if post.excerpt %}
-          <description>{{ post.excerpt | xml_escape }}</description>
-        {% else %}
-          <description>{{ post.content | xml_escape }}</description>
-        {% endif %}
-        <pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
+        <title>Running Puppet without a Master Server</title>
+        
+          <description>&lt;p&gt;Typically the easiest way to run puppet is to use the default master and agent
+mechanism.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 04 Dec 2012 08:45:00 +0000</pubDate>
         <link>
-        {{ site.url }}{{ post.url }}</link>
-        <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
+        /2012/12/04/masterless-puppet-wrapper</link>
+        <guid isPermaLink="true">/2012/12/04/masterless-puppet-wrapper</guid>
       </item>
-      {% endunless %}
-    {% endfor %}
+      
+    
+      
+      <item>
+        <title>ReproWeb - A micro repository browser</title>
+        
+          <description>&lt;p&gt;A few weeks ago we finished a first draft release of &lt;a href=&quot;http://github.com/andrewbunday/reproweb&quot;&gt;ReproWeb&lt;/a&gt;, a small, light weight apt repository browser.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 12 Nov 2012 18:05:00 +0000</pubDate>
+        <link>
+        /2012/11/12/reproweb-repository-browser</link>
+        <guid isPermaLink="true">/2012/11/12/reproweb-repository-browser</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Proxmoxia, yet another Python API for Proxmox</title>
+        
+          <description>&lt;p&gt;&lt;a href=&quot;http://github.com/andrewbunday/proxmoxia&quot;&gt;Proxmoxia&lt;/a&gt; is a simple python library which wraps operations
+with Proxmox.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 18 Oct 2012 22:27:00 +0000</pubDate>
+        <link>
+        /2012/10/18/introducting-proxmoxia</link>
+        <guid isPermaLink="true">/2012/10/18/introducting-proxmoxia</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>One time PPA additions using Puppet</title>
+        
+          <description>&lt;p&gt;When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 16 Oct 2012 10:00:00 +0000</pubDate>
+        <link>
+        /2012/10/16/triggering-ppas-only-once-with-puppet</link>
+        <guid isPermaLink="true">/2012/10/16/triggering-ppas-only-once-with-puppet</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Greenlet based PyQt and Flask Application&lt;/small&gt;</title>
+        
+          <description>&lt;p&gt;This is an old trick which could be used in the past to allow a webapp to be
+written and displayed on the desktop without the need to launch a full web
+browser.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 07 Dec 2011 19:02:18 +0000</pubDate>
+        <link>
+        /2011/12/07/greenlet-based-pyqt-and-flask-application</link>
+        <guid isPermaLink="true">/2011/12/07/greenlet-based-pyqt-and-flask-application</guid>
+      </item>
+      
+    
   </channel>
 </rss>

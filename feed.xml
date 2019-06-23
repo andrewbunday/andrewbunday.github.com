@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-06-23T21:55:29+00:00</updated><id>/</id><title type="html">Andrew Bunday</title><subtitle>Thoughts and Ideas</subtitle><entry><title type="html">Running Puppet without a Master Server</title><link href="/2012/12/04/masterless-puppet-wrapper" rel="alternate" type="text/html" title="Running Puppet without a Master Server" /><published>2012-12-04T08:45:00+00:00</published><updated>2012-12-04T08:45:00+00:00</updated><id>/2012/12/04/masterless-puppet-wrapper</id><content type="html" xml:base="/2012/12/04/masterless-puppet-wrapper">&lt;p&gt;Typically the easiest way to run puppet is to use the default master and agent
+mechanism.&lt;/p&gt;
+
+&lt;p&gt;When you run puppet using a master the only way to switch between
+different sets of manifests/modules is to use environments. If  you setup puppet
+correctly these can allow you to pick and choose which environment you want to
+use on a given run, and/or for a given node.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately there are a few caveats when using environments.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;To pick out a particular enviroment for a specific node each time you ideally
+should be using an ENC. Once you setup your enviroment == node relationship it’ll
+stick for each run.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If you are not using an ENC, since this is another server which you don’t want
+to have to maintain then you are requried to specify the environment to use
+via the commandline. For example:&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;puppet agent --test --environment canary_maya_001&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Each environment will need to have a different manifest/modulepath defined and
+located in your puppet manifests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;running-masterless&quot;&gt;Running Masterless&lt;/h3&gt;
+
+&lt;p&gt;Another way of running puppet is to setup it up in in a masterless mode. Here we
+instead checkout a copy of our manifest from a central repository and run puppet
+directly against it.&lt;/p&gt;
+
+&lt;p&gt;Whilst you gain the advantage of not needing a master, and of being able to split
+environments more easily with branches (this can be done with the master but requires
+multiple checkouts of the puppet repository). You do loose out on a few features
+of puppet, such as:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Reports, these really don’t work as well.&lt;/li&gt;
+  &lt;li&gt;StoreConfigs is probably the biggest feature loss although you should be able
+to solve the problems you would have used it for in other ways (SSHFP for example
+when handling new server certificates).&lt;/li&gt;
+  &lt;li&gt;To use a particular environment on a node it becomes easier to create branches
+of your manifests/modules and then checkout the branch you want on the node
+just before you execute puppet. This still means you have multiple ‘copies’ of
+files, but managing them tends to be easier via standard git branch&amp;amp;merge tools.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;an-example-wrapper-script&quot;&gt;An Example Wrapper Script&lt;/h3&gt;
+
+&lt;p&gt;The steps involved in running masterless are slightly more cumbersome than
+running with a master. In particular if you use a git server such as gitolite
+then you need to ensure that you have credentials setup which allow you to read
+from the repository.&lt;/p&gt;
+
+&lt;p&gt;For this we’re using a locally served ssh config file and private rsa id which
+the config file informs ssh to use to identifty ourselves when we contact our
+gitolite host.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;served with a pinch of salt&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# check if sudo has been used or user is root&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-z&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SUDO_USER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;USER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Fail: Only root can execute puppet&quot;&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# change to 'syslog' to redirect puppet's internal logging directly to syslog&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;LOGDEST&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'console'&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# this may be overkill. A time/datestamp or even standard path may be more&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# suitable.&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;UUID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;uuidgen&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# SSH credentials setup&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh &lt;span class=&quot;o&quot;&gt;]]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;mkdir &lt;span class=&quot;nt&quot;&gt;--mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;700 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Stash $HOME/.ssh/config if it already exists. We'll put it back when we're&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# finished.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config
+&lt;span class=&quot;k&quot;&gt;fi
+
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;test&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; /usr/bin/wget &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+wget &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-O&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config http://autoserver/d-i/bin/puppet_ssh.config
+wget &lt;span class=&quot;nt&quot;&gt;-q&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-O&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+           http://autoserver/d-i/bin/puppet_readonly_id_rsa
+
+&lt;span class=&quot;c&quot;&gt;# OpenSSH will bork out if the permissions are not exactly right.&lt;/span&gt;
+chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/puppet_readonly_id_rsa
+chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+
+&lt;span class=&quot;c&quot;&gt;# Clone a copy of the puppet manifests&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;git clone gitlab:puppet.git /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Get any updates to a previously checked out manifest repo&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;git &lt;span class=&quot;nt&quot;&gt;--git-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;--work-tree&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; fetch
+    git &lt;span class=&quot;nt&quot;&gt;--git-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/.git &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;--work-tree&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt; merge origin/master
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Return the users .ssh settings.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;rm &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+    mv &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;.config &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+    chmod 0600 &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.ssh/config
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Finally run puppet. This *can* take a while.&lt;/span&gt;
+puppet apply &lt;span class=&quot;nt&quot;&gt;--modulepath&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/modules &lt;span class=&quot;nt&quot;&gt;--color&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+       &lt;span class=&quot;nt&quot;&gt;--vardir&lt;/span&gt; /var/tmp/puppet/var &lt;span class=&quot;nt&quot;&gt;--confdir&lt;/span&gt; /var/tmp/puppet/etc &lt;span class=&quot;nt&quot;&gt;--no-report&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+       &lt;span class=&quot;nt&quot;&gt;--logdest&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$LOGDEST&lt;/span&gt; /var/tmp/puppet/&lt;span class=&quot;nv&quot;&gt;$UUID&lt;/span&gt;/manifests/site.pp &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>Andrew Bunday</name></author><category term="puppet" /><summary type="html">Typically the easiest way to run puppet is to use the default master and agent mechanism.</summary></entry><entry><title type="html">ReproWeb - A micro repository browser</title><link href="/2012/11/12/reproweb-repository-browser" rel="alternate" type="text/html" title="ReproWeb - A micro repository browser" /><published>2012-11-12T18:05:00+00:00</published><updated>2012-11-12T18:05:00+00:00</updated><id>/2012/11/12/reproweb-repository-browser</id><content type="html" xml:base="/2012/11/12/reproweb-repository-browser">&lt;p&gt;A few weeks ago we finished a first draft release of &lt;a href=&quot;http://github.com/andrewbunday/reproweb&quot;&gt;ReproWeb&lt;/a&gt;, a small, light weight apt repository browser.&lt;/p&gt;
+
+&lt;p&gt;The browser was built out of an increasing need we were finding, to be able to introspect into our main production repository.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;http://github.com/andrewbunday/reproweb&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Over the course of 1.5 years that repository has grown to the point when the main stable channel contains around 334 individual packages whilst the unstable channel contains a further 149.&lt;/p&gt;
+
+&lt;p&gt;Without running apt-cache commands, and munging with our software source lists it was becoming difficult to not only find the name/version of a piece of software, but it was also becoming hard to tell:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;When the package was created&lt;/li&gt;
+  &lt;li&gt;Who created the package&lt;/li&gt;
+  &lt;li&gt;If the package had a newer version in the unstable channel&lt;/li&gt;
+  &lt;li&gt;If the package was available in the stable channel&lt;/li&gt;
+  &lt;li&gt;If the package had been published for all of our supported distributions.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Almost all of these tasks can be carried out from a terminal using commands such as &lt;code class=&quot;highlighter-rouge&quot;&gt;apt-get show&lt;/code&gt;, but the web interface allows for far quicker navigation, comparison and has already started us asking more questions as our understanding of the data in our repository grows.&lt;/p&gt;
+
+&lt;h2 id=&quot;current-feature-set&quot;&gt;Current Feature Set&lt;/h2&gt;
+
+&lt;p&gt;At present Reproweb allows a user to perform filters on the content of a repository based on either;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;simple string pattern matching against either the package name, version string or codename/component/architecture,&lt;/li&gt;
+  &lt;li&gt;or by browsing through the hierarchy of the repository from:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;codename -&amp;gt; component -&amp;gt; architecture -&amp;gt; package -&amp;gt; version&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;browsing&quot;&gt;Browsing&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Do you find yourself wanting to know more about your repository? Perhaps how many packages are in a particular component? or perhaps you don’t know the structure of your repository and you want to get to know it more intimately?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;These screenshots show:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The root of the repository, listing the currently defined distributions.
+Metadata associated with the distribution is also listed along with information such as the components available within the distribtuion and the total number of packages currently published within it.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/andrewbunday/ReproWeb/raw/master/documentation/images/image_07.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The breadcrumb which is left at the top of the interface as you delve deeper into the repository.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/andrewbunday/ReproWeb/raw/master/documentation/images/image_08.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;searching&quot;&gt;Searching&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Do you have a specific package you are looking for? Do you know it’s name or version and don’t want to have to go browsing around for it?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The package list shows all of the packages currently available for a given architecture or all of the packages across all of the distributions in the repository. The search box can be used to search through these packages, as you type it will filter out those packages which don’t match.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://github.com/andrewbunday/ReproWeb/raw/master/documentation/images/image_05.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;future-ideas&quot;&gt;Future Ideas&lt;/h2&gt;
+
+&lt;p&gt;This is a list of the features which I’d like to add in time.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Make the package view accessable at an point in the browser, so for example
+allow listing of packages in a component.&lt;/li&gt;
+  &lt;li&gt;Complete json endpoints for all urls.&lt;/li&gt;
+  &lt;li&gt;Renaming or package or version number.&lt;/li&gt;
+  &lt;li&gt;Listing of unreferrenced versions. Or previous versions which are no longer
+available in Releases.gz&lt;/li&gt;
+  &lt;li&gt;Listing of pre/post install/remove scripts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;get-hold-of-it-yourself&quot;&gt;Get hold of it yourself&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;I strongly recommending visiting &lt;a href=&quot;http://github.com/andrewbunday/reproweb&quot;&gt;http://github.com/andrewbunday/reproweb&lt;/a&gt; and start by reading the README and documentation on the repo.&lt;/p&gt;
+
+&lt;p&gt;Or for the impatient in life:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# clone the repository&lt;/span&gt;
+
+git clone https://github.com/andrewbunday/ReproWeb.git
+
+&lt;span class=&quot;c&quot;&gt;# ensure that the cache directory has been created, or that you edit the setting in the configuration before you start up the app.&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;mkdir /var/cache/reproweb
+
+&lt;span class=&quot;c&quot;&gt;# start it up&lt;/span&gt;
+
+python debug-run.py&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;technical-details&quot;&gt;Technical Details&lt;/h2&gt;
+
+&lt;p&gt;Underneath the hood ReproWeb is built using only a handful of &lt;em&gt;(at the time of writing)&lt;/em&gt; actively developed tools.&lt;/p&gt;
+
+&lt;p&gt;Development of Reproweb was conciously kept to a tight a deadline. We gave ourselves less than 2 weeks to go from establishing our initial requirements, having looked at the alternatives, to the first releaseable draft.&lt;/p&gt;
+
+&lt;p&gt;This drove our decisions behind each of the components we used to build the application.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;reprepro&lt;/strong&gt; - This is the repository management tool which the browser has been designed to be used with. All of the interactions with reprepro are handled through via the 3rd party script reepocheep.py which could be swapped out with an equivalent script which provides the same api.&lt;/p&gt;
+
+    &lt;p&gt;Since we were using reprepro already to manage our software package repositories it made complete sense to tailor the app to its strengths.&lt;/p&gt;
+
+    &lt;p&gt;The majority of the heavy lifting for the app is handled by calls to reprepro via subprocess and then handling of the returned data.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;flask&lt;/strong&gt; - A small web application backend framework which handles all of the functionality we need for it for this project. Something as feature rich as django would have been more cumbersome that the project required. Other parts of the Flask eco system were utilised, such as jinja2 to handle dynamic page generation.&lt;/p&gt;
+
+    &lt;p&gt;This is one of my personally favourite frameworks to use when building these kinds of applications. Having worked previously with django and really having not gotten on well with it I’ve always been attracted to these lighter weight frameworks.&lt;/p&gt;
+
+    &lt;p&gt;Another choice a few years ago might have been &lt;a href=&quot;http://webpy.org&quot;&gt;web.py&lt;/a&gt; which truely is a micro framework would have ended up being replaced as it reached its limits a little sooner than flask will.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;bootstrap&lt;/strong&gt; - A very user friendly web front-end framework which handles features such as responsive layout, navbar and general css styling consistency.&lt;/p&gt;
+
+    &lt;p&gt;A few years ago if someone had told me that all of the css and jquery plugins I would need to build a webpage/app quickly with little stress I could download and get started with in minutes, I would have laughed and said ‘your sooo funny’. However now Bootstrap does all those things and it has made the lives of non-web developers such as myself far easier.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;datatables.js&lt;/strong&gt; - A damn awesome jquery plugin which completely powers the tabulated, sortable, filterable, paginated list of packages seen in the search view.&lt;/p&gt;
+
+    &lt;p&gt;Does what it says on the tin. Credit goes to &lt;a href=&quot;http://paulnendick.github.com&quot;&gt;@PaulNendick&lt;/a&gt; for the find.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Andrew Bunday</name></author><category term="python" /><category term="apt" /><category term="flask" /><summary type="html">A few weeks ago we finished a first draft release of ReproWeb, a small, light weight apt repository browser.</summary></entry><entry><title type="html">Proxmoxia, yet another Python API for Proxmox</title><link href="/2012/10/18/introducting-proxmoxia" rel="alternate" type="text/html" title="Proxmoxia, yet another Python API for Proxmox" /><published>2012-10-18T22:27:00+00:00</published><updated>2012-10-18T22:27:00+00:00</updated><id>/2012/10/18/introducting-proxmoxia</id><content type="html" xml:base="/2012/10/18/introducting-proxmoxia">&lt;p&gt;&lt;a href=&quot;http://github.com/andrewbunday/proxmoxia&quot;&gt;Proxmoxia&lt;/a&gt; is a simple python library which wraps operations
+with Proxmox.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://pve.proxmox.com/wiki/Main_Page&quot;&gt;Proxmox&lt;/a&gt; is an open source server virtualization platform which allows you to create and manage any number of virtual machines based on either KVM or OpenVZ.&lt;/p&gt;
+
+&lt;p&gt;At Baseblack we utilise Proxmox to provide us with the majority of our central infrastructure. For example we run a pair of DNS servers, an almost countless number of license servers and farm manager all as openvz containers. Doing this provides us with a far higher level of service since if any one of our virtualization nodes go down we can quickly and pretty painlessly re-start the downed services on one of the other nodes whilst we work outs whats happening.&lt;/p&gt;
+
+&lt;p&gt;An area of active development for us is the automation of builds of new software packages for deployment onto our workstations, render nodes and virtual hosts.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;This is where Proxmoxia comes in.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Until recently anytime we’ve needed to spin up a new virtual server, we’ve needed to login to the web interface and manually create a new instance. Not only is this tedious and time consuming, but it can also lead to the occasional mistake.&lt;/p&gt;
+
+&lt;p&gt;We knew that our plans for automated builds, and testing of packages would involve us spinning up more and more sacrificial virtual machines which we could use as testing/build bots, each being discarded once they had completed their assigned tasks.&lt;/p&gt;
+
+&lt;h2 id=&quot;download&quot;&gt;Download&lt;/h2&gt;
+
+&lt;p&gt;Clone or fork from my github account:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/andrewbunday/Proxmoxia&quot;&gt;https://github.com/andrewbunday/Proxmoxia&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;creating-proxmoxia&quot;&gt;Creating Proxmoxia&lt;/h2&gt;
+
+&lt;p&gt;After a short burst of &lt;em&gt;‘Spanish Flea’&lt;/em&gt; our  preferred google search background music we found that the majority of the existing implementations of wrappers for the rest API had been in languages we either weren’t keen on or flat out refused to use.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;Perl, Java, PHP need not apply&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unfortunately I didn’t come across PyProxmox &lt;em&gt;(a major omission of mine)&lt;/em&gt; until I’d already spent the better part of a day planning on how to make proxmoxia. And by then I well and truly had the bit between my teeth.&lt;/p&gt;
+
+&lt;p&gt;I wanted to create a library which followed a few simple rules:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;It should ‘feel’ pythonic.&lt;/li&gt;
+  &lt;li&gt;I wanted the wrapper to extend itself. Or in a few more words; I didn’t want to have to personally write wrapper functions for each and every endpoint and method combination which are currently exposed in the rest api.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Personally I don’t like PyProxmox’s implementation for both of these reasons which is why I feel justified in completing Proxmoxia.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;Whats Next?&lt;/h2&gt;
+
+&lt;p&gt;We’re going to be using the library as part of our testing suite, creating new VMs off of the back of Jenkins builds. Hopefully it’s going to work out to be really useful.&lt;/p&gt;
+
+&lt;h2 id=&quot;finally-some-examples&quot;&gt;Finally Some Examples&lt;/h2&gt;
+
+&lt;p&gt;Okay, so here are some examples to show what I’m talking about. Head over to the &lt;a href=&quot;http://github.com/baseblack/proxmoxia&quot;&gt;github&lt;/a&gt; site for the source for these.&lt;/p&gt;
+
+&lt;p&gt;First up, Proxmox uses a token based authentication mechanism which must be attached to the headers of each request.&lt;/p&gt;
+
+&lt;p&gt;Connect to any node in the cluster and get the auth_token:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;proxmox&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Connector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'proxmox-1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8006&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;auth_token&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_auth_token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'user@pam'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'strawberries'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next create Proxmox and Node access objects, these are the bread and butter of the library:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Proxmox&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;proxmox&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'proxmox-7'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# this is on a different host.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The library translates its requests into the url equivalent of what you call. So here we request the status on a vm with id number 108:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;108&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Which is converted to the URL:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://proxmox-1:8006/api2/json/nodes/proxmox-7/openvz/108/status/current
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Find a vm template filepath and use this as the os-template for a new vm you create. And then start it up once it has finished being created:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# find the path for the template you want to use.&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'virtual-nfs'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'vztmpl'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;re&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'.*ubuntu-12.04-bb-20121010b_amd64.tar.gz$'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'volid'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'virtual-nfs'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'volid'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# create the container, giving it some sensible settings&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ostemplate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;volume&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'path'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;vmid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;204&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;hostname&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'test-4'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ip_address&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'192.168.123.204'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;storage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'local'&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# keep an eye on task and see when its completed&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'status'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'running'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# print out the logs&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tasks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taskid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;line&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'t'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# start up the container&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;openvz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'204'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Unable to start container'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Find if a user exists and create them if they do not:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'andrew.bunday@pve'&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'userid'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()]:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;access&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;users&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'andrew.bunday@pve'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test user&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;strawberries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>Andrew Bunday</name></author><category term="python" /><category term="proxmox" /><summary type="html">Proxmoxia is a simple python library which wraps operations with Proxmox.</summary></entry><entry><title type="html">One time PPA additions using Puppet</title><link href="/2012/10/16/triggering-ppas-only-once-with-puppet" rel="alternate" type="text/html" title="One time PPA additions using Puppet" /><published>2012-10-16T10:00:00+00:00</published><updated>2012-10-16T10:00:00+00:00</updated><id>/2012/10/16/triggering-ppas-only-once-with-puppet</id><content type="html" xml:base="/2012/10/16/triggering-ppas-only-once-with-puppet">&lt;p&gt;When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.&lt;/p&gt;
+
+&lt;p&gt;Here’s the tl;dr version:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Puppet exec has a ‘creates =&amp;gt; somefile’ action. Add it to the exec definition which calls add-apt-repository to make it only run the first time before the file has been created.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;apt&quot;&gt;Apt&lt;/h2&gt;
+
+&lt;p&gt;At Baseblack all of our workstations, render nodes and servers have their software packages, configured and managed via a combination of Puppet and Apt repositories.&lt;/p&gt;
+
+&lt;p&gt;We preseed the build of a new host, pointing the installer at the official Ubuntu mirrors to retrieve the packages it requires. There are however many optional packages not yet included as part of universe or multiverse which our users find useful for their day to day work which we include on the system.&lt;/p&gt;
+
+&lt;p&gt;For internal software and tools we use Jordan Sissel’s &lt;a href=&quot;https://github.com/jordansissel/fpm&quot;&gt;fpm&lt;/a&gt; to generate Debian packages which can then locally host in a &lt;a href=&quot;http://mirrorer.alioth.debian.org/&quot;&gt;reprepro&lt;/a&gt; managed apt repository.&lt;/p&gt;
+
+&lt;p&gt;For those external pieces of software which are not in the official repositories we heavily rely upon Ubuntu’s &lt;a href=&quot;https://help.launchpad.net/Packaging/PPA&quot;&gt;PPA&lt;/a&gt; mechanism for adding additional unofficial packages to the system.&lt;/p&gt;
+
+&lt;h2 id=&quot;ppas&quot;&gt;PPAs&lt;/h2&gt;
+
+&lt;p&gt;PPAs were developed on top of Launchpad as a means of hosting and distributing software. Some examples of the software which we install using PPAs are; salt for orchestrated tasks, hugin the panorama stitcher and the latest nvidia graphics driver.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to add a ppa to the sources list is to use the add-apt-repository command. This takes the ppa’s short name, builds the apt url to access it, stores it in &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/apt/sources.list.d/*&lt;/code&gt; and retrieves its public signing key.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;add-apt-repository ppa:username/package&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;puppet&quot;&gt;Puppet&lt;/h2&gt;
+
+&lt;p&gt;We make use of the puppet-apt manifests put together by evolvingweb.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;https://github.com/evolvingweb/puppet-apt&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unfortunately each time puppet was running we were finding that it would not only take longer than we expected, but that the time it took was variable. Often during the middle of the day when our internet connection was more heavily being utilised the runs would take substantially longer.&lt;/p&gt;
+
+&lt;p&gt;We quickly saw when inspecting the run logs that on each run the ppas were being re-added into &lt;em&gt;sources.list.d&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Using what little skill I have at writing puppet configurations and from &lt;strong&gt;&lt;em&gt;reading&lt;/em&gt;&lt;/strong&gt; the documentation I amended the apt::ppa definition to make use of the &lt;strong&gt;creates =&amp;gt;&lt;/strong&gt; parameter for the &lt;strong&gt;exec&lt;/strong&gt; action. This parameter causes the action to only be executed if the file which it points towards does not exist at the specified location.&lt;/p&gt;
+
+&lt;p&gt;After adding the condition we found that our runs became much shorter and consistent in run time.&lt;/p&gt;
+
+&lt;p&gt;Finally here is the amended definition in all of its terrible glory:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-puppet&quot; data-lang=&quot;puppet&quot;&gt;    &lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;apt::ppa&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apt&lt;/span&gt;
+
+        &lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;':'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ppa_prefix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_name&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;$ppa_repo&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$ppa_name_repo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;apt-update-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;command&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/bin/aptitude update&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;refreshonly&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;creates&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/etc/apt/sources.list.d/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${ppa_name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${ppa_repo}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${lsbdistcodename}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.list&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;add-apt-repository-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;py&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/bin/add-apt-repository &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;kp&quot;&gt;notify&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;apt-update-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;${name}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>Andrew Bunday</name></author><category term="puppet" /><category term="apt" /><category term="ppa" /><summary type="html">When running puppet on our hosts we were finding that it would take not only far longer than we expected it to but that it was re-applying the creation of PPAs each time. These PPAs are critical for keeping our software up to date so we needed to find a way to keep them from being re-created on each run.</summary></entry><entry><title type="html">Greenlet based PyQt and Flask Application&amp;lt;/small&amp;gt;</title><link href="/2011/12/07/greenlet-based-pyqt-and-flask-application" rel="alternate" type="text/html" title="Greenlet based PyQt and Flask Application&lt;/small&gt;" /><published>2011-12-07T19:02:18+00:00</published><updated>2011-12-07T19:02:18+00:00</updated><id>/2011/12/07/greenlet-based-pyqt-and-flask-application</id><content type="html" xml:base="/2011/12/07/greenlet-based-pyqt-and-flask-application">&lt;p&gt;This is an old trick which could be used in the past to allow a webapp to be
+written and displayed on the desktop without the need to launch a full web
+browser.&lt;/p&gt;
+
+&lt;p&gt;Here we launch a PyQt QWebView and redirect it back at a local web service
+run in the same process.&lt;/p&gt;
+
+&lt;p&gt;The trick is to get around the problem of the web framework and Qt both wanting
+control of the primary python thread to execute their control loops.  To get
+around the problem each can be spawned into their own Greenlet and then forcing
+a manual execution of Qt events rather than giving over control to &lt;code class=&quot;highlighter-rouge&quot;&gt;app._exec()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/env python&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;logging&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sys&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;time&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;flask&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Flask&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;gevent.wsgi&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;PyQt4&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QtCore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QtGui&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QtWebKit&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;_LOGGER&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logging&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getLogger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;QtFlaskApp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;WebView&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QtWebKit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QWebView&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;QtWebKit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QWebView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QtCore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QUrl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;http://localhost:5000/&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QtCore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGNAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;clicked()&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;closeEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;closeEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deleteLater&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;_LOGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;closing gui&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kill&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GreenletExit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kill&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GreenletExit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;_LOGGER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;debug&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;are gui and webserver alive? &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;s &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dead&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PyQtGreenlet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Greenlet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Greenlet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;_run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;processEvents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasPendingEvents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+                &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;processEvents&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.01&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;__main__&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logging&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;basicConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# replace with more controlled logging in a real app.&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;fapp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Flask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fapp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;debug&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@fapp.route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hello&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'&amp;lt;a href=&quot;http://localhost:5000/bye&quot; &amp;gt; quit() &amp;lt;/a&amp;gt;&amp;lt;/br&amp;gt;&amp;lt;a href=&quot;http://localhost:5000/&quot; &amp;gt; reload &amp;lt;/a&amp;gt;&amp;lt;/br&amp;gt;count={0}'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@fapp.route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/bye&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'GET'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;goodbye&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;killing webserver&quot;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kill&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;is webserver alive? &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dead&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;closeEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QtCore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGNAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;clicked()&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'goodbye'&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;http_server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wsgi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WSGIServer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fapp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http_server&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;serve_forever&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;QtGui&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;QApplication&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;window&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WebView&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PyQtGreenlet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;gevent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>Andrew Bunday</name></author><category term="Python" /><category term="Qt" /><category term="Flask" /><summary type="html">This is an old trick which could be used in the past to allow a webapp to be written and displayed on the desktop without the need to launch a full web browser.</summary></entry></feed>
