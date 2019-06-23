@@ -33,8 +33,8 @@ steps:
   displayName: 'Clean Build Branch'
 
 - script: >
-    git config --global user.email "xavier.geerinck@gmail.com";
-    git config --global user.name "Xavier Geerinck";
+    git config --global user.email "andrew.bunday@gmail.com";
+    git config --global user.name "Andrew Bunday";
   displayName: 'Configure Git User'
 
 - script: 'cp -a $(Build.ArtifactStagingDirectory)/. $(Build.Repository.LocalPath)'
@@ -43,7 +43,7 @@ steps:
 - script: >
     cd $(Build.Repository.LocalPath);
     git add --all;
-    git commit -m"Pipelines-Bot: Updated site via $(Build.SourceVersion)";
+    git commit -m "Blob Bot: Updated site via $(Build.SourceVersion)";
   displayName: 'Create our Commit'
 
 - script: >
