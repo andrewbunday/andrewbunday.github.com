@@ -1,5 +1,5 @@
 trigger:
-- master
+- blog-source
 
 pool:
   vmImage:  'Ubuntu-16.04'
@@ -21,13 +21,39 @@ steps:
 - script: 'bundle exec jekyll build -d $(Build.ArtifactStagingDirectory)'
   displayName: 'Build Jekyll Static Site'
 
-# - task: AmazonWebServices.aws-vsts-tools.S3Upload.S3Upload@1
-#   displayName: 'S3 Upload: blog-andrewbunday'
-#   inputs:
-#     awsCredentials: andrewbunday.aws.s3
-#     regionName: 'us-east-1'
-#     bucketName: 'blog-andrewbunday'
-#     sourceFolder: '$(Build.ArtifactStagingDirectory)'
-#     filesAcl: 'public-read'
-#     createBucket: true
+- script: 'cd $(Build.Repository.LocalPath); git checkout master; git checkout -b azure-pipelines-build'
+  displayName: 'Create Build Branch based on Master'
 
+- script: >
+    cd $(Build.Repository.LocalPath);
+    git rm -rf .; git clean -fxd;
+    touch .nojekyll;
+    touch README.md;
+    echo "# My Blog" >> README.md;
+  displayName: 'Clean Build Branch'
+
+- script: >
+    git config --global user.email "xavier.geerinck@gmail.com";
+    git config --global user.name "Xavier Geerinck";
+  displayName: 'Configure Git User'
+
+- script: 'cp -a $(Build.ArtifactStagingDirectory)/. $(Build.Repository.LocalPath)'
+  displayName: 'Copy Artifact Files to Cleaned Build Branch'
+
+- script: >
+    cd $(Build.Repository.LocalPath);
+    git add --all;
+    git commit -m"Pipelines-Bot: Updated site via $(Build.SourceVersion)";
+  displayName: 'Create our Commit'
+
+- script: >
+    cd $(Build.Repository.LocalPath);
+    git checkout master;
+    git merge azure-pipelines-build;
+    git branch -d azure-pipelines-build;
+  displayName: 'Merge azure-pipelines-build into master'
+
+- script: >
+    cd $(Build.Repository.LocalPath);
+    git push origin master;
+  displayName: 'Push changes to remote'
