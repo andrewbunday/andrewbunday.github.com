@@ -6,6 +6,7 @@ tags:
 - python
 - apt
 - flask
+- devops
 cover: assets/images/posts/image_05.png
 class: post-template
 subclass: 'post tag-python'

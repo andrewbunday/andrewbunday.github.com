@@ -2,7 +2,9 @@
 date: 2012-12-04 8:45AM
 layout: post
 title: "Running Puppet without a Master Server"
-tags: puppet
+tags:
+    - puppet
+    - devops
 navigation: true
 cover: assets/images/posts/2012-12-04-cover.jpg
 class: post-template
