@@ -29,7 +29,9 @@ steps:
     git rm -rf .; git clean -fxd;
     touch .nojekyll;
     touch README.md;
+    touch CNAME;
     echo "# My Blog" >> README.md;
+    echo "andrewbunday.com" >> CNAME;
   displayName: 'Clean Build Branch'
 
 - script: >
@@ -43,7 +45,7 @@ steps:
 - script: >
     cd $(Build.Repository.LocalPath);
     git add --all;
-    git commit -m "Blob Bot: Updated site via $(Build.SourceVersion)";
+    git commit -m "Azure Pipelines: Updated site via $(Build.SourceVersion)";
   displayName: 'Create our Commit'
 
 - script: >
