@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
     <!-- Document Settings -->
@@ -20,7 +21,11 @@
     <link rel="stylesheet" type="text/css" href="/assets/built/syntax.css" />
     <!-- highlight.js -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-    <style>.hljs { background: none; }</style>
+    <style>
+        .hljs {
+            background: none;
+        }
+    </style>
 
     <!--[if IE]>
         <style>
@@ -99,7 +104,9 @@
 
 
 </head>
-<body class="post-template">
+
+<body
+    class="post-template">
 
     <div class="site-wrapper">
         <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
@@ -535,7 +542,8 @@ into the {body} of the default.hbs template -->
         <!-- The footer at the very bottom of the screen -->
         <footer class="site-footer outer">
             <div class="site-footer-content inner">
-                <section class="copyright"><a href="/">Andrew Bunday</a> &copy; 2019</section>
+                <section class="copyright"><a href="/">Andrew Bunday</a> &copy;
+                    2019</section>
                 <!-- <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> &
                     <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a> using
                     <a href="https://github.com/jekyller/jasper2" target="_blank" rel="noopener">Jasper2</a></section>
@@ -555,21 +563,17 @@ into the {body} of the default.hbs template -->
 
     <!-- highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.10.0/components/prism-abap.min.js"></script>
-    <script>$(document).ready(function() {
-      $('pre code').each(function(i, block) {
-        hljs.highlightBlock(block);
-      });
-    });</script>
+    <script>$(document).ready(function () {
+            $('pre code').each(function (i, block) {
+                hljs.highlightBlock(block);
+            });
+        });</script>
 
     <!-- jQuery + Fitvids, which makes all video embeds responsive -->
-    <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous">
-    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
+        </script>
     <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="https://demo.ghost.io/assets/js/jquery.fitvids.js?v=724281a32e"></script>
-
 
     <!-- Paginator increased to "infinit" in _config.yml -->
     <!-- if paginator.posts  -->
@@ -598,7 +602,7 @@ into the {body} of the default.hbs template -->
 
     <!-- The #block helper will pull in data from the #contentFor other template files. In this case, there's some JavaScript which we only want to use in post.hbs, but it needs to be included down here, after jQuery has already loaded. -->
     
-        <script>
+    <script>
 
 // NOTE: Scroll performance is poor in Safari
 // - this appears to be due to the events firing much more slowly in Safari.
@@ -668,4 +672,5 @@ $(document).ready(function () {
     <!-- ghost_foot -->
 
 </body>
+
 </html>
