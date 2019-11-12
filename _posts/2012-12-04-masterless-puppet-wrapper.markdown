@@ -6,7 +6,7 @@ tags:
     - puppet
     - devops
 navigation: true
-cover: assets/images/posts/2012-12-04-cover.jpg
+cover: assets/images/posts/2012-12-04-cover.webp
 class: post-template
 subclass: 'post tag-puppet'
 author: andrew
