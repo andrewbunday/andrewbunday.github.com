@@ -39,15 +39,17 @@ jobs:
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb
       - name: checkout repo
         uses: actions/checkout@v4
-      - name: list build dir
-        run: ls
+      - name: echo_base_url
+        run: echo "${{ steps.pages.outputs.base_url }}/"
       - name: Build with Hugo
         env:
           HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
           HUGO_ENVIRONMENT: production
         run: |
           hugo \
+            --gc \
             --minify \
+            --cleanDestinationDir \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
