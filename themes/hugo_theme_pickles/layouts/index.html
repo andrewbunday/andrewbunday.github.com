@@ -1,0 +1,13 @@
+{{ partial "header.html" . }}
+
+{{/*  {{.Site.Config}}  */}}
+{{/*  .Site.pagination.pagerSize  remove dthis from .Paginate call, i think this gets automatically read when no value is given */}}
+
+{{ range $index, $page := (.Paginate (where (where .Site.RegularPages "Type" "posts") ".Params.hidden" "!=" "true" ) ).Pages }}
+  {{if ne $index 0 }}
+    {{ end }}
+  {{ .Render "li" }}
+{{ end }}
+
+{{ partial "pagination.html" .Paginator }} {{ partial "siteinfo.html" . }}
+{{ partial "footer.html" . }}
