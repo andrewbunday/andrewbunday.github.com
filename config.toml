@@ -53,10 +53,12 @@ custom_css = ["/css/custom.css"]
 # Disqus shortname
 # disqus = ""
 ## footer -----------
-author = "Andy"
+
+# author = "Andy"
+# avatar = "/favicon.png"
+# contact = "mailto:andy.devblog@proton.me"
+
 # authorwebsite = "abunday.dev"
-avatar = "/favicon.png"
-contact = "mailto:andy.devblog@proton.me"
 # bio = "I like the outdoors"
 # Short subtitle/tagline. This is displayed in the header.
 # subtitle = "Short subtitle"
