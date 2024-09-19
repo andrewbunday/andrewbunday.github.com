@@ -48,12 +48,13 @@ custom_css = ["/css/custom.css"]
 # youtube = "Your YouTube username"
 # linkedin = "Your LinkedIn username"
 # medium = "Your Medium username"
-# strava = "Your Strava userid"
+# strava = "Your Strava userid":
 # threads = "Your Threads username"
 # Disqus shortname
 # disqus = ""
 ## footer -----------
 
+## commented out as we won't want this at the bottom of every page. 
 # author = "Andy"
 # avatar = "/favicon.png"
 # contact = "mailto:andycodes00@proton.me"
